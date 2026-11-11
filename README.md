@@ -4,7 +4,7 @@
 [![Ruffle](https://img.shields.io/badge/WebAssembly-Ruffle-FF6B6B?style=flat&logo=webassembly)](https://ruffle.rs/)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Cuong2000aa-blue?style=flat)](https://github.com/Cuong2000aa)
 
-> **Lưu ý & Tuyên bố trách nhiệm:** Dự án này là một **Private Server Gunny / DDTank** (dựa trên nền tảng Gunny II / DDTank 3.4/4.1) phục vụ mục đích nghiên cứu, học tập kiến trúc hệ thống game multiplayer cổ điển và bảo tồn di sản game Flash. Bản quyền thương hiệu và tài nguyên đồ họa gốc thuộc về **7Road** và các nhà phát hành chính thức. Dự án không nhận là tác giả game gốc; dự án này do **Cuong2000aa** bảo trì, port và hiện đại hóa trên nền tảng công nghệ mới.
+> **Lưu ý & Tuyên bố trách nhiệm:** Dự án này là một **Private Server Gunny / DDTank** (dựa trên nền tảng Gunny II / DDTank 3.4/4.1) phục vụ mục đích nghiên cứu, học tập kiến trúc hệ thống game multiplayer cổ điển và bảo tồn di sản game Flash. Bản quyền thương hiệu và tài nguyên đồ họa gốc thuộc về các nhà phát hành chính thức. Dự án này do **Cuong2000aa** bảo trì, port và hiện đại hóa trên nền tảng công nghệ mới.
 
 ---
 
@@ -23,11 +23,7 @@
    - Ghi nhớ tùy chọn người dùng tự động bằng `localStorage`.
    - Tích hợp sẵn Bàn phím ảo (Virtual Gamepad) cho thiết bị di động (iOS / Android qua mạng LAN).
 
-4. **Vật Lý Hố Đào (Crater Physics) Chuẩn Đồ Họa**:
-   - Server đồng bộ hình dạng hố nổ theo `Crater ID` thực tế của từng loại vũ khí thay vì mã đạn thô.
-   - Bổ sung xử lý viền hố (`craterbrink.png` / `_brink.bomb`) với thuật toán bitwise `Tile.Add`, loại bỏ lỗi viền đen/trong suốt dị thường.
-
-5. **Asset Proxy Thông Minh & Caching Cục Bộ**:
+4. **Asset Proxy Thông Minh & Caching Cục Bộ**:
    - Máy chủ `Tank.Request` tích hợp cơ chế cache tài nguyên cục bộ (`Resources/`) cho vũ khí, trang phục theo mốc cường hóa và crater hố nổ, hạn chế tối đa độ trễ giật lag mạng giữa trận đấu.
 
 ---
