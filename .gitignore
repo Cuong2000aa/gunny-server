@@ -1,0 +1,42 @@
+# Build & Compiler Outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.pidb
+*.pdb
+
+# Visual Studio / IDE / Editors
+.vs/
+.idea/
+.vscode/
+*.swp
+*.bak
+*~
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Tooling, Logs & Scratch
+graphify-out/
+.graphifyignore
+RecordLog/
+logs/
+*.log
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# tree-refresh:2026-11-11T02:31:26Z

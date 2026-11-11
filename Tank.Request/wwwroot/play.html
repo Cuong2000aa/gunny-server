@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gunny II - Chiến Trường Gà (.NET 8 macOS)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            width: 100%;
+            background: #16213e;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0f3460;
+        }
+        h1 { font-size: 20px; color: #e94560; }
+        .status-badge {
+            background: #00b894;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .controls {
+            margin: 10px 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #16213e;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        input {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #0f3460;
+            background: #0f3460;
+            color: white;
+            font-size: 14px;
+        }
+        button, a.btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        button:hover, a.btn:hover { background: #ff5e78; }
+        #game-container {
+            width: 1000px;
+            height: 600px;
+            background: #000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .guide-box {
+            max-width: 1000px;
+            margin: 16px auto;
+            background: #16213e;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-left: 4px solid #e94560;
+        }
+        .guide-box code {
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f1c40f;
+            user-select: all;
+        }
+    </style>
+    <!-- Configure Ruffle BEFORE loading script -->
+    <script>
+        var wsHost = window.location.hostname || "127.0.0.1";
+        var wsPort = window.location.port || "828";
+        var wsProxyUrl = "ws://" + wsHost + ":" + wsPort + "/ws?port=9500";
+
+        // Hook WebSocket to log every socket attempt
+        const origWebSocket = window.WebSocket;
+        window.WebSocket = function(url, protocols) {
+            console.log('[Browser Hooked WebSocket] Opening WebSocket to:', url);
+            const ws = protocols ? new origWebSocket(url, protocols) : new origWebSocket(url);
+            ws.addEventListener('open', () => console.log('[Browser Hooked WebSocket] OPENED successfully!'));
+            ws.addEventListener('error', (e) => console.log('[Browser Hooked WebSocket] ERROR:', e));
+            ws.addEventListener('close', (e) => console.log('[Browser Hooked WebSocket] CLOSED:', e.code, e.reason));
+            return ws;
+        };
+
+        window.RufflePlayer = window.RufflePlayer || {};
+        window.RufflePlayer.config = {
+            autoplay: "on",
+            splashScreen: false,
+            unmuteOverlay: "hidden",
+            socketProxy: [
+                { host: "127.0.0.1", port: 9500, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9500, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9569, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9569, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9200, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9200, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9269, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9269, proxyUrl: wsProxyUrl }
+            ],
+            allowScriptAccess: true,
+            quality: "high",
+            letterbox: "on",
+            warnOnUnsupportedContent: false
+        };
+        console.log("[Ruffle Config] Configured socketProxy =>", wsProxyUrl);
+    </script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle@nightly"></script>
+</head>
+<body>
+    <header>
+        <h1>⚡ Gunny II .NET 8 on macOS Apple Silicon</h1>
+        <div class="status-badge">● Server Online (Ports: 1433, 9202, 9208, 9500, 828)</div>
+    </header>
+
+    <div class="controls">
+        <label for="username">Tài khoản:</label>
+        <input type="text" id="username" value="admin" />
+        <button onclick="launchWithRuffle()">▶ Vào Game (Ruffle Web)</button>
+        <button onclick="openDirectFlash()">🔗 Lấy Link Flash Player Standalone</button>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div class="guide-box">
+        <h3>🎮 Hai cách chơi trên macOS:</h3>
+        <p>1. <strong>Chơi trực tiếp trên Trình duyệt (Edge / Chrome / Safari):</strong> Bấm nút <code>▶ Vào Game (Ruffle Web)</code> ở trên. Trình duyệt sẽ kết nối qua WebSocket Bridge đến GameServer port 9500.</p>
+        <p>2. <strong>Chơi qua Adobe Flash Player Projector Standalone (Khuyên dùng - 100% mượt mà, đầy đủ hiệu ứng âm thanh):</strong></p>
+        <p>- Mở <code>Flash Player.app</code> trên Mac.</p>
+        <p>- Bấm menu <code>File -> Open Location...</code> (hoặc <code>Command + O</code>) và dán link:</p>
+        <p><code id="direct-link">http://127.0.0.1:828/flash/Loading.swf?user=admin&key=Gunny2026&config=http://127.0.0.1:828/flash/config.xml</code></p>
+    </div>
+
+    <script>
+        function getGameUrl() {
+            var user = document.getElementById("username").value.trim() || "admin";
+            var key = "Gunny2026";
+            var config = encodeURIComponent("http://127.0.0.1:828/flash/config.xml");
+            return "http://127.0.0.1:828/flash/Loading.swf?user=" + encodeURIComponent(user) + "&key=" + key + "&config=" + config;
+        }
+
+        function launchWithRuffle() {
+            var container = document.getElementById("game-container");
+            container.innerHTML = "";
+            var ruffle = window.RufflePlayer.newest();
+            var player = ruffle.createPlayer();
+            player.style.width = "100%";
+            player.style.height = "100%";
+            container.appendChild(player);
+
+            var swfUrl = getGameUrl();
+            console.log("[Gunny] Loading SWF:", swfUrl);
+            player.load({
+                url: swfUrl,
+                allowScriptAccess: true,
+                backgroundColor: "#000000",
+                socketProxy: [
+                    { host: "127.0.0.1", port: 9500, proxyUrl: wsProxyUrl },
+                    { host: "localhost", port: 9500, proxyUrl: wsProxyUrl },
+                    { host: "127.0.0.1", port: 9569, proxyUrl: wsProxyUrl },
+                    { host: "localhost", port: 9569, proxyUrl: wsProxyUrl },
+                    { host: "127.0.0.1", port: 9200, proxyUrl: wsProxyUrl },
+                    { host: "localhost", port: 9200, proxyUrl: wsProxyUrl },
+                    { host: "127.0.0.1", port: 9269, proxyUrl: wsProxyUrl },
+                    { host: "localhost", port: 9269, proxyUrl: wsProxyUrl }
+                ],
+                parameters: {
+                    user: document.getElementById("username").value.trim() || "admin",
+                    key: "Gunny2026",
+                    config: "http://127.0.0.1:828/flash/config.xml"
+                }
+            });
+        }
+
+        function openDirectFlash() {
+            var url = getGameUrl();
+            prompt("Copy link SWF để dán vào Flash Player Projector:", url);
+        }
+
+        document.getElementById("username").addEventListener("input", function() {
+            document.getElementById("direct-link").innerText = getGameUrl();
+        });
+
+        // Tự động khởi chạy Ruffle khi vào trang
+        window.addEventListener("DOMContentLoaded", function() {
+            launchWithRuffle();
+        });
+    </script>
+</body>
+</html>

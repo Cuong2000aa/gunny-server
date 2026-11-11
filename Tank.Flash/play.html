@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gunny II - Chiến Trường Gà (.NET 8 macOS & Mobile Web)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+        header {
+            width: 100%;
+            background: #16213e;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0f3460;
+        }
+        h1 { font-size: 18px; color: #e94560; }
+        .status-badge {
+            background: #00b894;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .controls {
+            margin: 8px 0;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #16213e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            max-width: 1000px;
+            width: 98%;
+            justify-content: center;
+        }
+        input {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #0f3460;
+            background: #0f3460;
+            color: white;
+            font-size: 14px;
+        }
+        button, a.btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        button:hover, a.btn:hover { background: #ff5e78; }
+        button.btn-alt { background: #0984e3; }
+        button.btn-alt:hover { background: #74b9ff; }
+        
+        /* Explicitly define @font-face with full Vietnamese TTF support so Canvas renderer uses complete glyph set */
+        @font-face {
+            font-family: 'Arial';
+            src: url('/web/fonts/Arial.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Arial';
+            src: url('/web/fonts/Arial-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Tahoma';
+            src: url('/web/fonts/Tahoma.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Tahoma';
+            src: url('/web/fonts/Tahoma-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        #game-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 100vw;
+            transition: width 0.15s ease-out;
+        }
+
+        #game-container {
+            width: 1000px;
+            height: 600px;
+            max-width: 98vw;
+            max-height: calc(98vw * 0.6);
+            background: #000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1000 / 600;
+            transition: width 0.15s ease-out, height 0.15s ease-out;
+        }
+
+        #game-container.scale-100 {
+            width: 1000px;
+            height: 600px;
+        }
+
+        #game-container.scale-125 {
+            width: 1250px;
+            height: 750px;
+        }
+
+        #game-container.scale-150 {
+            width: 1500px;
+            height: 900px;
+        }
+
+        /* Fullscreen letterbox: keeps exact 1000:600 ratio centered with black bars */
+        #game-wrapper:fullscreen, #game-wrapper:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            background: #000 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #game-wrapper:fullscreen #game-container, #game-wrapper:-webkit-full-screen #game-container {
+            width: min(100vw, calc(100vh * (1000 / 600))) !important;
+            height: min(100vh, calc(100vw * (600 / 1000))) !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        #game-wrapper:fullscreen #virtual-gamepad, #game-wrapper:-webkit-full-screen #virtual-gamepad {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(1000px, 96vw);
+            background: rgba(22, 33, 62, 0.88);
+            z-index: 10000;
+        }
+
+        ruffle-player, ruffle-player canvas {
+            image-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .scale-selector {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid #16213e;
+        }
+        .btn-scale {
+            background: #16213e;
+            color: #bdc3c7;
+            border: 1px solid #2c3e50;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-scale:hover {
+            color: #fff;
+            background: #0984e3;
+        }
+        .btn-scale.active {
+            background: #e94560 !important;
+            color: #fff !important;
+            border-color: #ff7675 !important;
+        }
+
+        @media (max-width: 1024px) {
+            #game-container {
+                width: 100vw;
+                height: 60vw;
+                min-height: 360px;
+                border-radius: 0;
+            }
+        }
+
+        /* Virtual Gamepad for Mobile */
+        #virtual-gamepad {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(22, 33, 62, 0.95);
+            border-radius: 8px;
+            margin-top: 8px;
+            gap: 12px;
+        }
+
+        .dpad-container {
+            display: grid;
+            grid-template-columns: 50px 50px 50px;
+            grid-template-rows: 45px 45px;
+            gap: 5px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .pad-btn {
+            background: #2d3436;
+            color: #dfe6e9;
+            border: 2px solid #636e72;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 42px;
+            user-select: none;
+            touch-action: none;
+            cursor: pointer;
+        }
+        .pad-btn:active, .pad-btn.active {
+            background: #e94560;
+            color: white;
+            border-color: #ff7675;
+            transform: scale(0.94);
+        }
+
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+        }
+
+        .sub-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .sub-btn {
+            background: #0984e3;
+            color: white;
+            border: 1px solid #74b9ff;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 10px;
+            touch-action: none;
+            cursor: pointer;
+        }
+        .sub-btn:active, .sub-btn.active {
+            background: #d63031;
+            transform: scale(0.92);
+        }
+
+        .space-btn {
+            width: 220px;
+            height: 52px;
+            background: linear-gradient(135deg, #e17055, #d63031);
+            color: white;
+            border: 2px solid #ff7675;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(214, 48, 49, 0.4);
+            touch-action: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .space-btn:active, .space-btn.active {
+            background: #e84393;
+            border-color: #fd79a8;
+            box-shadow: 0 0 15px rgba(232, 67, 147, 0.8);
+            transform: scale(0.95);
+        }
+
+        .guide-box {
+            max-width: 1000px;
+            width: 98%;
+            margin: 14px auto;
+            background: #16213e;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            border-left: 4px solid #e94560;
+        }
+        .guide-box code {
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #f1c40f;
+            user-select: all;
+        }
+    </style>
+    <!-- Configure Ruffle BEFORE loading script -->
+    <script>
+        var wsHost = window.location.hostname || "127.0.0.1";
+        var wsPort = window.location.port || "828";
+        var wsProxyUrl = (window.location.protocol === "https:" ? "wss://" : "ws://") + wsHost + ":" + wsPort + "/ws?port=9500";
+
+        // Hook WebSocket to log every socket attempt
+        const origWebSocket = window.WebSocket;
+        window.WebSocket = function(url, protocols) {
+            console.log('[Browser Hooked WebSocket] Opening WebSocket to:', url);
+            const ws = protocols ? new origWebSocket(url, protocols) : new origWebSocket(url);
+            ws.addEventListener('open', () => console.log('[Browser Hooked WebSocket] OPENED successfully!'));
+            ws.addEventListener('error', (e) => console.log('[Browser Hooked WebSocket] ERROR:', e));
+            ws.addEventListener('close', (e) => console.log('[Browser Hooked WebSocket] CLOSED:', e.code, e.reason));
+            return ws;
+        };
+
+        window.RufflePlayer = window.RufflePlayer || {};
+        window.RufflePlayer.config = {
+            autoplay: "on",
+            splashScreen: false,
+            unmuteOverlay: "hidden",
+            deviceFontRenderer: "canvas",
+            defaultFonts: {
+                sans: ["Arial", "Tahoma", "sans-serif"],
+                serif: ["Times New Roman", "serif"],
+                typewriter: ["Courier New", "monospace"]
+            },
+            socketProxy: [
+                { host: wsHost, port: 9500, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9500, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9500, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9569, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9569, proxyUrl: wsProxyUrl },
+                { host: "127.0.0.1", port: 9200, proxyUrl: wsProxyUrl },
+                { host: "localhost", port: 9200, proxyUrl: wsProxyUrl }
+            ],
+            allowScriptAccess: true,
+            quality: "best",
+            letterbox: "on",
+            scale: "showAll",
+            forceScale: true,
+            warnOnUnsupportedContent: false
+        };
+        console.log("[Ruffle Config] Configured socketProxy =>", wsProxyUrl);
+    </script>
+    <script src="https://unpkg.com/@ruffle-rs/ruffle@nightly"></script>
+</head>
+<body>
+    <header>
+        <h1>⚡ Gunny II .NET 8 (Web & Mobile)</h1>
+        <div class="status-badge">● Online</div>
+    </header>
+
+    <div class="controls">
+        <label for="username">Tài khoản:</label>
+        <input type="text" id="username" value="admin" style="width: 110px;" />
+        <button onclick="launchWithRuffle()">▶ Tải Lại Game</button>
+        
+        <div class="scale-selector">
+            <span style="font-size: 11px; font-weight: bold; color: #f1c40f; margin-right: 2px;">Màn:</span>
+            <button class="btn-scale" data-scale="100" onclick="setScalePreset('100')">100%</button>
+            <button class="btn-scale" data-scale="125" onclick="setScalePreset('125')">125%</button>
+            <button class="btn-scale" data-scale="150" onclick="setScalePreset('150')">150%</button>
+            <button class="btn-scale" data-scale="full" onclick="toggleFullscreen()">⛶ Toàn Màn</button>
+        </div>
+
+        <button class="btn-alt" onclick="toggleGamepad()">🎮 Phím Ảo</button>
+        <button id="btnToggleMax" style="background:#28a745; margin-left:8px;" onclick="toggleMaxResources()">⚡ Max Tài Nguyên: [BẬT]</button>
+    </div>
+
+    <div id="game-wrapper">
+        <div id="game-container"></div>
+
+        <!-- Virtual Gamepad for Mobile & Touch devices -->
+        <div id="virtual-gamepad">
+            <div class="dpad-container">
+                <div style="grid-column: 2;" class="pad-btn" id="btn-up">▲</div>
+                <div style="grid-column: 1; grid-row: 2;" class="pad-btn" id="btn-left">◀</div>
+                <div style="grid-column: 2; grid-row: 2;" class="pad-btn" id="btn-down">▼</div>
+                <div style="grid-column: 3; grid-row: 2;" class="pad-btn" id="btn-right">▶</div>
+            </div>
+
+            <div class="action-container">
+                <div class="sub-actions">
+                    <button class="sub-btn" id="btn-1">1</button>
+                    <button class="sub-btn" id="btn-2">2</button>
+                    <button class="sub-btn" id="btn-3">3</button>
+                    <button class="sub-btn" id="btn-4">4</button>
+                    <button class="sub-btn" id="btn-fly" style="background:#6c5ce7;">BAY(F)</button>
+                    <button class="sub-btn" id="btn-pow" style="background:#d63031;">POW(B)</button>
+                    <button class="sub-btn" id="btn-pass" style="background:#e17055;">BỎ(P)</button>
+                </div>
+                <div class="space-btn" id="btn-space">🚀 GIỮ LỰC & BẮN (SPACE)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="guide-box">
+        <h3>📱 Cách chơi trên Điện thoại (iOS / Android):</h3>
+        <p>1. Kết nối cùng mạng Wifi với máy Mac.</p>
+        <p>2. Mở trình duyệt trên điện thoại và truy cập: <code id="lan-link">http://172.20.52.83:828/web/play.html</code></p>
+        <p>3. Xoay ngang màn hình (Landscape) và bấm nút <code>⛶ Toàn Màn Hình</code>.</p>
+        <p>4. Dùng bàn phím ảo bên dưới: Nút <strong>▲▼</strong> chỉnh góc, <strong>◀▶</strong> di chuyển, chạm giữ <strong>🚀 GIỮ LỰC & BẮN</strong> để canh lực rồi nhấc tay để bắn!</p>
+    </div>
+
+    <script>
+        var currentHost = window.location.hostname || "127.0.0.1";
+        var currentPort = window.location.port || "828";
+        var baseUrl = window.location.protocol + "//" + currentHost + ":" + currentPort;
+
+        document.getElementById("lan-link").innerText = baseUrl + "/web/play.html";
+
+        function getGameUrl() {
+            var user = document.getElementById("username").value.trim() || "admin";
+            var key = "Gunny2026";
+            var config = encodeURIComponent(baseUrl + "/flash/config.xml");
+            return baseUrl + "/flash/Loading.swf?user=" + encodeURIComponent(user) + "&key=" + key + "&config=" + config;
+        }
+
+        function launchWithRuffle() {
+            var container = document.getElementById("game-container");
+            container.innerHTML = "";
+            var ruffle = window.RufflePlayer.newest();
+            var player = ruffle.createPlayer();
+            player.style.width = "100%";
+            player.style.height = "100%";
+            container.appendChild(player);
+
+            var swfUrl = getGameUrl();
+            console.log("[Gunny] Loading SWF:", swfUrl);
+            player.load({
+                url: swfUrl,
+                allowScriptAccess: true,
+                backgroundColor: "#000000",
+                deviceFontRenderer: "canvas",
+                parameters: {
+                    user: document.getElementById("username").value.trim() || "admin",
+                    key: "Gunny2026",
+                    config: baseUrl + "/flash/config.xml"
+                }
+            });
+        }
+
+        function setScalePreset(preset) {
+            var container = document.getElementById("game-container");
+            if (!container) return;
+            container.classList.remove("scale-100", "scale-125", "scale-150");
+
+            if (preset === "125") {
+                container.classList.add("scale-125");
+            } else if (preset === "150") {
+                container.classList.add("scale-150");
+            } else {
+                preset = "100";
+                container.classList.add("scale-100");
+            }
+            try {
+                localStorage.setItem("gunny_scale_preset", preset);
+            } catch(e) {}
+
+            document.querySelectorAll(".btn-scale").forEach(function(b) {
+                if (b.getAttribute("data-scale") === preset) {
+                    b.classList.add("active");
+                } else if (b.getAttribute("data-scale") !== "full") {
+                    b.classList.remove("active");
+                }
+            });
+        }
+
+        function toggleFullscreen() {
+            var elem = document.getElementById("game-wrapper");
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        }
+
+        function updateFullscreenButton() {
+            var isFull = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            var btn = document.querySelector(".btn-scale[data-scale='full']");
+            if (btn) {
+                if (isFull) {
+                    btn.classList.add("active");
+                    btn.innerHTML = "🗗 Thoát Toàn Màn";
+                } else {
+                    btn.classList.remove("active");
+                    btn.innerHTML = "⛶ Toàn Màn";
+                }
+            }
+        }
+
+        document.addEventListener("fullscreenchange", updateFullscreenButton);
+        document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+
+        function toggleGamepad() {
+            var pad = document.getElementById("virtual-gamepad");
+            pad.style.display = (pad.style.display === "none") ? "flex" : "none";
+        }
+
+        // --- VIRTUAL KEYBOARD INJECTION ENGINE ---
+        function dispatchKey(type, keyCode, key, code) {
+            var player = document.querySelector("ruffle-player");
+            var opts = {
+                bubbles: true,
+                cancelable: true,
+                key: key,
+                code: code,
+                keyCode: keyCode,
+                which: keyCode,
+                view: window
+            };
+            var ev = new KeyboardEvent(type, opts);
+            if (player) player.dispatchEvent(ev);
+            window.dispatchEvent(ev);
+            document.dispatchEvent(ev);
+        }
+
+        function bindKey(btnId, keyCode, key, code) {
+            var el = document.getElementById(btnId);
+            if (!el) return;
+
+            var active = false;
+            var start = function(e) {
+                if (e.cancelable) e.preventDefault();
+                if (!active) {
+                    active = true;
+                    el.classList.add("active");
+                    dispatchKey("keydown", keyCode, key, code);
+                }
+            };
+            var end = function(e) {
+                if (e.cancelable) e.preventDefault();
+                if (active) {
+                    active = false;
+                    el.classList.remove("active");
+                    dispatchKey("keyup", keyCode, key, code);
+                }
+            };
+
+            el.addEventListener("touchstart", start, { passive: false });
+            el.addEventListener("touchend", end, { passive: false });
+            el.addEventListener("touchcancel", end, { passive: false });
+            el.addEventListener("mousedown", start);
+            el.addEventListener("mouseup", end);
+            el.addEventListener("mouseleave", end);
+        }
+
+        bindKey("btn-up", 38, "ArrowUp", "ArrowUp");
+        bindKey("btn-down", 40, "ArrowDown", "ArrowDown");
+        bindKey("btn-left", 37, "ArrowLeft", "ArrowLeft");
+        bindKey("btn-right", 39, "ArrowRight", "ArrowRight");
+        bindKey("btn-space", 32, " ", "Space");
+        bindKey("btn-1", 49, "1", "Digit1");
+        bindKey("btn-2", 50, "2", "Digit2");
+        bindKey("btn-3", 51, "3", "Digit3");
+        bindKey("btn-4", 52, "4", "Digit4");
+        bindKey("btn-fly", 70, "f", "KeyF");
+        bindKey("btn-pow", 66, "b", "KeyB");
+        bindKey("btn-pass", 80, "p", "KeyP");
+
+        // Quản lý Bật/Tắt Max Tài Nguyên (Dành riêng cho Admin)
+        async function updateResourceStatus() {
+            var user = document.getElementById("username").value.trim();
+            var btn = document.getElementById("btnToggleMax");
+            if (!btn) return;
+            if (user.toLowerCase() !== "admin") {
+                btn.style.display = "none";
+                return;
+            }
+            btn.style.display = "inline-block";
+            try {
+                var res = await fetch("/api/admin/resource-status?user=" + encodeURIComponent(user));
+                var data = await res.json();
+                if (data.isMax) {
+                    btn.style.background = "#28a745";
+                    btn.innerHTML = "⚡ Max Tài Nguyên: [BẬT] (Lv 65)";
+                } else {
+                    btn.style.background = "#6c757d";
+                    btn.innerHTML = "🛡️ Max Tài Nguyên: [TẮT] (Lv 30)";
+                }
+            } catch(e) {}
+        }
+
+        async function toggleMaxResources() {
+            var user = document.getElementById("username").value.trim();
+            if (user.toLowerCase() !== "admin") {
+                alert("⚠️ Tính năng này chỉ áp dụng riêng cho tài khoản admin!");
+                return;
+            }
+            try {
+                var res = await fetch("/api/admin/toggle-resource?user=" + encodeURIComponent(user));
+                var data = await res.json();
+                alert(data.message);
+                await updateResourceStatus();
+            } catch(e) {
+                alert("Lỗi kết nối máy chủ: " + e);
+            }
+        }
+
+        // Tự động khởi chạy khi vào trang
+        window.addEventListener("DOMContentLoaded", function() {
+            var savedPreset = "100";
+            try {
+                savedPreset = localStorage.getItem("gunny_scale_preset") || "100";
+            } catch(e) {}
+            setScalePreset(savedPreset);
+            launchWithRuffle();
+            updateResourceStatus();
+        });
+    </script>
+</body>
+</html>
