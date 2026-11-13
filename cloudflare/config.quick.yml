@@ -1,0 +1,17 @@
+# Quick / named tunnel sample — service luôn về Tank.Request local.
+# Dùng với: cloudflared tunnel --config cloudflare/config.quick.yml run
+#
+# Named tunnel (domain riêng):
+#   1) cloudflared tunnel login
+#   2) cloudflared tunnel create gunny
+#   3) cloudflared tunnel route dns gunny gunny.YOURDOMAIN.com
+#   4) Sửa tunnel + credentials-file bên dưới, rồi:
+#      cloudflared tunnel --config cloudflare/config.yml run gunny
+
+ingress:
+  - service: http://127.0.0.1:828
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      # Game WebSocket có thể idle — giữ kết nối lâu hơn
+      keepAliveTimeout: 90s

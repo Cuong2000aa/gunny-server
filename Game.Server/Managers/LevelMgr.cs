@@ -67,20 +67,23 @@ namespace Game.Server.Managers
         {
 			if (MaxLevel > level && level > 0)
 			{
-				return FindLevel(level - 1).GP;
+				LevelInfo info = FindLevel(level - 1);
+				return info?.GP ?? 0;
 			}
 			return 0;
         }
 
         public static int GetLevel(int GP)
         {
-			if (GP >= FindLevel(MaxLevel).GP)
+			LevelInfo maxInfo = FindLevel(MaxLevel);
+			if (maxInfo != null && GP >= maxInfo.GP)
 			{
 				return MaxLevel;
 			}
 			for (int i = 1; i <= MaxLevel; i++)
 			{
-				if (GP < FindLevel(i).GP)
+				LevelInfo info = FindLevel(i);
+				if (info != null && GP < info.GP)
 				{
 					if (i - 1 != 0)
 					{

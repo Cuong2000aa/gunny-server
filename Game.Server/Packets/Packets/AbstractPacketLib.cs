@@ -2117,6 +2117,14 @@ namespace Game.Base.Packets
 
         public GSPacketIn SendUpdatePlayerProperty(PlayerInfo info, PlayerProperty PlayerProp)
         {
+            if (info == null || PlayerProp?.Current == null)
+            {
+                return null;
+            }
+            if (m_gameClient?.Player?.PlayerCharacter == null)
+            {
+                return null;
+            }
             string[] array = new string[4]
             {
                 "Attack",
@@ -2131,18 +2139,31 @@ namespace Game.Base.Packets
             foreach (string key in array3)
             {
                 gSPacketIn.WriteInt(0);
-                gSPacketIn.WriteInt(PlayerProp.Current["Texp"][key]);
-                gSPacketIn.WriteInt(PlayerProp.Current["Card"][key]);
-                gSPacketIn.WriteInt(PlayerProp.Current["Suit"][key]);
+                gSPacketIn.WriteInt(SafeProp(PlayerProp, "Texp", key));
+                gSPacketIn.WriteInt(SafeProp(PlayerProp, "Card", key));
+                gSPacketIn.WriteInt(SafeProp(PlayerProp, "Suit", key));
             }
             gSPacketIn.WriteInt(0);
             gSPacketIn.WriteInt(0);
-            gSPacketIn.WriteInt(PlayerProp.Current["Damage"]["Bead"]);
-            gSPacketIn.WriteInt(PlayerProp.Current["Armor"]["Bead"]);
-            gSPacketIn.WriteInt(PlayerProp.Current["Damage"]["Suit"]);
-            gSPacketIn.WriteInt(PlayerProp.Current["Armor"]["Suit"]);
+            gSPacketIn.WriteInt(SafeProp(PlayerProp, "Damage", "Bead"));
+            gSPacketIn.WriteInt(SafeProp(PlayerProp, "Armor", "Bead"));
+            gSPacketIn.WriteInt(SafeProp(PlayerProp, "Damage", "Suit"));
+            gSPacketIn.WriteInt(SafeProp(PlayerProp, "Armor", "Suit"));
             SendTCP(gSPacketIn);
             return gSPacketIn;
+        }
+
+        private static int SafeProp(PlayerProperty playerProp, string mainKey, string subKey)
+        {
+            if (playerProp?.Current == null)
+            {
+                return 0;
+            }
+            if (!playerProp.Current.TryGetValue(mainKey, out var sub) || sub == null)
+            {
+                return 0;
+            }
+            return sub.TryGetValue(subKey, out var value) ? value : 0;
         }
 
         public GSPacketIn SendOpenVIP(GamePlayer Player)

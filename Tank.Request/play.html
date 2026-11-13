@@ -351,9 +351,25 @@
     </style>
     <!-- Configure Ruffle BEFORE loading script -->
     <script>
+        // Cloudflare / reverse-proxy: bỏ :443/:80 (và port rỗng). LAN vẫn dùng :828.
+        function gunnyPublicOrigin() {
+            var protocol = window.location.protocol || "http:";
+            var host = window.location.hostname || "127.0.0.1";
+            var port = window.location.port || "";
+            if (!port) {
+                return protocol + "//" + host;
+            }
+            if ((protocol === "https:" && port === "443") || (protocol === "http:" && port === "80")) {
+                return protocol + "//" + host;
+            }
+            return protocol + "//" + host + ":" + port;
+        }
+        function gunnyWsOrigin() {
+            return gunnyPublicOrigin().replace(/^http/i, "ws");
+        }
         var wsHost = window.location.hostname || "127.0.0.1";
-        var wsPort = window.location.port || "828";
-        var wsProxyUrl = (window.location.protocol === "https:" ? "wss://" : "ws://") + wsHost + ":" + wsPort + "/ws?port=9500";
+        var wsPort = window.location.port || "";
+        var wsProxyUrl = gunnyWsOrigin() + "/ws?port=9500";
 
         // Không hook WebSocket — hook function cũ làm mất WebSocket.OPEN → Ruffle đóng
         // socket với 0 byte → Road disconnect → treo 13/13.
@@ -393,8 +409,9 @@
             autoplay: "on",
             splashScreen: false,
             unmuteOverlay: "hidden",
-            // canvas ổn định hơn trên iOS Safari/Chrome so với device fonts + complex path
-            preferredRenderer: "canvas",
+            // Không dùng "canvas": backend canvas không hỗ trợ BitmapData.draw → lỗi trong
+            // handler LOGIN, không setState(MAIN) → treo 13/13. WebGL trước, canvas chỉ fallback.
+            preferredRenderer: "wgpu-webgl",
             deviceFontRenderer: "canvas",
             defaultFonts: {
                 sans: ["Arial", "Tahoma", "sans-serif"],
@@ -411,7 +428,7 @@
                         list.push({
                             host: hosts[i],
                             port: ports[j],
-                            proxyUrl: (window.location.protocol === "https:" ? "wss://" : "ws://") + wsHost + ":" + wsPort + "/ws?port=" + ports[j]
+                            proxyUrl: gunnyWsOrigin() + "/ws?port=" + ports[j]
                         });
                     }
                 }
@@ -426,7 +443,7 @@
             warnOnUnsupportedContent: false,
             // Giảm log / polyfill nặng trên mobile
             logLevel: isMobile ? "warn" : "info",
-            maxExecutionDuration: { secs: isIOS ? 20 : 30, nanos: 0 }
+            maxExecutionDuration: isIOS ? 60 : 90
         };
         console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
     </script>
@@ -441,7 +458,7 @@
                 if (onerror) s.onerror = onerror;
                 document.head.appendChild(s);
             }
-            var localSrc = "/web/ruffle071/ruffle.js?v=20261112d";
+            var localSrc = "/web/ruffle071/ruffle.js?v=20261112e";
             var cdnSrc = "https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.7.1/ruffle.js";
             loadScript(localSrc, function () {
                 window.__ruffleSource = "local";
@@ -529,8 +546,8 @@
 
     <script>
         var currentHost = window.location.hostname || "127.0.0.1";
-        var currentPort = window.location.port || "828";
-        var baseUrl = window.location.protocol + "//" + currentHost + ":" + currentPort;
+        var currentPort = window.location.port || "";
+        var baseUrl = gunnyPublicOrigin();
 
         document.getElementById("lan-link").innerText = baseUrl + "/web/play.html";
 
@@ -538,7 +555,8 @@
             var user = document.getElementById("username").value.trim() || "admin";
             var key = "Gunny2026";
             var config = encodeURIComponent(baseUrl + "/flash/config.xml");
-            return baseUrl + "/flash/Loading.swf?user=" + encodeURIComponent(user) + "&key=" + key + "&config=" + config;
+            // DDT_Loading.swf = full bootstrap (có LoginSelectList → 2.png). Loading.swf nhỏ dễ kẹt ~33%.
+            return baseUrl + "/flash/DDT_Loading.swf?user=" + encodeURIComponent(user) + "&key=" + key + "&config=" + config;
         }
 
         // Ruffle RSA hay trả p rỗng → Login.ashx fail/treo 13/13. Gắn cookie + rewrite
@@ -656,7 +674,7 @@
                 url: swfUrl,
                 allowScriptAccess: true,
                 backgroundColor: "#000000",
-                preferredRenderer: "canvas",
+                preferredRenderer: "wgpu-webgl",
                 deviceFontRenderer: "canvas",
                 quality: iosNow ? "low" : (mobileNow ? "medium" : "high"),
                 letterbox: mobileNow ? "off" : "on",
@@ -686,7 +704,7 @@
         function launchWithRuffle() {
             var container = document.getElementById("game-container");
             if (!container) return;
-            setGameStatus("Đang tải Ruffle + Loading.swf...");
+            setGameStatus("Đang tải Ruffle + DDT_Loading.swf...");
 
             waitForRuffle(25000).then(function (ruffle) {
                 return loadSwfInto(ruffle);

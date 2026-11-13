@@ -33,16 +33,34 @@ namespace Game.Server.Packets.Client
 						return 0;
 					}
 
+					// Cap grade to LevelInfo max (DB only has 1..60). Grade 65 caused client error 1033.
+					int maxGrade = LevelMgr.MaxLevel > 0 ? LevelMgr.MaxLevel : 60;
+					LevelInfo maxLevel = LevelMgr.FindLevel(maxGrade);
+					int maxGp = maxLevel?.GP ?? 211140995;
+
 					client.Player.BeginChanges();
-					client.Player.PlayerCharacter.Grade = 65;
-					client.Player.PlayerCharacter.GP = 150000000;
+					client.Player.PlayerCharacter.Grade = maxGrade;
+					client.Player.PlayerCharacter.GP = maxGp;
 					client.Player.PlayerCharacter.Money = 99999999;
 					client.Player.PlayerCharacter.Gold = 99999999;
 					client.Player.PlayerCharacter.GiftToken = 99999999;
 					client.Player.PlayerCharacter.medal = 999999;
+					client.Player.PlayerCharacter.Score = 99999999;
+					client.Player.PlayerCharacter.petScore = 99999999;
+					client.Player.PlayerCharacter.damageScores = 99999999;
+					client.Player.PlayerCharacter.myHonor = 99999999;
+					client.Player.PlayerCharacter.AchievementPoint = 999999;
+					client.Player.PlayerCharacter.Offer = 99999999;
+					client.Player.PlayerCharacter.Nimbus = 999;
+					client.Player.PlayerCharacter.typeVIP = 2;
+					client.Player.PlayerCharacter.VIPLevel = 12;
+					client.Player.PlayerCharacter.VIPExp = 99999999;
+					client.Player.PlayerCharacter.VIPExpireDay = DateTime.Now.AddYears(10);
+					client.Player.PlayerCharacter.CanTakeVipReward = true;
 					client.Player.CommitChanges();
 					client.Player.UpdateProperties();
-					client.Player.SendMessage("⚡ [ADMIN] Đã BẬT MAX TÀI NGUYÊN: Cấp 65, 99.999.999 Xu, 99.999.999 Vàng, 99.999.999 Lễ Kim, 999.999 Huân Chương!");
+					client.Player.Out.SendOpenVIP(client.Player);
+					client.Player.SendMessage($"⚡ [ADMIN] MAX FULL: Cấp {maxGrade}, VIP12, 99.999.999 Xu/Vàng/Lễ Kim, điểm/honor max!");
 					return 0;
 				}
 				else if (trimmedText.Equals("/normal", StringComparison.OrdinalIgnoreCase) || trimmedText.Equals("/min", StringComparison.OrdinalIgnoreCase))

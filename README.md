@@ -48,42 +48,38 @@ Gunny/
 
 ---
 
-## 💻 Hướng dẫn chạy nhanh (Local Quickstart)
+## 💻 Hướng dẫn chạy nhanh (máy khác / sau `git pull`)
 
-### 1. Yêu cầu môi trường
+### 1. Yêu cầu
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Docker](https://www.docker.com/) (để chạy cơ sở dữ liệu SQL Server)
+- [Docker Desktop](https://www.docker.com/) (SQL Edge)
+- Windows: sau pull chạy `Sync-GameAssets.bat` (symlink Git không copy file map/bomb trên Windows)
 
-### 2. Khởi động Cơ sở dữ liệu SQL Server
-```bash
-docker run -d --name gunny-sql \
-  -e "ACCEPT_EULA=Y" \
-  -e "MSSQL_SA_PASSWORD=Gunny@2026Mac" \
-  -p 1433:1433 \
-  mcr.microsoft.com/azure-sql-edge:latest
+### 2. Restore DB + Admin full
+```powershell
+.\scripts\restore-databases.ps1
+```
+- Start container `gunny-sql` (SA: `Gunny@2026Mac`)
+- Restore `Database/*.bak` → `Db_Membership` / `Project_Game34` / `Project_Player34`
+- Apply `scripts/fix-admin-full.sql` (Admin cấp **60**, VIP12, full xu/vàng/lễ kim + đồ starter)
+
+> Trong game lệnh `/max` full tài nguyên nhưng **không** set cấp 65 (LevelInfo chỉ tới 60; cấp 65 gây lỗi 1033).
+
+### 3. Sync map/bomb (Windows)
+```bat
+Sync-GameAssets.bat
 ```
 
-### 3. Build & Khởi động Server
-Khởi động tuần tự 4 dịch vụ cốt lõi:
-```bash
-# 1. Center Service (Port 9202)
-dotnet run --project Center.Service/Center.Service.csproj
-
-# 2. Fighting Service (Port 9208)
-dotnet run --project Fighting.Service/Fighting.Service.csproj
-
-# 3. Road Service (Port 9500)
-dotnet run --project Road.Service/Road.Service.csproj
-
-# 4. Web & Asset Proxy (Port 828)
-dotnet run --project Tank.Request/Tank.Request.csproj
+### 4. Start 4 service
+```powershell
+.\scripts\start-gunny-stack.ps1
 ```
 
-### 4. Vào game
-Mở trình duyệt bất kỳ và truy cập:
+### 5. Vào game
 ```
 http://127.0.0.1:828/web/play.html
 ```
+LAN / Cloudflare: xem `cloudflare/README.md` (`.\cloudflare\start-quick-tunnel.ps1`).
 
 ---
 

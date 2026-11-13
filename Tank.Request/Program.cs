@@ -15,6 +15,7 @@ using System.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,8 +41,19 @@ namespace Tank.Request
 
             builder.Services.AddSystemWebAdapters();
             builder.Services.AddCors();
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                // Cloudflare Tunnel / reverse-proxy: scheme + host từ client thật
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                    | ForwardedHeaders.XForwardedProto
+                    | ForwardedHeaders.XForwardedHost;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
 
             var app = builder.Build();
+
+            app.UseForwardedHeaders();
 
             app.UseCors(policy => policy
                 .AllowAnyOrigin()
@@ -310,8 +322,8 @@ namespace Tank.Request
                 await next();
             });
 
-            // LAN play: rewrite flash/config.xml so SITE/FLASHSITE match the Host the client used
-            // (phone/other PC on Wi‑Fi must not keep hardcoded 127.0.0.1).
+            // LAN / Cloudflare: rewrite flash/config.xml so SITE/FLASHSITE match public origin
+            // (phone/other PC / tunnel must not keep hardcoded 127.0.0.1).
             app.Use(async (context, next) =>
             {
                 string p = context.Request.Path.Value ?? "";
@@ -321,17 +333,12 @@ namespace Tank.Request
                     string configPath = Path.Combine(flashDir, "config.xml");
                     if (File.Exists(configPath))
                     {
-                        string hostHeader = context.Request.Host.Value;
-                        if (string.IsNullOrWhiteSpace(hostHeader))
-                        {
-                            hostHeader = "127.0.0.1:828";
-                        }
-                        string scheme = string.IsNullOrEmpty(context.Request.Scheme) ? "http" : context.Request.Scheme;
-                        string publicOrigin = $"{scheme}://{hostHeader}";
-                        // Normalize origin without default-looking empty port
+                        string publicOrigin = ResolvePublicOrigin(context);
                         string xml = await File.ReadAllTextAsync(configPath);
                         xml = xml.Replace("http://127.0.0.1:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
                         xml = xml.Replace("http://localhost:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
+                        xml = xml.Replace("https://127.0.0.1:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
+                        xml = xml.Replace("https://localhost:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
                         context.Response.ContentType = "text/xml; charset=utf-8";
                         context.Response.Headers.CacheControl = "no-cache, max-age=0, must-revalidate";
                         context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
@@ -405,12 +412,14 @@ namespace Tank.Request
 
             app.UseSystemWebAdapters();
 
-            // LAN play helper: show Wi‑Fi IP for other devices
+            // LAN / Cloudflare helper: show Wi‑Fi IP + public origin (tunnel)
             app.MapGet("/api/lan-info", (Microsoft.AspNetCore.Http.HttpContext context) =>
             {
                 string lanIp = GetLanIPv4() ?? "127.0.0.1";
-                string playUrl = $"http://{lanIp}:828/web/play.html";
-                return Results.Json(new { ip = lanIp, playUrl, port = 828 });
+                string publicOrigin = ResolvePublicOrigin(context);
+                string playUrlLan = $"http://{lanIp}:828/web/play.html";
+                string playUrl = $"{publicOrigin}/web/play.html";
+                return Results.Json(new { ip = lanIp, playUrlLan, playUrl, publicOrigin, port = 828 });
             });
 
             // Admin Resource Toggle Endpoints (Strictly Admin UserID = 1 only)
@@ -827,6 +836,45 @@ namespace Tank.Request
                 }
             }
             return null;
+        }
+
+        private static string ResolvePublicOrigin(Microsoft.AspNetCore.Http.HttpContext context)
+        {
+            string scheme = context.Request.Headers["X-Forwarded-Proto"].FirstOrDefault()
+                ?? context.Request.Scheme
+                ?? "http";
+            // Cloudflare may send CF-Visitor: {"scheme":"https"}
+            string cfVisitor = context.Request.Headers["CF-Visitor"].FirstOrDefault() ?? "";
+            if (cfVisitor.Contains("\"scheme\":\"https\"", StringComparison.OrdinalIgnoreCase))
+            {
+                scheme = "https";
+            }
+            scheme = scheme.Split(',')[0].Trim();
+            if (string.IsNullOrWhiteSpace(scheme))
+            {
+                scheme = "http";
+            }
+
+            string hostHeader = context.Request.Headers["X-Forwarded-Host"].FirstOrDefault()
+                ?? context.Request.Host.Value
+                ?? "127.0.0.1:828";
+            hostHeader = hostHeader.Split(',')[0].Trim();
+            if (string.IsNullOrWhiteSpace(hostHeader))
+            {
+                hostHeader = "127.0.0.1:828";
+            }
+
+            // Strip default ports if somehow present twice
+            if (scheme.Equals("https", StringComparison.OrdinalIgnoreCase) && hostHeader.EndsWith(":443"))
+            {
+                hostHeader = hostHeader[..^4];
+            }
+            else if (scheme.Equals("http", StringComparison.OrdinalIgnoreCase) && hostHeader.EndsWith(":80"))
+            {
+                hostHeader = hostHeader[..^3];
+            }
+
+            return $"{scheme}://{hostHeader}";
         }
 
         private static string? GetLanIPv4()

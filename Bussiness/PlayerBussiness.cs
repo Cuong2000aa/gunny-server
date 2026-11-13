@@ -336,6 +336,10 @@ namespace Bussiness
             bool result = false;
             try
             {
+                if (item?.Template == null)
+                {
+                    throw new InvalidOperationException("AddGoods: item or item.Template is null (TemplateID=" + (item?.TemplateID ?? 0) + ")");
+                }
                 SqlParameter[] para = new SqlParameter[41];
                 para[0] = new SqlParameter("@ItemID", item.ItemID);
                 para[0].Direction = ParameterDirection.Output;
@@ -374,12 +378,16 @@ namespace Bussiness
                 para[33] = new SqlParameter("@goldBeginTime", item.goldBeginTime);
                 para[34] = new SqlParameter("@StrengthenExp", item.StrengthenExp);
                 para[35] = new SqlParameter("@Blood", item.Blood);
-                para[36] = new SqlParameter("@latentEnergyCurStr", item.latentEnergyCurStr);
-                para[37] = new SqlParameter("@latentEnergyNewStr", item.latentEnergyNewStr);
-                para[38] = new SqlParameter("@latentEnergyEndTime", item.latentEnergyEndTime);
+                para[36] = new SqlParameter("@latentEnergyCurStr", item.latentEnergyCurStr ?? "0,0,0,0");
+                para[37] = new SqlParameter("@latentEnergyNewStr", item.latentEnergyNewStr ?? "0,0,0,0");
+                para[38] = new SqlParameter("@latentEnergyEndTime", item.latentEnergyEndTime == default ? DateTime.Now : item.latentEnergyEndTime);
                 para[39] = new SqlParameter("@curExp", 0);
                 para[40] = new SqlParameter("@cellLocked", false);
                 result = db.RunProcedure("SP_Users_Items_Add", para);
+                if (para[0].Value == null || para[0].Value == DBNull.Value)
+                {
+                    throw new InvalidOperationException("AddGoods: SP_Users_Items_Add did not return ItemID for TemplateID=" + item.Template.TemplateID);
+                }
                 item.ItemID = (int)para[0].Value;
                 item.IsDirty = false;
             }

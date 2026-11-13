@@ -3794,11 +3794,14 @@ public class GamePlayer : IGamePlayer
         {
             try
             {
-                if (Level == 1)
+                if (Level == 1 && EquipBag != null && EquipBag.GetItemAt(6) == null)
                 {
                     ItemInfo itemInfo = ItemInfo.CreateFromTemplate(ItemMgr.FindItemTemplate(7008), 1, 105);
-                    itemInfo.ValidDate = 365;
-                    EquipBag.AddItemTo(itemInfo, 6);
+                    if (itemInfo != null)
+                    {
+                        itemInfo.ValidDate = 365;
+                        EquipBag.AddItemTo(itemInfo, 6);
+                    }
                 }
                 if (CurrentRoom != null)
                 {
