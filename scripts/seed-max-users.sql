@@ -3,21 +3,18 @@
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 
-DECLARE @Style nvarchar(200) = N'1761,2310,3349,4355,5527,6305,71424,85384,85204,95384,95354,13726,14056,15154,16967,17013';
+DECLARE @Style nvarchar(200) = N'1761,2310,3349,4355,5527,6305,7142,8516,8319,9018,9019,13726,14052,15154,16064,17013';
 DECLARE @Colors nvarchar(200) = N',,,,,,,,,,,,,,,,';
 
 ------------------------------------------------------------
 -- Helper: wipe + insert full equip set for a user
 ------------------------------------------------------------
--- Templates / places
--- 0:1761 1:2310 2:3349 3:4355 4:5527 5:6305 6:71424
--- 7:85384 8:85204 9:95384 10:95354 11:13726 12:14056 13:15154 14:16967 15:17013
-
+-- Safe gear (avoid broken "13 tuổi +10" jewelry Property2 overflow)
 IF OBJECT_ID('tempdb..#Gear') IS NOT NULL DROP TABLE #Gear;
 CREATE TABLE #Gear (Place int NOT NULL, TemplateID int NOT NULL);
 INSERT INTO #Gear(Place, TemplateID) VALUES
-(0,1761),(1,2310),(2,3349),(3,4355),(4,5527),(5,6305),(6,71424),
-(7,85384),(8,85204),(9,95384),(10,95354),(11,13726),(12,14056),(13,15154),(14,16967),(15,17013);
+(0,1761),(1,2310),(2,3349),(3,4355),(4,5527),(5,6305),(6,7142),
+(7,8516),(8,8319),(9,9018),(10,9019),(11,13726),(12,14052),(13,15154),(14,16064),(15,17013);
 
 -- Extra bag copies (EquipBag inventory slots from 31+)
 IF OBJECT_ID('tempdb..#BagExtra') IS NOT NULL DROP TABLE #BagExtra;
@@ -70,10 +67,14 @@ INSERT INTO Project_Player34.dbo.Sys_Users_Goods
  latentEnergyCurStr, latentEnergyNewStr, latentEnergyEndTime, curExp, cellLocked)
 SELECT 1, 0, g.TemplateID, g.Place, 1, 1, N'', 1, 15, 0,
        80, 80, 80, 80, N'', 1, 1, GETDATE(), 0,
-       GETDATE(), 0, 1,1,1,1,1,1, 0,0,0,0,
+       GETDATE(), 0, -1,-1,-1,-1,-1,-1, 0,0,0,0,
        0,0, 0,0, GETDATE(), 0,
        N'0,0,0,0', N'0,0,0,0', GETDATE(), 0, 0
 FROM #Gear g;
+
+UPDATE Project_Player34.dbo.Sys_Users_Texp
+SET attTexpExp=1280550, defTexpExp=1280550, spdTexpExp=1280550, lukTexpExp=1280550, hpTexpExp=1280550, texpCount=999
+WHERE UserID=1;
 
 -- bag extras for admin (places 31+)
 INSERT INTO Project_Player34.dbo.Sys_Users_Goods
@@ -152,10 +153,14 @@ INSERT INTO Project_Player34.dbo.Sys_Users_Goods
  latentEnergyCurStr, latentEnergyNewStr, latentEnergyEndTime, curExp, cellLocked)
 SELECT @u40, 0, g.TemplateID, g.Place, 1, 1, N'', 1, 12, 0,
        50, 50, 50, 50, N'', 1, 1, GETDATE(), 0,
-       GETDATE(), 0, 1,1,1,1,1,1, 0,0,0,0,
+       GETDATE(), 0, -1,-1,-1,-1,-1,-1, 0,0,0,0,
        0,0, 0,0, GETDATE(), 0,
        N'0,0,0,0', N'0,0,0,0', GETDATE(), 0, 0
 FROM #Gear g;
+
+UPDATE Project_Player34.dbo.Sys_Users_Texp
+SET attTexpExp=500000, defTexpExp=500000, spdTexpExp=500000, lukTexpExp=500000, hpTexpExp=500000, texpCount=200
+WHERE UserID=@u40;
 
 INSERT INTO Project_Player34.dbo.Sys_Users_Goods
 (UserID, BagType, TemplateID, Place, Count, IsJudge, Color, IsExist, StrengthenLevel, StrengthenExp,

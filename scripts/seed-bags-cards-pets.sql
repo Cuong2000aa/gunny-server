@@ -13,8 +13,8 @@ IF @admin IS NULL SET @admin = 1;
 IF OBJECT_ID('tempdb..#EquipSet') IS NOT NULL DROP TABLE #EquipSet;
 CREATE TABLE #EquipSet (Place int, TemplateID int);
 INSERT INTO #EquipSet VALUES
-(0,1761),(1,2310),(2,3349),(3,4355),(4,5527),(5,6305),(6,71424),
-(7,85384),(8,85204),(9,95384),(10,95354),(11,13726),(12,14056),(13,15154),(14,16967),(15,17013);
+(0,1761),(1,2310),(2,3349),(3,4355),(4,5527),(5,6305),(6,7142),
+(7,8516),(8,8319),(9,9018),(10,9019),(11,13726),(12,14052),(13,15154),(14,16064),(15,17013);
 
 -- Pool of high-quality equip for bag fill
 IF OBJECT_ID('tempdb..#BagPool') IS NOT NULL DROP TABLE #BagPool;
@@ -67,7 +67,7 @@ INSERT INTO Project_Player34.dbo.Sys_Users_Goods
  latentEnergyCurStr, latentEnergyNewStr, latentEnergyEndTime, curExp, cellLocked)
 SELECT @uid, 0, TemplateID, Place, 1, 1, N'', 1, @stren, 0,
        @compose, @compose, @compose, @compose, N'', 1, 1, GETDATE(), 0,
-       GETDATE(), 0, 1,1,1,1,1,1, 0,0,0,0, 0,0, 0,0, GETDATE(), 0,
+       GETDATE(), 0, -1,-1,-1,-1,-1,-1, 0,0,0,0, 0,0, 0,0, GETDATE(), 0,
        N'0,0,0,0', N'0,0,0,0', GETDATE(), 0, 0
 FROM #EquipSet;
 

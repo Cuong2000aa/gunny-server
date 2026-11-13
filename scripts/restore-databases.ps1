@@ -60,6 +60,7 @@ Restore-Db "Project_Player34" "Player34.bak" "DDTMixTankAc" "DDTMixTankAc_log"
 Write-Host "Apply admin/max40 seed (gear + bags + cards + pets)..." -ForegroundColor Cyan
 Get-Content "$root\scripts\seed-max-users.sql" -Raw | docker exec -i $container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $saPassword
 Get-Content "$root\scripts\seed-bags-cards-pets.sql" -Raw | docker exec -i $container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $saPassword
+Get-Content "$root\scripts\fix-stats-and-safe-gear.sql" -Raw | docker exec -i $container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $saPassword
 Write-Host ""
 Write-Host "Done." -ForegroundColor Green
 Write-Host "Accounts: admin (Lv60 max bags), max40 (Lv40 limited) — any password" -ForegroundColor Yellow
