@@ -61,11 +61,11 @@ Gunny/
 ```
 - Start container `gunny-sql` (SA: `Gunny@2026Mac`)
 - Restore `Database/*.bak` → `Db_Membership` / `Project_Game34` / `Project_Player34`
-- Apply `scripts/seed-max-users.sql`:
-  - **admin** — Lv60, VIP12, full xu, bộ đồ thần khí **cường hóa +15** + đồ trong túi
-  - **max40** — Lv40, cùng bộ đồ nhưng **cường hóa +12**
+- Apply `scripts/seed-max-users.sql` + `scripts/seed-bags-cards-pets.sql`:
+  - **admin** — Lv60, VIP12, full xu, đồ mặc +15, túi trang bị ~90, đạo cụ ~60, thẻ 50, pet 18
+  - **max40** — Lv40, cùng set nhưng +12, túi/thẻ/pet ít hơn
 
-> Login: user `admin` hoặc `max40` (password bất kỳ trên bản này). Lệnh `/max` chỉ full tài nguyên, cấp max = 60 (không set 65 — dễ lỗi 1033).
+> Login: `admin` / `max40` (password bất kỳ). Sau khi seed phải **thoát nhân vật rồi vào lại** thì túi mới hiện. `/max` chỉ full tài nguyên (cấp max 60).
 
 ### 3. Sync map/bomb (Windows)
 ```bat

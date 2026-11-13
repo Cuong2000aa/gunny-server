@@ -57,10 +57,12 @@ Restore-Db "Db_Membership" "Db_Membership.bak" "Db_Membership_Data" "Db_Membersh
 Restore-Db "Project_Game34" "Game34.bak" "Db_Tank" "Db_Tank_log"
 Restore-Db "Project_Player34" "Player34.bak" "DDTMixTankAc" "DDTMixTankAc_log"
 
-Write-Host "Apply admin full + Max40 gear seed..." -ForegroundColor Cyan
+Write-Host "Apply admin/max40 seed (gear + bags + cards + pets)..." -ForegroundColor Cyan
 Get-Content "$root\scripts\seed-max-users.sql" -Raw | docker exec -i $container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $saPassword
+Get-Content "$root\scripts\seed-bags-cards-pets.sql" -Raw | docker exec -i $container /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $saPassword
 Write-Host ""
 Write-Host "Done." -ForegroundColor Green
-Write-Host "Accounts: admin (Lv60 +15), max40 (Lv40 +12) — login any password" -ForegroundColor Yellow
+Write-Host "Accounts: admin (Lv60 max bags), max40 (Lv40 limited) — any password" -ForegroundColor Yellow
+Write-Host "After seed: logout/login lại nhân vật để túi hiện đồ." -ForegroundColor Yellow
 Write-Host "Next: .\Sync-GameAssets.bat" -ForegroundColor Cyan
 Write-Host "Then:  .\scripts\start-gunny-stack.ps1" -ForegroundColor Cyan
