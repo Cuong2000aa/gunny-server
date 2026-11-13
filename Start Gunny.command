@@ -85,6 +85,16 @@ fi
 # Cho SQL engine khởi động xong (Edge cần thêm vài giây sau khi port mở)
 sleep 5
 
+# --- Map/bomb (fore.map) — required by Road/Fighting cwd ---
+if [ ! -f "$ROOT/Road.Service/map/1001/fore.map" ] || [ ! -f "$ROOT/Fighting.Service/map/1001/fore.map" ]; then
+  warn "Sync GameAssets map/bomb vào Road + Fighting..."
+  bash "$ROOT/Sync-GameAssets.sh" || {
+    err "Thiếu GameAssets/map. git pull rồi chạy Sync-GameAssets.sh"
+    read -r -p "Nhấn Enter…"
+    exit 1
+  }
+fi
+
 # --- Deploy latest DLLs if present ---
 if [ -f "$ROOT/GameServerScripts/bin/out/GameServerScripts.dll" ]; then
   cp -f "$ROOT/GameServerScripts/bin/out/GameServerScripts.dll" \
