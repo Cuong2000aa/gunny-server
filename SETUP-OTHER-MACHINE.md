@@ -2,6 +2,8 @@
 
 Repo: https://github.com/Cuong2000aa/gunny-server
 
+**Kiến trúc / flow chi tiết (cho AI đọc):** [`SOURCE-ARCHITECTURE.md`](./SOURCE-ARCHITECTURE.md)
+
 ## 1. Pull
 ```bat
 git clone https://github.com/Cuong2000aa/gunny-server.git
