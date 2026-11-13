@@ -146,18 +146,46 @@ CDN **không browse được** folder (403). Chỉ file path trực tiếp mới
 
 Offline / máy khác: càng nhiều file trong `Resources/` càng ít phụ thuộc CDN. Player remote vẫn cần mạng tới **host game**, không phải CDN.
 
-### 6.2 Hiệu ứng đào (dig / crater)
+### 6.2 Hiệu ứng đào (dig / crater) — CHI TIẾT (hay lỗi khi sang máy khác)
 
-| | |
+Dig **không** chỉ là “có file ảnh”. Client (Ruffle) đục địa hình bằng `BitmapData.draw(..., BlendMode.ERASE)` + vẽ viền `craterbrink`. Trên Ruffle cũ, ERASE dễ fail → client **tô nguyên oval vàng/cam** lên map (đó là “hiệu ứng đào cũ” user từng báo).
+
+| Thành phần | Path / code | Việc |
+|---|---|---|
+| Ảnh lỗ | `Resources/image/bomb/crater/<id>/crater.png` | Mask ERASE (alpha) |
+| Ảnh viền | `.../craterbrink.png` | Viền; **phải trong suốt phần giữa** nếu ERASE fail |
+| Sanitize runtime | `Tank.Request/DigAssetSanitizer.cs` | Gọi **`python3` + Pillow**: crater → RGB trắng giữ alpha; brink → **full transparent** |
+| Proxy / casing | `Tank.Request/Program.cs` | `craterBrink` → `craterbrink`; **cấm** trả pixel 1×1 cho crater; fallback `crater/4/` |
+| Collision map | `GameAssets/map/<id>/dead.map` + client `dead.png` | **Không sanitize / không xóa** `dead.png` — đụng collision |
+| Bomb server | `GameAssets/bomb/<id>.bomb` | Tile đào server-side (`BallMgr`); thiếu → log `can't find bomb file for ball …` |
+
+**Máy khác bắt buộc có:**
+
+1. `git pull` (đã có ~316 file crater trên git).
+2. **Python + Pillow** trên PATH (`pip install pillow`). DigAssetSanitizer thử `python3` rồi `python`.
+3. Thiếu Python/Pillow → sanitize fail → lại oval nâu/vàng trên Ruffle.
+
+**Không làm:**
+- Đừng “fix dig” bằng cách xóa/thay `map/*/dead.png` hoặc `dead.map`.
+- Đừng commit chỉ `.bak` crater (bị `.gitignore` `*.bak`) rồi quên file `.png` đã sanitize.
+- Đừng nghĩ CDN tự đủ: brink sai casing trên CDN từng 404 → brink trong suốt 1×1.
+
+### 6.3 Vũ khí phụ / thiên sứ ban phúc (nút R / PHỤ)
+
+Không phải asset “thiên sứ.swf” một file — là **logic đạn phụ**:
+
+| File | Patch |
 |---|---|
-| Path | `Resources/image/bomb/crater/<bombId>/crater.png` + `craterbrink.png` |
-| Code | `Tank.Request/DigAssetSanitizer.cs` + nhánh crater trong `Program.cs` |
-| Fallback | `Resources/image/bomb/crater/4/` |
-| Git | Đã track (~316 file). Máy khác chỉ cần `git pull` |
+| `Game.Logic/Phy/Object/Player.cs` → `UseSecondWeapon()` | `Property3 == 31` → khiên/`AddGuardEquipEffect`; **else** → thiên sứ: `SetCurrentWeapon(DeputyWeapon)` + `OnPlayerCure()` |
+| Cùng file → set ball khi đổi weapon | Nếu `BallConfigMgr.FindBall(templateId)` **null** → fallback `Template.Property1` làm `ballId` (client cũng vậy) |
+| `Game.Logic/Cmd/SecondWeaponCommand.cs` | Packet 84: chỉ khi đang attack + còn `deputyWeaponCount`; gửi lại count về client |
 
-Không nhầm với `GameAssets/bomb` (file `.bomb` collision server-side).
+**Phụ thuộc data (DB `Project_Game34`):** bảng Ball / BallConfig + item template Property1/3/4/5.  
+→ Máy khác **phải restore `Database/Game34.bak` mới** (đã export cùng repo). Thiếu BallConfig + thiếu fallback cũ = phụ R “không nổ / không trừ lượt”.
 
-### 6.3 Binary map (Road/Fighting)
+**Client UI:** nút PHỤ(R) trên `play.html` / phím `R` — chỉ gửi input; logic thật ở Fighting/Road `SecondWeaponCommand`.
+
+### 6.4 Binary map (Road/Fighting)
 
 | | |
 |---|---|
@@ -195,9 +223,10 @@ Khi AI sửa code, **giữ** các hành vi sau:
 3. **WS `/ws` luôn về Road 9500** khi client gửi 9569.
 4. **`forceLoginNow` once-only** trong SWF `2.png` (`LoginStateView`).
 5. **UserLoginHandler newest-wins** + plaintext RSA fallback (`rsaEncry5` / RAW login).
-6. **Dig crater casing + DigAssetSanitizer** — không trả 1×1 cho crater.
-7. **Không ffdec-replace `HallStateView` toàn class** nếu không cần — từng gây `VerifyError: Stack depth unbalanced` trên Ruffle.
-8. **Alice / network inspector:** N/A repo này (rule ACFC khác workspace).
+6. **Dig crater:** casing `craterbrink` + `DigAssetSanitizer` (python3+Pillow) + fallback `crater/4/` — **không** trả 1×1; **không** đụng `dead.png`/`dead.map`.
+7. **Thiên sứ / phụ R:** giữ fallback `BallConfig → Property1` và nhánh `Property3==31` vs đạn phụ trong `Player.UseSecondWeapon` / `SecondWeaponCommand`.
+8. **Không ffdec-replace `HallStateView` toàn class** nếu không cần — từng gây `VerifyError: Stack depth unbalanced` trên Ruffle.
+9. **Alice / network inspector:** N/A repo này (rule ACFC khác workspace).
 
 SWF core: `Source Flash/FlashSV1/2.png` — edit bằng FFDec (`-replace` / `-export script`). Backup trước khi patch.
 
@@ -213,6 +242,10 @@ SWF core: `Source Flash/FlashSV1/2.png` — edit bằng FFDec (`-replace` / `-ex
 | Road bytes=0 / không SendLoginSuccess | WS không tới 9500 | Kiểm tra play.html socketProxy + Request `/ws` |
 | Skin trống | Thiếu Resources + không CDN | Có mạng lần đầu để cache, hoặc copy `Resources/` |
 | VerifyError HallStateView | SWF recompile hỏng | Restore `2.png` từ backup sạch Hall |
+| Đào ra **oval vàng/cam** | ERASE Ruffle fail + brink chưa sanitize / thiếu Python | Cài `python3`+Pillow; giữ DigAssetSanitizer; hard-refresh crater |
+| Đào “thủng” nhưng nền vàng | Lỗ đục `fore` lộ màu `dead` layer | Đừng xóa dead; đó là layer đá `digable=false` |
+| Phụ R / thiên sứ không ăn | BallConfig thiếu hoặc code fallback mất | Restore Game34.bak; giữ patch `Player.cs` / `SecondWeaponCommand` |
+| Log `can't find bomb file` | Thiếu `GameAssets/bomb/<id>.bomb` | `Sync-GameAssets` + đủ bak/assets |
 
 Logs hay dùng:
 - Mac Request/Road stdout: `/tmp/tankrequest.log`, `/tmp/road.log` hoặc `/tmp/gunny-logs/`
@@ -258,10 +291,11 @@ WS proxy           → Tank.Request/Program.cs  Map("/ws")
 Socket login       → Game.Server/Packets/Client/UserLoginHandler.cs
 Hall enter         → hall.HallStateView (trong 2.png)
 Map binary         → GameAssets/map/<id>/fore.map
-Dig FX             → Resources/image/bomb/crater/<id>/
+Dig FX             → Resources/image/bomb/crater/<id>/ + DigAssetSanitizer (python+Pillow)
+Angel / phụ R      → Player.UseSecondWeapon + SecondWeaponCommand + BallConfig/Property1
 CDN                → https://gunny.vcdn.vn/<image|sound path>
 ```
 
 ---
 
-*Last aligned with private-server fixes: Ruffle wgpu-webgl, once-login SWF, newest-wins Road login, GameAssets sync, DigAssetSanitizer, live DB bak export.*
+*Last aligned: dig crater sanitizer + thiên sứ deputy-weapon patches documented; DigAssetSanitizer tries python3/python.*

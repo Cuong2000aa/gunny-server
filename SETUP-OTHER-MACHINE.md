@@ -25,7 +25,19 @@ Restore-Database.bat
 Sync-GameAssets.bat
 ```
 
-## 4. Build + chạy
+## 4. Dig FX (hiệu ứng đào) — đừng bỏ qua
+Trên máy Request phải có:
+```bat
+python --version
+pip install pillow
+```
+(Linux/Mac: `python3` + `pip3 install pillow`)
+
+`Tank.Request/DigAssetSanitizer.cs` gọi `python3` mỗi khi serve crater. Thiếu Python/Pillow → lỗ đào lại thành oval nâu/vàng trên Ruffle.
+
+Chi tiết: `SOURCE-ARCHITECTURE.md` §6.2 (dig) và §6.3 (thiên sứ / phụ R).
+
+## 5. Build + chạy
 Cần .NET 8 SDK. Build solution / các project Service, rồi chạy:
 - Center.Service
 - Fighting.Service
@@ -34,7 +46,7 @@ Cần .NET 8 SDK. Build solution / các project Service, rồi chạy:
 
 (Mac: double-click `Start Gunny.command`)
 
-## 5. Chơi
+## 6. Chơi
 http://127.0.0.1:828/web/play.html
 
 ## Đã có trong git (mirror máy chính)
@@ -42,7 +54,9 @@ http://127.0.0.1:828/web/play.html
 |---|---|
 | DB mới | `Database/*.bak` |
 | Binary map + bomb | `GameAssets/` |
-| Ảnh map / item cache | `Resources/` |
+| Ảnh map / item / **dig crater** | `Resources/` (gồm `image/bomb/crater/`) |
+| Dig sanitizer code | `Tank.Request/DigAssetSanitizer.cs` |
+| Thiên sứ / phụ R logic | `Game.Logic/Phy/Object/Player.cs`, `SecondWeaponCommand.cs` |
 | Flash client | `Source Flash/FlashSV1/` |
 | Ruffle | `Tank.Flash/ruffle071/` |
 | AI / mission scripts | `GameServerScripts/` |

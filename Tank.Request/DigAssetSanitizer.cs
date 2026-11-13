@@ -90,36 +90,48 @@ namespace Tank.Request
                 File.WriteAllBytes(inFile, input);
                 try
                 {
-                    var psi = new ProcessStartInfo
+                    // Win thường chỉ có `python`; Mac/Linux có `python3`.
+                    foreach (string py in new[] { "python3", "python" })
                     {
-                        FileName = "python3",
-                        ArgumentList = { script, mode, inFile, outFile },
-                        RedirectStandardError = true,
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    };
-                    using var proc = Process.Start(psi);
-                    if (proc == null)
-                    {
-                        return false;
-                    }
-                    if (!proc.WaitForExit(8000))
-                    {
-                        try { proc.Kill(true); } catch { }
-                        return false;
-                    }
-                    if (proc.ExitCode != 0 || !File.Exists(outFile))
-                    {
-                        string err = proc.StandardError.ReadToEnd();
-                        if (!string.IsNullOrWhiteSpace(err))
+                        var psi = new ProcessStartInfo
                         {
-                            Console.WriteLine($"[DigAssetSanitizer] python fail: {err.Trim()}");
+                            FileName = py,
+                            ArgumentList = { script, mode, inFile, outFile },
+                            RedirectStandardError = true,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        try
+                        {
+                            using var proc = Process.Start(psi);
+                            if (proc == null)
+                            {
+                                continue;
+                            }
+                            if (!proc.WaitForExit(8000))
+                            {
+                                try { proc.Kill(true); } catch { }
+                                continue;
+                            }
+                            if (proc.ExitCode != 0 || !File.Exists(outFile))
+                            {
+                                string err = proc.StandardError.ReadToEnd();
+                                if (!string.IsNullOrWhiteSpace(err))
+                                {
+                                    Console.WriteLine($"[DigAssetSanitizer] {py} fail: {err.Trim()}");
+                                }
+                                continue;
+                            }
+                            output = File.ReadAllBytes(outFile);
+                            return true;
                         }
-                        return false;
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[DigAssetSanitizer] {py}: {ex.Message}");
+                        }
                     }
-                    output = File.ReadAllBytes(outFile);
-                    return true;
+                    return false;
                 }
                 finally
                 {
