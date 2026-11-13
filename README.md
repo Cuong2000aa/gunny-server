@@ -61,9 +61,11 @@ Gunny/
 ```
 - Start container `gunny-sql` (SA: `Gunny@2026Mac`)
 - Restore `Database/*.bak` → `Db_Membership` / `Project_Game34` / `Project_Player34`
-- Apply `scripts/fix-admin-full.sql` (Admin cấp **60**, VIP12, full xu/vàng/lễ kim + đồ starter)
+- Apply `scripts/seed-max-users.sql`:
+  - **admin** — Lv60, VIP12, full xu, bộ đồ thần khí **cường hóa +15** + đồ trong túi
+  - **max40** — Lv40, cùng bộ đồ nhưng **cường hóa +12**
 
-> Trong game lệnh `/max` full tài nguyên nhưng **không** set cấp 65 (LevelInfo chỉ tới 60; cấp 65 gây lỗi 1033).
+> Login: user `admin` hoặc `max40` (password bất kỳ trên bản này). Lệnh `/max` chỉ full tài nguyên, cấp max = 60 (không set 65 — dễ lỗi 1033).
 
 ### 3. Sync map/bomb (Windows)
 ```bat
