@@ -164,7 +164,7 @@ BEGIN
    latentEnergyCurStr, latentEnergyNewStr, latentEnergyEndTime, curExp, cellLocked)
   SELECT @uid, 0, TemplateID, Place, 1, 1, N'', 1, @stren, 0,
          @compose, @compose, @compose, @compose, N'', 1, 1, GETDATE(), 0,
-         GETDATE(), 0, 1,1,1,1,1,1, 0,0,0,0, 0,0, 0,0, GETDATE(), 0,
+         GETDATE(), 0, -1,-1,-1,-1,-1,-1, 0,0,0,0, 0,0, 0,0, GETDATE(), 0,
          N'0,0,0,0', N'0,0,0,0', GETDATE(), 0, 0
   FROM #EquipSet;
 
