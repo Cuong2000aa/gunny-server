@@ -1631,9 +1631,9 @@ namespace Game.Logic
             ClearMissionData();
             m_gameOverResources.Clear();
             this.WantTryAgain = 0;
-            m_missionInfo = Misssions[SessionId];
-            if (m_missionInfo == null)
+            if (!Misssions.TryGetValue(SessionId, out m_missionInfo) || m_missionInfo == null)
             {
+                BaseGame.log.ErrorFormat("PVE mission missing for session {0} (missions={1})", SessionId, Misssions.Count);
                 m_gameState = eGameState.ALLSessionStopped;
                 base.IsWrong = true;
                 return;

@@ -1,4 +1,4 @@
-﻿AlertDialog.Error:Báo lỗi
+AlertDialog.Error:Báo lỗi
 AlertDialog.Info:Nhắc nhở
 Crazytank.ONLY_ONE_CLIENT:Cùng lúc chỉ có thể mở được một client
 CrazyTank.CLOSE_OTHER_CLIENT:Đang đóng client khác

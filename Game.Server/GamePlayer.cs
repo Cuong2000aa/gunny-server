@@ -2970,7 +2970,14 @@ public class GamePlayer : IGamePlayer
             UpdatePet(m_petBag.GetPetIsEquip());
             if (m_character.CheckNewDay())
             {
-                this.QuestInventory.Restart();
+                try
+                {
+                    this.QuestInventory.Restart();
+                }
+                catch (Exception questEx)
+                {
+                    log.Error("QuestInventory.Restart (non-fatal)", questEx);
+                }
                 this.QuestInventory.LoadFromDatabase(this.PlayerCharacter.ID);
                 OnPlayerLogin();
                 m_character.NewDay = DateTime.Now;
@@ -3414,6 +3421,7 @@ public class GamePlayer : IGamePlayer
             catch (Exception exception)
             {
                 log.Error("Error Login!", exception);
+                try { WorldMgr.RemovePlayer(m_character.ID); } catch { }
             }
             return false;
         }

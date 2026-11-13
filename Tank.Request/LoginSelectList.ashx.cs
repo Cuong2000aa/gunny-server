@@ -55,7 +55,7 @@ namespace Tank.Request
 				xelement.Add(new XAttribute("message", str1));
 				xelement.Add(new XAttribute("total", xelement.Elements("Item").Count()));
 				context.Response.ContentType = "text/plain";
-				context.Response.Write(xelement.ToString(check: false));
+				context.Response.BinaryWrite(new System.Text.UTF8Encoding(false).GetBytes(xelement.ToString(check: false)));
 			}
 		}
 	}

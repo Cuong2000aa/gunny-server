@@ -642,27 +642,36 @@ namespace Game.Server.Quests
         public bool Restart()
         {
             bool result = false;
-            foreach (QuestDataInfo questDataInfo in this.GetAllQuestData())
+            // Snapshot — Reset/Update/Save can mutate m_datas mid-enumeration (Login crash).
+            List<QuestDataInfo> snapshot;
+            lock (this.m_lock)
+            {
+                snapshot = new List<QuestDataInfo>(this.m_datas);
+            }
+            foreach (QuestDataInfo questDataInfo in snapshot)
             {
                 BaseQuest baseQuest = this.FindQuest(questDataInfo.QuestID);
-                if (baseQuest != null && baseQuest.Info.CanRepeat && baseQuest.Data.IsComplete)
+                if (baseQuest != null && baseQuest.Info != null && baseQuest.Info.CanRepeat && baseQuest.Data != null && baseQuest.Data.IsComplete)
                 {
                     List<QuestConditionInfo> questCondiction = QuestMgr.GetQuestCondiction(baseQuest.Info);
-                    if (questCondiction.Count > 0)
+                    if (questCondiction != null)
                     {
-                        baseQuest.Data.Condition1 = questCondiction[0].Para2;
-                    }
-                    if (questCondiction.Count > 1)
-                    {
-                        baseQuest.Data.Condition2 = questCondiction[1].Para2;
-                    }
-                    if (questCondiction.Count > 2)
-                    {
-                        baseQuest.Data.Condition3 = questCondiction[2].Para2;
-                    }
-                    if (questCondiction.Count > 3)
-                    {
-                        baseQuest.Data.Condition4 = questCondiction[3].Para2;
+                        if (questCondiction.Count > 0)
+                        {
+                            baseQuest.Data.Condition1 = questCondiction[0].Para2;
+                        }
+                        if (questCondiction.Count > 1)
+                        {
+                            baseQuest.Data.Condition2 = questCondiction[1].Para2;
+                        }
+                        if (questCondiction.Count > 2)
+                        {
+                            baseQuest.Data.Condition3 = questCondiction[2].Para2;
+                        }
+                        if (questCondiction.Count > 3)
+                        {
+                            baseQuest.Data.Condition4 = questCondiction[3].Para2;
+                        }
                     }
                     --baseQuest.Data.RepeatFinish;
                     baseQuest.Data.IsComplete = false;

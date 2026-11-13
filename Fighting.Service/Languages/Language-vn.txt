@@ -393,8 +393,8 @@ CheckCodeHandler.Msg3: Đáp sai
 
 
 Tank.Request.NickNameCheck.Long:Tối đa nhập 14 ký tự!
-Tank.Request.NickNameCheck.Right:chúc mừng! tên nhân vật có thể sử dụng.
-Tank.Request.NickNameCheck.Exist:Tên đã sử dụng
+Tank.Request.NickNameCheck.Right:Chúc mừng! tên nhân vật có thể sử dụng.
+Tank.Request.NickNameCheck.Exist:Tên nhân vật đã được sử dụng
 Tank.Request.ConsortiaCheck.Right:Chúc mừng! Tên hội đã có thể sử dụng.
 
 
@@ -599,7 +599,7 @@ Tank.Request.RenameNick.Fail1: thay đổi tên hiệu thất bại.
 Tank.Request.RenameNick.Fail2: thay đổi tên hiệu thất bại ..
 
 PlayerBussiness.SP_Users_RenameConsortiaName.Msg4: Hiệp hội các tên đã tồn tại.
-Tank.Request.RenameConsortiaName.Success: Guild tên thay đổi thành công.
+Tank.Request.RenameConsortiaName.Success: Chúc mừng! Tên hội đã có thể sử dụng.
 Tank.Request.RenameConsortiaName.Fail1: thay đổi tên Guild thất bại.
 Tank.Request.RenameConsortiaName.Fail2: thay đổi tên Guild thất bại.
 ItemRefineryHandler.ItemNotEnough: không đủ số lượng các mặt hàng.
@@ -891,7 +891,7 @@ StartMessage.Consortia: kết hợp thành công! Nhóm của bạn bắt đầu
 StartMessage.free: kết hợp thành công! Nhóm của bạn bắt đầu một cuộc chiến tự do.
 
 GameServerScript.AI.Messions.DCNM2102.msg1: hộp là của tôi, con tôi, miễn là tôi có thể thấy là của tôi!
-GameServerScript.AI.Messions.DCSM2002.msg1: hộp là của tôi, con tôi, miễn là tôi có thể thấy là của tôi!
+GameServerScript.AI.Messions.DCSM2002.msg1: Kho báu này là của ta! Con ta, trứng ta — hễ ta nhìn thấy đều thuộc về ta!
 GameServerScript.AI.NPC.HardCaptainAi.msg1: bạn là nụ hôn của cái chết!
 GameServerScript.AI.NPC.HardCaptainAi.msg2: bạn nhận được điên tôi!
 GameServerScript.AI.NPC.HardCaptainAi.msg3: Invincible trận động đất ... ... <br/> sốc sốc ... ... ... ...
@@ -1080,23 +1080,23 @@ GameServerScript.AI.NPC.NormalKingZhen.msg17: bạn chỉ có khả năng này? 
 GameServerScript.AI.NPC.NormalKingZhen.msg18: Vâng - một có nghĩa là ít
 GameServerScript.AI.NPC.NormalKingZhen.msg19: Ngay cả khi tôi chết, tôi cũng sẽ được đi kèm với mong muốn vô tận thế giới này mãi mãi!
 GameServerScript.AI.NPC.NormalKingZhen.msg20: Haha, tôi đã có đầy đủ quyền lực!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg1: bạn là nụ hôn của cái chết!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg2: bạn nhận được điên tôi!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg3: Invincible trận động đất ... ... <br/> sốc sốc ... ... ... ...
-GameServerScript.AI.NPC.NormalQueenAntAi.msg4: chụp ảnh với độ chính xác tuyệt vời!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg5: cho bạn biết xấu của tôi!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg6: ảo tưởng một mình, bạn có thể đánh tôi?
-GameServerScript.AI.NPC.NormalQueenAntAi.msg7: thế giới một trong ít thằng ngốc.
-GameServerScript.AI.NPC.NormalQueenAntAi.msg8: công chức - ra để loại bỏ những kẻ xâm lược!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg9: hộ tống! Hộ tống! !
-GameServerScript.AI.NPC.NormalQueenAntAi.msg10: Đối với chiến thắng của bạn, <br/> cháy của tôi!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg11: Tôi lấy bạn nửa bước về phía trước một lần nữa để giết bạn!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg12: High! <br/> thực sự cao!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg13: Đừng đóng chị em, chị em tôi có bạn nôn ra máu!
-GameServerScript.AI.NPC.NormalQueenAntAi.msg14: Bạn nghĩ như vậy đã chết? ! <br/> vì lợi ích của bạn! !
-GameServerScript.AI.NPC.NormalQueenAntAi.msg15: ah, mặt tôi ... ...
-GameServerScript.AI.NPC.NormalQueenAntAi.msg16: uh, tôi đã đưa ra một áo giáp tuyệt đẹp đã bị trầy xước ... ...
-GameServerScript.AI.NPC.NormalQueenAntAi.msg17: ah, toàn bộ ... là ... tôi không ... có ... ...
+GameServerScript.AI.NPC.NormalQueenAntAi.msg1: Các ngươi… chính là nụ hôn của cái chết!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg2: Các ngươi đã chọc giận ta rồi!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg3: Động đất bất khả chiến bại…<br/>Rung… rung… rung…!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg4: Ngắm bắn chuẩn xác tuyệt đối!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg5: Để ta dạy các ngươi thế nào là ác!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg6: Ảo tưởng một mình có thể đánh bại ta ư?
+GameServerScript.AI.NPC.NormalQueenAntAi.msg7: Trên đời này còn thiếu gì thằng ngốc.
+GameServerScript.AI.NPC.NormalQueenAntAi.msg8: Lính kiến — ra ngoài tiêu diệt kẻ xâm lược!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg9: Hộ tống! Hộ tống!!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg10: Vì chiến thắng của các ngươi,<br/>ta sẽ thiêu cháy!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg11: Chỉ cần các ngươi tiến thêm nửa bước, ta sẽ giết!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg12: Cao quá!<br/>Thật sự cao quá!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg13: Đừng đụng chị em ta — chị em ta sẽ khiến các ngươi nôn máu!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg14: Ngươi nghĩ thế là chết rồi ư?!<br/>Vì lợi ích của các ngươi!!
+GameServerScript.AI.NPC.NormalQueenAntAi.msg15: Á… mặt ta…
+GameServerScript.AI.NPC.NormalQueenAntAi.msg16: Ư… lớp giáp đẹp đẽ của ta bị trầy rồi…
+GameServerScript.AI.NPC.NormalQueenAntAi.msg17: Á… tất cả… đều… ta không… còn…
 GameServerScript.AI.NPC.SimpleBomblingNpc.msg1: Hey hey hey, ở đây tôi đi!
 GameServerScript.AI.NPC.SimpleBomblingNpc.msg2: và tôi kết thúc nó!
 GameServerScript.AI.NPC.SimpleBomblingNpc.msg3: không thể để bạn sống!
@@ -1219,23 +1219,23 @@ GameServerScript.AI.NPC.SimpleNpcAi.msg20: đầu, đó là đường dây của
 GameServerScript.AI.NPC.SimpleNpcAi.msg21: các chiến binh dữ dội sẽ là nữ hoàng của mái tóc.
 GameServerScript.AI.NPC.SimpleNpcAi.msg22: Đừng đánh giá thấp chúng tôi!
 GameServerScript.AI.NPC.SimpleNpcAi.msg23: Tất cả những thứ thuộc về nữ hoàng!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg1: bạn là nụ hôn của cái chết!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg2: bạn nhận được điên tôi!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg3: Invincible trận động đất ... ... <br/> sốc sốc ... ... ... ...
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg4: chụp ảnh với độ chính xác tuyệt vời!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg5: cho bạn biết xấu của tôi!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg6: ảo tưởng một mình, bạn có thể đánh tôi?
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg7: thế giới một trong ít thằng ngốc.
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg8: công chức - ra để loại bỏ những kẻ xâm lược!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg9: hộ tống! Hộ tống! !
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg10: Đối với chiến thắng của bạn, <br/> cháy của tôi!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg11: Tôi lấy bạn nửa bước về phía trước một lần nữa để giết bạn!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg12: High! <br/> thực sự cao!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg13: Đừng đóng chị em, chị em tôi có bạn nôn ra máu!
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg14: Bạn nghĩ như vậy đã chết? ! <br/> vì lợi ích của bạn! !
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg15: ah, mặt tôi ... ...
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg16: uh, tôi đã đưa ra một áo giáp tuyệt đẹp đã bị trầy xước ... ...
-GameServerScript.AI.NPC.SimpleQueenAntAi.msg17: ah, toàn bộ ... là ... tôi không ... có ... ...
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg1: Các ngươi… chính là nụ hôn của cái chết!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg2: Các ngươi đã chọc giận ta rồi!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg3: Động đất bất khả chiến bại…<br/>Rung… rung… rung…!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg4: Ngắm bắn chuẩn xác tuyệt đối!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg5: Để ta dạy các ngươi thế nào là ác!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg6: Ảo tưởng một mình có thể đánh bại ta ư?
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg7: Trên đời này còn thiếu gì thằng ngốc.
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg8: Lính kiến — ra ngoài tiêu diệt kẻ xâm lược!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg9: Hộ tống! Hộ tống!!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg10: Vì chiến thắng của các ngươi,<br/>ta sẽ thiêu cháy!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg11: Chỉ cần các ngươi tiến thêm nửa bước, ta sẽ giết!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg12: Cao quá!<br/>Thật sự cao quá!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg13: Đừng đụng chị em ta — chị em ta sẽ khiến các ngươi nôn máu!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg14: Ngươi nghĩ thế là chết rồi ư?!<br/>Vì lợi ích của các ngươi!!
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg15: Á… mặt ta…
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg16: Ư… lớp giáp đẹp đẽ của ta bị trầy rồi…
+GameServerScript.AI.NPC.SimpleQueenAntAi.msg17: Á… tất cả… đều… ta không… còn…
 GameServerScript.AI.NPC.TerrorCaptainAi.msg1: bạn là nụ hôn của cái chết!
 GameServerScript.AI.NPC.TerrorCaptainAi.msg2: bạn nhận được điên tôi!
 GameServerScript.AI.NPC.TerrorCaptainAi.msg3: Invincible trận động đất ... ... <br/> sốc sốc ... ... ... ...
@@ -2570,6 +2570,8 @@ ActiveBussiness.Msg13:本活动不存在，请联系GM
 ItemTransferHandler.NoCondition:没有属性可以被转换。
 ItemTransferHandler.Success:文章中转换成功。
 ItemTransferHandler.NoCondition1:装备强化等级低无法为加强高层次设备交换。
+AbstractPacketLib.SendGamePlayerLeave.Msg6:非正常退出战斗扣除{0}点经验值，{1}功绩点。
+AbstractPacketLib.SendGamePlayerLeave.Msg7:玩家[{0}]出来的不拘形式的战斗中，增加一输球，以及有打折的数量{0}点经验值，{1}功绩点。
 Game.Server.Quests.FinishQuest.GiftMailTitle:{0}任务奖励
 Game.Server.Quests.FinishQuest.GiftMailContent:在完成任务表示祝贺{0}（S），这里是给你的礼物，作为奖励{1}×{2}（魅力大奖任务项目名称）。希望你越来越好！
 Game.Server.Lottery.Reward.MailTitle:奖品开放花瓶。

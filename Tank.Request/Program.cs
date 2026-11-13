@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -46,6 +47,19 @@ namespace Tank.Request
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
+
+            // Root /play.html (wwwroot cũ) → /web/play.html (canonical, socketProxy đúng)
+            app.Use(async (context, next) =>
+            {
+                string p = context.Request.Path.Value ?? "";
+                if (p.Equals("/play.html", StringComparison.OrdinalIgnoreCase)
+                    || p.Equals("/server_list.html", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Response.Redirect("/web/play.html");
+                    return;
+                }
+                await next();
+            });
 
             var contentTypeProvider = new FileExtensionContentTypeProvider();
             contentTypeProvider.Mappings[".swf"] = "application/x-shockwave-flash";
@@ -296,13 +310,59 @@ namespace Tank.Request
                 await next();
             });
 
+            // LAN play: rewrite flash/config.xml so SITE/FLASHSITE match the Host the client used
+            // (phone/other PC on Wi‑Fi must not keep hardcoded 127.0.0.1).
+            app.Use(async (context, next) =>
+            {
+                string p = context.Request.Path.Value ?? "";
+                if (p.Equals("/flash/config.xml", StringComparison.OrdinalIgnoreCase) ||
+                    p.Equals("/config.xml", StringComparison.OrdinalIgnoreCase))
+                {
+                    string configPath = Path.Combine(flashDir, "config.xml");
+                    if (File.Exists(configPath))
+                    {
+                        string hostHeader = context.Request.Host.Value;
+                        if (string.IsNullOrWhiteSpace(hostHeader))
+                        {
+                            hostHeader = "127.0.0.1:828";
+                        }
+                        string scheme = string.IsNullOrEmpty(context.Request.Scheme) ? "http" : context.Request.Scheme;
+                        string publicOrigin = $"{scheme}://{hostHeader}";
+                        // Normalize origin without default-looking empty port
+                        string xml = await File.ReadAllTextAsync(configPath);
+                        xml = xml.Replace("http://127.0.0.1:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
+                        xml = xml.Replace("http://localhost:828", publicOrigin, StringComparison.OrdinalIgnoreCase);
+                        context.Response.ContentType = "text/xml; charset=utf-8";
+                        context.Response.Headers.CacheControl = "no-cache, max-age=0, must-revalidate";
+                        context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                        await context.Response.WriteAsync(xml);
+                        return;
+                    }
+                }
+                await next();
+            });
+
             if (Directory.Exists(flashDir))
             {
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(flashDir),
                     RequestPath = "/flash",
-                    ContentTypeProvider = contentTypeProvider
+                    ContentTypeProvider = contentTypeProvider,
+                    OnPrepareResponse = ctx =>
+                    {
+                        // Core SWF (2.png) / loaders: tránh cache bản cũ sau patch RSA
+                        var path = ctx.Context.Request.Path.Value ?? "";
+                        if (path.EndsWith("/2.png", StringComparison.OrdinalIgnoreCase)
+                            || path.EndsWith("Loading.swf", StringComparison.OrdinalIgnoreCase)
+                            || path.EndsWith("DDT_Loading.swf", StringComparison.OrdinalIgnoreCase)
+                            || path.EndsWith("config.xml", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ctx.Context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
+                            ctx.Context.Response.Headers.Pragma = "no-cache";
+                            ctx.Context.Response.Headers.Expires = "0";
+                        }
+                    }
                 });
             }
 
@@ -312,7 +372,19 @@ namespace Tank.Request
                 {
                     FileProvider = new PhysicalFileProvider(tankFlashDir),
                     RequestPath = "/web",
-                    ContentTypeProvider = contentTypeProvider
+                    ContentTypeProvider = contentTypeProvider,
+                    OnPrepareResponse = ctx =>
+                    {
+                        // play.html + ruffle: đừng để browser/Arc cache 404 cũ
+                        var path = ctx.Context.Request.Path.Value ?? "";
+                        if (path.EndsWith("play.html", StringComparison.OrdinalIgnoreCase)
+                            || path.Contains("/ruffle", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ctx.Context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
+                            ctx.Context.Response.Headers.Pragma = "no-cache";
+                            ctx.Context.Response.Headers.Expires = "0";
+                        }
+                    }
                 });
             }
 
@@ -332,6 +404,14 @@ namespace Tank.Request
             }
 
             app.UseSystemWebAdapters();
+
+            // LAN play helper: show Wi‑Fi IP for other devices
+            app.MapGet("/api/lan-info", (Microsoft.AspNetCore.Http.HttpContext context) =>
+            {
+                string lanIp = GetLanIPv4() ?? "127.0.0.1";
+                string playUrl = $"http://{lanIp}:828/web/play.html";
+                return Results.Json(new { ip = lanIp, playUrl, port = 828 });
+            });
 
             // Admin Resource Toggle Endpoints (Strictly Admin UserID = 1 only)
             app.MapGet("/api/admin/toggle-resource", async (Microsoft.AspNetCore.Http.HttpContext context) =>
@@ -436,6 +516,7 @@ namespace Tank.Request
                     return;
                 }
 
+                // Flash ServerListAnalyzer adds +69 to Port (9500 → 9569). Always tunnel to Road 9500.
                 int port = 9500;
                 if (int.TryParse(context.Request.Query["port"], out int reqPort))
                 {
@@ -464,11 +545,13 @@ namespace Tank.Request
                     return;
                 }
 
-                Console.WriteLine($"[WS Proxy] Client connected from {context.Connection.RemoteIpAddress}. Forwarding to 127.0.0.1:{port}...");
+                Console.WriteLine($"[WS Proxy] Client connected from {context.Connection.RemoteIpAddress}. Forwarding to 127.0.0.1:{port} (q={reqPort})...");
 
                 using (webSocket)
                 using (var tcpClient = new TcpClient())
                 {
+                    long wsBytes = 0;
+                    long tcpBytes = 0;
                     try
                     {
                         await tcpClient.ConnectAsync(IPAddress.Loopback, port);
@@ -477,7 +560,7 @@ namespace Tank.Request
 
                         var wsToTcp = Task.Run(async () =>
                         {
-                            var buffer = new byte[32768];
+                            var buffer = new byte[65536];
                             try
                             {
                                 while (webSocket.State == WebSocketState.Open && !cts.IsCancellationRequested)
@@ -487,23 +570,43 @@ namespace Tank.Request
                                     {
                                         break;
                                     }
-                                    if (result.Count > 0)
+                                    // Reassemble fragmented WS frames before writing to TCP
+                                    int total = result.Count;
+                                    while (!result.EndOfMessage && webSocket.State == WebSocketState.Open)
                                     {
-                                        await netStream.WriteAsync(buffer.AsMemory(0, result.Count), cts.Token);
+                                        if (total >= buffer.Length)
+                                        {
+                                            break;
+                                        }
+                                        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer, total, buffer.Length - total), cts.Token);
+                                        if (result.MessageType == WebSocketMessageType.Close)
+                                        {
+                                            break;
+                                        }
+                                        total += result.Count;
+                                    }
+                                    if (total > 0)
+                                    {
+                                        await netStream.WriteAsync(buffer.AsMemory(0, total), cts.Token);
                                         await netStream.FlushAsync(cts.Token);
+                                        Interlocked.Add(ref wsBytes, total);
                                     }
                                 }
                             }
-                            catch {}
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[WS Proxy] ws→tcp end: {ex.GetType().Name}");
+                            }
                             finally
                             {
+                                try { tcpClient.Client.Shutdown(SocketShutdown.Send); } catch { }
                                 cts.Cancel();
                             }
                         });
 
                         var tcpToWs = Task.Run(async () =>
                         {
-                            var buffer = new byte[32768];
+                            var buffer = new byte[65536];
                             try
                             {
                                 while (webSocket.State == WebSocketState.Open && !cts.IsCancellationRequested)
@@ -514,9 +617,13 @@ namespace Tank.Request
                                         break;
                                     }
                                     await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, read), WebSocketMessageType.Binary, true, cts.Token);
+                                    Interlocked.Add(ref tcpBytes, read);
                                 }
                             }
-                            catch {}
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[WS Proxy] tcp→ws end: {ex.GetType().Name}");
+                            }
                             finally
                             {
                                 cts.Cancel();
@@ -524,6 +631,8 @@ namespace Tank.Request
                         });
 
                         await Task.WhenAny(wsToTcp, tcpToWs);
+                        // Cho phía còn lại flush thêm chút trước khi đóng
+                        try { await Task.WhenAny(Task.WhenAll(wsToTcp, tcpToWs), Task.Delay(500)); } catch { }
                     }
                     catch (Exception ex)
                     {
@@ -539,7 +648,7 @@ namespace Tank.Request
                             }
                             catch {}
                         }
-                        Console.WriteLine($"[WS Proxy] Disconnected from 127.0.0.1:{port}");
+                        Console.WriteLine($"[WS Proxy] Disconnected 127.0.0.1:{port} wsBytes={wsBytes} tcpBytes={tcpBytes}");
                     }
                 }
             });
@@ -575,8 +684,9 @@ namespace Tank.Request
             {
                 string path = context.Request.Path.Value?.TrimStart('/') ?? "";
 
-                // Handle server_list.html
-                if (path.Equals("server_list.html", StringComparison.OrdinalIgnoreCase))
+                // Handle server_list.html / root play.html → canonical /web/play.html
+                if (path.Equals("server_list.html", StringComparison.OrdinalIgnoreCase)
+                    || path.Equals("play.html", StringComparison.OrdinalIgnoreCase))
                 {
                     context.Response.Redirect("/web/play.html");
                     return;
@@ -715,6 +825,43 @@ namespace Tank.Request
                         return hit;
                     }
                 }
+            }
+            return null;
+        }
+
+        private static string? GetLanIPv4()
+        {
+            try
+            {
+                foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (ni.OperationalStatus != OperationalStatus.Up)
+                    {
+                        continue;
+                    }
+                    if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                    {
+                        continue;
+                    }
+                    foreach (UnicastIPAddressInformation addr in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (addr.Address.AddressFamily != AddressFamily.InterNetwork)
+                        {
+                            continue;
+                        }
+                        string ip = addr.Address.ToString();
+                        if (ip.StartsWith("127.", StringComparison.Ordinal) ||
+                            ip.StartsWith("169.254.", StringComparison.Ordinal))
+                        {
+                            continue;
+                        }
+                        return ip;
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
             }
             return null;
         }

@@ -2376,15 +2376,42 @@ namespace Game.Logic.Phy.Object
 
         public void SetCurrentWeapon(ItemInfo item)
         {
+            if (item == null || item.Template == null)
+            {
+                return;
+            }
             m_weapon = item;
             BallConfigInfo info = BallConfigMgr.FindBall(m_weapon.TemplateID);
-            if (m_weapon.isGold)
+            if (m_weapon.isGold && m_weapon.GoldEquip != null)
             {
-                info = BallConfigMgr.FindBall(m_weapon.GoldEquip.TemplateID);
+                BallConfigInfo goldInfo = BallConfigMgr.FindBall(m_weapon.GoldEquip.TemplateID);
+                if (goldInfo != null)
+                {
+                    info = goldInfo;
+                }
             }
             if (ChangeSpecialBall > 0)
             {
-                info = BallConfigMgr.FindBall(70396);
+                BallConfigInfo special = BallConfigMgr.FindBall(70396);
+                if (special != null)
+                {
+                    info = special;
+                }
+            }
+            // Vũ khí phụ (thiên sứ / khiên…): BallConfig có thể thiếu — fallback Property1 = ballId (client cũng dùng vậy)
+            if (info == null)
+            {
+                int ballId = m_weapon.Template.Property1;
+                if (ballId > 0 && BallMgr.FindBall(ballId) != null)
+                {
+                    m_mainBallId = ballId;
+                    m_spBallId = ballId;
+                    m_AddWoundBallId = ballId;
+                    m_MultiBallId = ballId;
+                    SetBall(ballId);
+                    return;
+                }
+                return;
             }
             m_mainBallId = info.Common;
             m_spBallId = info.Special;
@@ -2827,11 +2854,16 @@ namespace Game.Logic.Phy.Object
 
         public void UseSecondWeapon()
         {
-            m_useitemCount += 1;
+            if (m_DeputyWeapon == null || m_DeputyWeapon.Template == null)
+            {
+                return;
+            }
             if (!CanUseItem(m_DeputyWeapon.Template))
             {
                 return;
             }
+            m_useitemCount += 1;
+            // Property3 == 31: khiên / giáp phụ. Còn lại (thiên sứ…): đổi đạn theo BallConfig hoặc Property1.
             if (m_DeputyWeapon.Template.Property3 == 31)
             {
                 bool isArrmor = false;
@@ -2849,6 +2881,7 @@ namespace Game.Logic.Phy.Object
             }
             else
             {
+                // Thiên sứ / vũ khí phụ dạng đạn: đổi ball (BallConfig hoặc Property1)
                 SetCurrentWeapon(m_DeputyWeapon);
                 OnPlayerCure();
             }

@@ -689,52 +689,15 @@ namespace Game.Server
                 }
 
                 Thread.CurrentThread.Priority = ThreadPriority.Lowest;
-                List<DayOfWeek> opendays = new List<DayOfWeek>//3 5 7
+                // Private server: keep Little Game always open. Hour-window close was
+                // kicking players mid-load (hang at 13/13 waiting for gamestart).
+                if (!LittleGameWorldMgr.IsOpen)
                 {
-                    DayOfWeek.Monday,
-                    DayOfWeek.Tuesday,
-                    DayOfWeek.Wednesday,
-                    DayOfWeek.Thursday,
-                    DayOfWeek.Friday,
-                    DayOfWeek.Saturday,
-                    DayOfWeek.Sunday
-                };
-                if (opendays.Contains(DateTime.Now.DayOfWeek))
-                {
-                    int startTime = GameProperties.LittleGameStartHourse;
-                    int stopTime = GameProperties.LittleGameStartHourse + GameProperties.LittleGameTimeSpending;
-                    if (DateTime.Now.Hour == startTime && !LittleGameWorldMgr.IsOpen)
-                    {
-                        LittleGameWorldMgr.OpenLittleGameSetup();
-                    }
-                    else if (DateTime.Now.Hour >= stopTime && LittleGameWorldMgr.IsOpen)
-                    {
-                        LittleGameWorldMgr.CloseLittleGame();
-                    }
-                    else if (DateTime.Now.Hour == startTime - 1 && !LittleGameWorldMgr.IsOpen && DateTime.Now.Minute >= 55)
-                    {
-                        foreach (var player in WorldMgr.GetAllPlayers())
-                        {
-                            player.Actives.SendLittleGameActived();
-                            player.Out.SendMessage(eMessageType.Normal, $"Sự kiện Đại chiến Hút Gà còn {(int)(60 - DateTime.Now.Minute)} phút sẽ bắt đầu, tham gia từ Đặc Sắc ở sảnh game nhé !");
-                        }
-                    }
-                    else if (DateTime.Now.Hour == startTime && LittleGameWorldMgr.IsOpen && DateTime.Now.Minute >= 55)
-                    {
-                        foreach (var player in WorldMgr.GetAllPlayers())
-                        {
-                            player.Actives.SendLittleGameActived();
-                            player.Out.SendMessage(eMessageType.Normal, $"Sự kiện Đại chiến Hút Gà còn {(int)(60 - DateTime.Now.Minute)} phút sẽ kết thúc. Nhanh chóng đổi thưởng nàoo !");
-                        }
-                    }
-                    if (log.IsInfoEnabled)
-                    {
-                        log.Info("LittleGame today scan completed!");
-                    }
+                    LittleGameWorldMgr.OpenLittleGameSetup();
                 }
-                else if (log.IsInfoEnabled)
+                if (log.IsInfoEnabled)
                 {
-                    log.Info("LittleGame scan not today!");
+                    log.Info("LittleGame today scan completed!");
                 }
             }
             catch (Exception exception)

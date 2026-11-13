@@ -2,10 +2,17 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gunny II - Chiến Trường Gà (.NET 8 macOS & Mobile Web)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        html, body {
+            height: 100%;
+            overscroll-behavior: none;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #1a1a2e;
@@ -14,7 +21,9 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            min-height: 100dvh;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         header {
             width: 100%;
@@ -171,6 +180,19 @@
         ruffle-player, ruffle-player canvas {
             image-rendering: auto;
             -webkit-font-smoothing: antialiased;
+            touch-action: none;
+        }
+        /* iOS Chrome/Safari: giảm smear khi GPU yếu */
+        body.is-mobile ruffle-player canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        @media (orientation: landscape) and (max-height: 500px) {
+            header, .guide-box { display: none !important; }
+            .controls { padding: 4px 8px; margin: 4px 0; }
+            #game-container {
+                max-height: calc(100dvh - 120px);
+            }
         }
 
         .scale-selector {
@@ -333,47 +355,113 @@
         var wsPort = window.location.port || "828";
         var wsProxyUrl = (window.location.protocol === "https:" ? "wss://" : "ws://") + wsHost + ":" + wsPort + "/ws?port=9500";
 
-        // Hook WebSocket to log every socket attempt
-        const origWebSocket = window.WebSocket;
-        window.WebSocket = function(url, protocols) {
-            console.log('[Browser Hooked WebSocket] Opening WebSocket to:', url);
-            const ws = protocols ? new origWebSocket(url, protocols) : new origWebSocket(url);
-            ws.addEventListener('open', () => console.log('[Browser Hooked WebSocket] OPENED successfully!'));
-            ws.addEventListener('error', (e) => console.log('[Browser Hooked WebSocket] ERROR:', e));
-            ws.addEventListener('close', (e) => console.log('[Browser Hooked WebSocket] CLOSED:', e.code, e.reason));
-            return ws;
-        };
+        // Không hook WebSocket — hook function cũ làm mất WebSocket.OPEN → Ruffle đóng
+        // socket với 0 byte → Road disconnect → treo 13/13.
 
+        // Mobile / iOS detection — Chrome trên iOS dùng WebKit, rất dễ lag với quality:best + nightly
+        var ua = navigator.userAgent || "";
+        var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        var isAndroid = /Android/i.test(ua);
+        var isMobile = isIOS || isAndroid || /Mobile/i.test(ua) || (navigator.maxTouchPoints > 1 && Math.min(screen.width, screen.height) < 900);
+        if (isIOS) document.documentElement.classList.add("is-ios");
+        if (isAndroid) document.documentElement.classList.add("is-android");
+        if (isMobile) {
+            document.documentElement.classList.add("is-mobile");
+            document.addEventListener("DOMContentLoaded", function () {
+                document.body.classList.add("is-mobile");
+                if (isIOS) document.body.classList.add("is-ios");
+                if (isAndroid) document.body.classList.add("is-android");
+            });
+        }
+
+        // iOS: giới hạn DPR để canvas Ruffle nhẹ hơn (Chrome iOS hay scale 2–3x)
+        if (isIOS && window.devicePixelRatio > 2) {
+            try {
+                Object.defineProperty(window, "devicePixelRatio", { get: function () { return 2; } });
+            } catch (e) {}
+        }
+
+        var ruffleQuality = isIOS ? "low" : (isMobile ? "medium" : "high");
+        var ruffleLetterbox = isMobile ? "off" : "on";
+
+        // publicPath bắt buộc: không thì WASM/chunk bị request nhầm /web/*.wasm (404 → đen)
+        // Ưu tiên local để tải tức thì (10ms) và chạy 100% offline, không sợ CDN chậm/lỗi
+        var rufflePublicPath = (window.location.pathname.indexOf("/web") === 0) ? "/web/ruffle071/" : "/ruffle071/";
         window.RufflePlayer = window.RufflePlayer || {};
         window.RufflePlayer.config = {
+            publicPath: rufflePublicPath,
             autoplay: "on",
             splashScreen: false,
             unmuteOverlay: "hidden",
+            // Không dùng "canvas": backend canvas không hỗ trợ BitmapData.draw → lỗi trong
+            // handler LOGIN, không setState(MAIN) → treo 13/13. WebGL trước, canvas chỉ fallback.
+            preferredRenderer: "wgpu-webgl",
             deviceFontRenderer: "canvas",
             defaultFonts: {
                 sans: ["Arial", "Tahoma", "sans-serif"],
                 serif: ["Times New Roman", "serif"],
                 typewriter: ["Courier New", "monospace"]
             },
-            socketProxy: [
-                { host: wsHost, port: 9500, proxyUrl: wsProxyUrl },
-                { host: "127.0.0.1", port: 9500, proxyUrl: wsProxyUrl },
-                { host: "localhost", port: 9500, proxyUrl: wsProxyUrl },
-                { host: "127.0.0.1", port: 9569, proxyUrl: wsProxyUrl },
-                { host: "localhost", port: 9569, proxyUrl: wsProxyUrl },
-                { host: "127.0.0.1", port: 9200, proxyUrl: wsProxyUrl },
-                { host: "localhost", port: 9200, proxyUrl: wsProxyUrl }
-            ],
+            socketProxy: (function () {
+                // Flash ServerListAnalyzer: Port = Port + 69 (9500→9569). Proxy luôn về Road :9500.
+                var hosts = [wsHost, "127.0.0.1", "localhost"];
+                var ports = [9500, 9569, 9200, 9269];
+                var list = [];
+                for (var i = 0; i < hosts.length; i++) {
+                    for (var j = 0; j < ports.length; j++) {
+                        list.push({
+                            host: hosts[i],
+                            port: ports[j],
+                            proxyUrl: (window.location.protocol === "https:" ? "wss://" : "ws://") + wsHost + ":" + wsPort + "/ws?port=" + ports[j]
+                        });
+                    }
+                }
+                return list;
+            })(),
             allowScriptAccess: true,
-            quality: "best",
-            letterbox: "on",
+            quality: ruffleQuality,
+            letterbox: ruffleLetterbox,
             scale: "showAll",
             forceScale: true,
-            warnOnUnsupportedContent: false
+            forceAlign: true,
+            warnOnUnsupportedContent: false,
+            // Giảm log / polyfill nặng trên mobile
+            logLevel: isMobile ? "warn" : "info",
+            maxExecutionDuration: isIOS ? 60 : 90
         };
-        console.log("[Ruffle Config] Configured socketProxy =>", wsProxyUrl);
+        console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
     </script>
-    <script src="https://unpkg.com/@ruffle-rs/ruffle@nightly"></script>
+    <!-- Local Ruffle sync-ish (cache-bust); CDN fallback -->
+    <script>
+        (function () {
+            function loadScript(src, onload, onerror) {
+                var s = document.createElement("script");
+                s.src = src;
+                s.async = true;
+                if (onload) s.onload = onload;
+                if (onerror) s.onerror = onerror;
+                document.head.appendChild(s);
+            }
+            var localSrc = "/web/ruffle071/ruffle.js?v=20261112e";
+            var cdnSrc = "https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.7.1/ruffle.js";
+            loadScript(localSrc, function () {
+                window.__ruffleSource = "local";
+                console.log("[Ruffle] loaded local", localSrc);
+            }, function () {
+                console.warn("[Ruffle] local failed, trying CDN");
+                if (window.RufflePlayer && window.RufflePlayer.config) {
+                    window.RufflePlayer.config.publicPath = "https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.7.1/";
+                }
+                loadScript(cdnSrc, function () {
+                    window.__ruffleSource = "cdn";
+                    console.log("[Ruffle] loaded CDN", cdnSrc);
+                }, function () {
+                    window.__ruffleSource = "fail";
+                    console.error("[Ruffle] local + CDN failed");
+                });
+            });
+        })();
+    </script>
 </head>
 <body>
     <header>
@@ -395,6 +483,7 @@
         </div>
 
         <button class="btn-alt" onclick="toggleGamepad()">🎮 Phím Ảo</button>
+        <span id="pad-status" title="Trạng thái tay cầm / RG557" style="margin-left:8px;padding:4px 10px;border-radius:6px;font-size:12px;background:#6c757d;color:#fff;">Tay cầm: chờ…</span>
         <button id="btnToggleMax" style="background:#28a745; margin-left:8px;" onclick="toggleMaxResources()">⚡ Max Tài Nguyên: [BẬT]</button>
     </div>
 
@@ -417,6 +506,7 @@
                     <button class="sub-btn" id="btn-3">3</button>
                     <button class="sub-btn" id="btn-4">4</button>
                     <button class="sub-btn" id="btn-fly" style="background:#6c5ce7;">BAY(F)</button>
+                    <button class="sub-btn" id="btn-deputy" style="background:#00b894;">PHỤ(R)</button>
                     <button class="sub-btn" id="btn-pow" style="background:#d63031;">POW(B)</button>
                     <button class="sub-btn" id="btn-pass" style="background:#e17055;">BỎ(P)</button>
                 </div>
@@ -431,6 +521,11 @@
         <p>2. Mở trình duyệt trên điện thoại và truy cập: <code id="lan-link">http://172.20.52.83:828/web/play.html</code></p>
         <p>3. Xoay ngang màn hình (Landscape) và bấm nút <code>⛶ Toàn Màn Hình</code>.</p>
         <p>4. Dùng bàn phím ảo bên dưới: Nút <strong>▲▼</strong> chỉnh góc, <strong>◀▶</strong> di chuyển, chạm giữ <strong>🚀 GIỮ LỰC & BẮN</strong> để canh lực rồi nhấc tay để bắn!</p>
+        <p>5. <strong>PHỤ(R)</strong> = vũ khí phụ (thiên sứ / khiên…). Phím cứng <code>R</code> cũng vậy.</p>
+        <h3 style="margin-top:12px;">🎮 Anbernic RG557 (nút cứng + cảm ứng):</h3>
+        <p>Chrome/Chromium trên RG557: tay cầm máy được nhận qua <strong>Gamepad API</strong>, gửi cùng phím với bàn ảo — dùng chung lúc chơi.</p>
+        <p><strong>D-pad / Stick trái</strong> = ◀▶▲▼ · <strong>A / RT</strong> = giữ lực SPACE · <strong>B</strong> = Bỏ lượt (P) · <strong>X</strong> = POW · <strong>Y</strong> = Bay · <strong>R2</strong> = Phụ/Thiên sứ (R) · <strong>L1/R1/L2/Select</strong> = đạo cụ 1–4 · <strong>Start</strong> = ẩn/hiện phím ảo.</p>
+        <p>Nếu Chrome chưa thấy pad: chạm màn hình một lần, hoặc Settings → bật gamepad cho trình duyệt. Không cần Keymapp Anbernic cho trang này.</p>
     </div>
 
     <script>
@@ -447,27 +542,158 @@
             return baseUrl + "/flash/Loading.swf?user=" + encodeURIComponent(user) + "&key=" + key + "&config=" + config;
         }
 
-        function launchWithRuffle() {
+        // Ruffle RSA hay trả p rỗng → Login.ashx fail/treo 13/13. Gắn cookie + rewrite
+        // request Login thiếu p thành local bypass (server Login.ashx đã hỗ trợ).
+        function setGunnyLoginCookies() {
+            var user = document.getElementById("username").value.trim() || "admin";
+            var key = "Gunny2026";
+            var nick = user.toLowerCase() === "admin" ? "Admin" : user;
+            var secure = window.location.protocol === "https:" ? "; Secure" : "";
+            document.cookie = "gunny_user=" + encodeURIComponent(user) + "; path=/" + secure;
+            document.cookie = "gunny_key=" + encodeURIComponent(key) + "; path=/" + secure;
+            document.cookie = "gunny_nick=" + encodeURIComponent(nick) + "; path=/" + secure;
+        }
+
+        function rewriteLoginUrl(url) {
+            if (typeof url !== "string") return url;
+            if (url.indexOf("Login.ashx") < 0) return url;
+            var user = document.getElementById("username").value.trim() || "admin";
+            var nick = user.toLowerCase() === "admin" ? "Admin" : user;
+            // Luôn gắn user/nick/key (kể cả khi đã có p=RAW/RSA) — backup nếu payload lỗi.
+            var fixed = url;
+            if (!/[?&]user=/.test(fixed)) {
+                fixed += (fixed.indexOf("?") >= 0 ? "&" : "?") + "user=" + encodeURIComponent(user);
+            }
+            if (!/[?&]nickname=/.test(fixed)) {
+                fixed += "&nickname=" + encodeURIComponent(nick);
+            }
+            if (!/[?&]key=/.test(fixed)) {
+                fixed += "&key=" + encodeURIComponent("Gunny2026");
+            }
+            if (fixed !== url) {
+                console.log("[Gunny] Login.ashx rewrite:", fixed);
+            }
+            return fixed;
+        }
+
+        (function installLoginBypassHooks() {
+            // Arc/Chrome extension spam FrameDoesNotExistError — không phải lỗi game.
+            try {
+                window.addEventListener("unhandledrejection", function (ev) {
+                    var msg = (ev && ev.reason && (ev.reason.message || String(ev.reason))) || "";
+                    if (msg.indexOf("FrameDoesNotExistError") >= 0 || msg.indexOf("background.js") >= 0) {
+                        ev.preventDefault();
+                        ev.stopImmediatePropagation();
+                    }
+                }, true);
+            } catch (e) {}
+            try {
+                var origOpen = XMLHttpRequest.prototype.open;
+                XMLHttpRequest.prototype.open = function(method, url) {
+                    arguments[1] = rewriteLoginUrl(url);
+                    return origOpen.apply(this, arguments);
+                };
+            } catch (e) {}
+            try {
+                var origFetch = window.fetch;
+                if (typeof origFetch === "function") {
+                    window.fetch = function(input, init) {
+                        if (typeof input === "string") {
+                            input = rewriteLoginUrl(input);
+                        } else if (input && typeof input.url === "string") {
+                            input = new Request(rewriteLoginUrl(input.url), input);
+                        }
+                        return origFetch.call(this, input, init);
+                    };
+                }
+            } catch (e) {}
+        })();
+
+        function setGameStatus(msg) {
+            var container = document.getElementById("game-container");
+            if (!container) return;
+            container.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#f1c40f;font-size:16px;padding:24px;text-align:center;line-height:1.5;">' + msg + '</div>';
+        }
+
+        function isRuffleReady() {
+            try {
+                return !!(window.RufflePlayer && typeof window.RufflePlayer.newest === "function" && window.RufflePlayer.newest());
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function waitForRuffle(timeoutMs) {
+            timeoutMs = timeoutMs || 20000;
+            return new Promise(function (resolve, reject) {
+                var start = Date.now();
+                (function tick() {
+                    if (isRuffleReady()) return resolve(window.RufflePlayer.newest());
+                    if (window.__ruffleSource === "fail") return reject(new Error("Ruffle load failed"));
+                    if (Date.now() - start > timeoutMs) return reject(new Error("Ruffle timeout"));
+                    setTimeout(tick, 100);
+                })();
+            });
+        }
+
+        function loadSwfInto(ruffle) {
             var container = document.getElementById("game-container");
             container.innerHTML = "";
-            var ruffle = window.RufflePlayer.newest();
             var player = ruffle.createPlayer();
             player.style.width = "100%";
             player.style.height = "100%";
             container.appendChild(player);
 
+            setGunnyLoginCookies();
             var swfUrl = getGameUrl();
-            console.log("[Gunny] Loading SWF:", swfUrl);
-            player.load({
+            console.log("[Gunny] Loading SWF:", swfUrl, "ruffle=", window.__ruffleSource || "?");
+            var uaNow = navigator.userAgent || "";
+            var iosNow = /iPad|iPhone|iPod/.test(uaNow) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+            var mobileNow = iosNow || /Android|Mobile/i.test(uaNow);
+            // socketProxy phải có trên player.load — nếu chỉ set global config mà load()
+            // không merge, Ruffle TCP thẳng :9569 → fail/treo 13/13 (Road bytes=0).
+            var sockProxy = (window.RufflePlayer && window.RufflePlayer.config && window.RufflePlayer.config.socketProxy) || [];
+            return player.load({
                 url: swfUrl,
                 allowScriptAccess: true,
                 backgroundColor: "#000000",
+                preferredRenderer: "wgpu-webgl",
                 deviceFontRenderer: "canvas",
+                quality: iosNow ? "low" : (mobileNow ? "medium" : "high"),
+                letterbox: mobileNow ? "off" : "on",
+                scale: "showAll",
+                forceScale: true,
+                autoplay: "on",
+                socketProxy: sockProxy,
                 parameters: {
                     user: document.getElementById("username").value.trim() || "admin",
                     key: "Gunny2026",
                     config: baseUrl + "/flash/config.xml"
                 }
+            }).then(function () {
+                console.log("[Gunny] SWF loaded OK");
+                document.addEventListener("visibilitychange", function () {
+                    try {
+                        if (document.hidden) {
+                            if (player && player.pause) player.pause();
+                        } else if (player && player.play) {
+                            player.play();
+                        }
+                    } catch (e) {}
+                }, { passive: true });
+            });
+        }
+
+        function launchWithRuffle() {
+            var container = document.getElementById("game-container");
+            if (!container) return;
+            setGameStatus("Đang tải Ruffle + Loading.swf...");
+
+            waitForRuffle(25000).then(function (ruffle) {
+                return loadSwfInto(ruffle);
+            }).catch(function (err) {
+                console.error("[Gunny] launch failed:", err);
+                setGameStatus("Lỗi tải game: " + (err && err.message ? err.message : err) + "<br/><br/>Bấm ▶ Tải Lại Game.<br/>Hard refresh: Cmd+Shift+R (xoá cache 404).");
             });
         }
 
@@ -588,8 +814,143 @@
         bindKey("btn-3", 51, "3", "Digit3");
         bindKey("btn-4", 52, "4", "Digit4");
         bindKey("btn-fly", 70, "f", "KeyF");
+        bindKey("btn-deputy", 82, "r", "KeyR");
         bindKey("btn-pow", 66, "b", "KeyB");
         bindKey("btn-pass", 80, "p", "KeyP");
+
+        // --- PHYSICAL GAMEPAD (RG557 / standard Android gamepad) ---
+        // Maps to the same keyboard codes as the virtual touch pad so both work together.
+        var PAD_DEADZONE = 0.45;
+        var padPrev = {};
+        var padStartLatch = false;
+        var padConnectedName = "";
+
+        // Action buttons (Standard Gamepad). Movement handled separately (D-pad ∪ stick).
+        // A/RT → SPACE handled in PAD_MOVE.space (union). Do not map button 0 here.
+        var PAD_ACTION = {
+            1: { keyCode: 80, key: "p", code: "KeyP", btn: "btn-pass" },     // B → Pass
+            2: { keyCode: 66, key: "b", code: "KeyB", btn: "btn-pow" },      // X → POW
+            3: { keyCode: 70, key: "f", code: "KeyF", btn: "btn-fly" },      // Y → Fly
+            4: { keyCode: 49, key: "1", code: "Digit1", btn: "btn-1" },      // L1
+            5: { keyCode: 50, key: "2", code: "Digit2", btn: "btn-2" },      // R1
+            6: { keyCode: 51, key: "3", code: "Digit3", btn: "btn-3" },      // L2
+            7: { keyCode: 82, key: "r", code: "KeyR", btn: "btn-deputy" },   // R2 → Thiên sứ / vũ khí phụ
+            8: { keyCode: 52, key: "4", code: "Digit4", btn: "btn-4" }       // Select → 4
+        };
+        var PAD_MOVE = {
+            left:  { keyCode: 37, key: "ArrowLeft", code: "ArrowLeft", btn: "btn-left" },
+            right: { keyCode: 39, key: "ArrowRight", code: "ArrowRight", btn: "btn-right" },
+            up:    { keyCode: 38, key: "ArrowUp", code: "ArrowUp", btn: "btn-up" },
+            down:  { keyCode: 40, key: "ArrowDown", code: "ArrowDown", btn: "btn-down" },
+            space: { keyCode: 32, key: " ", code: "Space", btn: "btn-space" }
+        };
+
+        function setPadStatus(text, ok) {
+            var el = document.getElementById("pad-status");
+            if (!el) return;
+            el.textContent = text;
+            el.style.background = ok ? "#00b894" : "#6c757d";
+        }
+
+        function btnDown(btn) {
+            return !!(btn && (btn.pressed || (typeof btn.value === "number" && btn.value > 0.5)));
+        }
+
+        function setPadKey(id, pressed, map) {
+            var was = !!padPrev[id];
+            if (pressed === was) return;
+            padPrev[id] = pressed;
+            if (pressed) {
+                dispatchKey("keydown", map.keyCode, map.key, map.code);
+                if (map.btn) {
+                    var b = document.getElementById(map.btn);
+                    if (b) b.classList.add("active");
+                }
+            } else {
+                dispatchKey("keyup", map.keyCode, map.key, map.code);
+                if (map.btn) {
+                    var b2 = document.getElementById(map.btn);
+                    if (b2) b2.classList.remove("active");
+                }
+            }
+        }
+
+        function releaseAllPadKeys() {
+            Object.keys(PAD_ACTION).forEach(function(k) {
+                setPadKey("act" + k, false, PAD_ACTION[k]);
+            });
+            Object.keys(PAD_MOVE).forEach(function(k) {
+                setPadKey("mv" + k, false, PAD_MOVE[k]);
+            });
+        }
+
+        function pollGamepad() {
+            if (!navigator.getGamepads) {
+                requestAnimationFrame(pollGamepad);
+                return;
+            }
+            var pads = navigator.getGamepads();
+            var pad = null;
+            for (var i = 0; i < pads.length; i++) {
+                if (pads[i]) { pad = pads[i]; break; }
+            }
+            if (!pad) {
+                if (padConnectedName) {
+                    padConnectedName = "";
+                    setPadStatus("Tay cầm: chờ…", false);
+                    releaseAllPadKeys();
+                }
+                requestAnimationFrame(pollGamepad);
+                return;
+            }
+
+            if (pad.id !== padConnectedName) {
+                padConnectedName = pad.id;
+                var short = pad.id.length > 28 ? pad.id.slice(0, 28) + "…" : pad.id;
+                setPadStatus("Tay cầm: OK · " + short, true);
+            }
+
+            var buttons = pad.buttons || [];
+            Object.keys(PAD_ACTION).forEach(function(idxStr) {
+                setPadKey("act" + idxStr, btnDown(buttons[+idxStr]), PAD_ACTION[idxStr]);
+            });
+
+            // A ∪ RT → SPACE (RT = index 7)
+            var fire = btnDown(buttons[0]) || btnDown(buttons[7]);
+            setPadKey("mvspace", fire, PAD_MOVE.space);
+
+            // D-pad ∪ left stick
+            var ax = pad.axes || [];
+            var lx = ax[0] || 0, ly = ax[1] || 0;
+            setPadKey("mvleft",  btnDown(buttons[14]) || lx < -PAD_DEADZONE, PAD_MOVE.left);
+            setPadKey("mvright", btnDown(buttons[15]) || lx >  PAD_DEADZONE, PAD_MOVE.right);
+            setPadKey("mvup",    btnDown(buttons[12]) || ly < -PAD_DEADZONE, PAD_MOVE.up);
+            setPadKey("mvdown",  btnDown(buttons[13]) || ly >  PAD_DEADZONE, PAD_MOVE.down);
+
+            // Start = toggle virtual gamepad (edge)
+            var startDown = btnDown(buttons[9]);
+            if (startDown && !padStartLatch) {
+                padStartLatch = true;
+                toggleGamepad();
+            } else if (!startDown) {
+                padStartLatch = false;
+            }
+
+            requestAnimationFrame(pollGamepad);
+        }
+
+        window.addEventListener("gamepadconnected", function(e) {
+            setPadStatus("Tay cầm: OK · " + e.gamepad.id, true);
+        });
+        window.addEventListener("gamepaddisconnected", function() {
+            setPadStatus("Tay cầm: ngắt", false);
+        });
+
+        // Kick poll (Android often needs a gesture first — also restart on first touch)
+        requestAnimationFrame(pollGamepad);
+        window.addEventListener("pointerdown", function once() {
+            requestAnimationFrame(pollGamepad);
+        }, { once: true });
 
         // Quản lý Bật/Tắt Max Tài Nguyên (Dành riêng cho Admin)
         async function updateResourceStatus() {

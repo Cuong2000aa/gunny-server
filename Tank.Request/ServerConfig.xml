@@ -57,8 +57,8 @@
   <Item Name="FastGrowSubTime" Value="30" />
   <Item Name="LittleGameBoguConfig" Value="200,1,1|100,4,1|3000,80,3|6000,125,5" />
   <Item Name="LittleGameMaxBoguCount" Value="40" />
-  <Item Name="LittleGameStartHourse" Value="13" />
-  <Item Name="LittleGameTimeSpendingHours" Value="1" />
+  <Item Name="LittleGameStartHourse" Value="0" />
+  <Item Name="LittleGameTimeSpendingHours" Value="24" />
   <Item Name="DebugMode" Value="False" />
   <Item Name="VIPStrengthenEx" Value="25|25|25|35|35|50|50|50|50|50|50|50" />
   <Item Name="PICKUP_SNENIOR_ROBOT" Value="True" />

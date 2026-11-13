@@ -99,6 +99,42 @@ namespace Game.Server.Managers
 				{
 					log.Error("CompileScripts", e);
 				}
+				// .NET Core/macOS: CodeDom C# compiler unsupported — load prebuilt DLL if present
+				try
+				{
+					string normalized = (dllName ?? string.Empty).Replace('\\', Path.DirectorySeparatorChar);
+					string fileName = Path.GetFileName(normalized);
+					if (string.IsNullOrEmpty(fileName))
+					{
+						fileName = "GameServerScripts.dll";
+					}
+					string[] candidates =
+					{
+						Path.IsPathRooted(normalized) ? normalized : Path.Combine(Directory.GetCurrentDirectory(), normalized),
+						Path.Combine(AppContext.BaseDirectory, fileName),
+						Path.Combine(Directory.GetCurrentDirectory(), fileName),
+						Path.Combine(Directory.GetCurrentDirectory(), "bin", "Debug", "net8.0", fileName),
+					};
+					foreach (string fallback in candidates)
+					{
+						if (string.IsNullOrEmpty(fallback) || !File.Exists(fallback))
+						{
+							continue;
+						}
+						Assembly asm = Assembly.LoadFrom(Path.GetFullPath(fallback));
+						InsertAssembly(asm);
+						log.ErrorFormat("Loaded prebuilt scripts assembly: {0}", fallback);
+						return true;
+					}
+					log.ErrorFormat("Prebuilt scripts DLL not found (cwd={0}, base={1}, target={2})", Directory.GetCurrentDirectory(), AppContext.BaseDirectory, dllName);
+				}
+				catch (Exception loadEx)
+				{
+					if (log.IsErrorEnabled)
+					{
+						log.Error("Load prebuilt GameServerScripts.dll failed", loadEx);
+					}
+				}
 			}
 			if (res != null && !res.Errors.HasErrors)
 			{

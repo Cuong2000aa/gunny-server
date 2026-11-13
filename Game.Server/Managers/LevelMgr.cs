@@ -42,9 +42,22 @@ namespace Game.Server.Managers
 
         public static int LevelPlusBlood(int Grade)
         {
-			if (_levels.ContainsKey(Grade))
+			if (_levels != null && _levels.ContainsKey(Grade))
 			{
 				return _levels[Grade].Blood;
+			}
+			// Cap to max known level (admin/high GP chars above LevelInfo rows).
+			if (_levels != null && _levels.Count > 0)
+			{
+				int max = MaxLevel;
+				if (_levels.ContainsKey(max))
+				{
+					if (Grade != max)
+					{
+						log.WarnFormat("Level {0} not found — using MaxLevel {1} blood", Grade, max);
+					}
+					return _levels[max].Blood;
+				}
 			}
 			log.ErrorFormat("Level {0} not found!", Grade);
 			return 0;

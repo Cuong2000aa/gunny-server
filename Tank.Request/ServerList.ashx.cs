@@ -34,17 +34,23 @@ namespace Tank.Request
                         {
                             if (s.State == -1)
                                 continue;
-                            total += s.Online;
-                            // Local play: always advertise a joinable server. Road may push State=2
-                            // (busy/full) into DB even when the zone is empty, which traps the
-                            // Flash client on the loading screen after templates finish.
-                            int state = s.State <= 0 ? 1 : s.State;
-                            if (state == 2 || state == 3 || state == 4)
-                            {
-                                state = 1;
-                            }
+                            // total = số server (Flash/UI), không phải Online — Online=0 khiến total=0 → dễ treo 13/13.
+                            total += 1;
+                            // Flash ServerInfo: MAINTAIN=1, UNIMPEDED=2, HALF=4, ALL_FULL=5
+                            // Local play: luôn trả UNIMPEDED (2). Trả State=1 = bảo trì → treo 13/13.
+                            int state = 2;
                             int mustLevel = s.MustLevel < 1000 ? 1000 : s.MustLevel;
-                            result.Add(Road.Flash.FlashUtils.CreateServerInfo(s.ID, s.Name, "127.0.0.1", s.Port, state, mustLevel, 0, s.Online));
+                            // Advertise the host the browser used (LAN IP / hostname), so other
+                            // devices on Wi‑Fi get a reachable address; Ruffle socketProxy tunnels to Road.
+                            string advertiseIp = context.Request.Url?.Host;
+                            if (string.IsNullOrWhiteSpace(advertiseIp) ||
+                                string.Equals(advertiseIp, "localhost", StringComparison.OrdinalIgnoreCase))
+                            {
+                                advertiseIp = "127.0.0.1";
+                            }
+                            // Online tối thiểu 1 để client không coi server “trống/chết”.
+                            int online = s.Online > 0 ? s.Online : 1;
+                            result.Add(Road.Flash.FlashUtils.CreateServerInfo(s.ID, s.Name, advertiseIp, s.Port, state, mustLevel, 0, online));
                         }
                     }
                 }
@@ -65,7 +71,8 @@ namespace Tank.Request
             result.Add(new XAttribute("AreaName", "Gunny macOS"));
 
             context.Response.ContentType = "text/plain";
-            context.Response.Write(result.ToString(false));
+            // UTF8 không BOM — tránh Flash/Ruffle XML() parse fail
+            context.Response.BinaryWrite(new System.Text.UTF8Encoding(false).GetBytes(result.ToString(false)));
         }
 
         public bool IsReusable => false;

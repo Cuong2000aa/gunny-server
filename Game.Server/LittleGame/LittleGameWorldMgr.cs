@@ -52,6 +52,8 @@ namespace Game.Server.LittleGame
             {
                 InitializeMap();
                 ReloadConfig();
+                // Schedule timer is commented out in TaskMgr — keep event always open for private server.
+                OpenLittleGameSetup();
                 result = true;
             }
             catch (Exception e)

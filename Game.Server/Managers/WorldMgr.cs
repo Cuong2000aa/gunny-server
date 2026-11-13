@@ -123,18 +123,27 @@ namespace Game.Server.Managers
 
         public static bool AddPlayer(int playerId, GamePlayer player)
         {
+            GamePlayer stale = null;
             m_clientLocker.AcquireWriterLock(-1);
             try
             {
                 if (m_players.ContainsKey(playerId))
                 {
-                    return false;
+                    GamePlayer existing = m_players[playerId];
+                    // Newest-wins: replace any prior session (Ruffle dual-WS listens on latest socket).
+                    stale = existing;
+                    m_players.Remove(playerId);
+                    Console.WriteLine("[WorldMgr] Replace prior AddPlayer id={0} (newest-wins)", playerId);
                 }
                 m_players.Add(playerId, player);
             }
             finally
             {
                 m_clientLocker.ReleaseWriterLock();
+            }
+            if (stale != null)
+            {
+                try { stale.Client?.Disconnect(); } catch { }
             }
             return true;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Reflection;
 using System.Text;
@@ -42,20 +42,50 @@ namespace Tank.Request
                 BaseInterface inter = BaseInterface.CreateInterface();
                 string site = ((context.Request["site"] == null) ? "" : HttpUtility.UrlDecode(context.Request["site"]));
                 string IP = context.Request.UserHostAddress;
-                if (string.IsNullOrEmpty(p))
+                string name;
+                string pwd;
+                string newPwd;
+                string nickname;
+                // Ruffle: RSA encrypt trong Flash hay trả p rỗng / treo → Login.ashx không có payload.
+                // Private server local: nhận user/key/nickname (query hoặc cookie) khi RSA thiếu/hỏng.
+                if (!TryParseLoginPayload(p, out name, out pwd, out newPwd, out nickname))
                 {
-                    return;
+                    name = FirstNonEmpty(
+                        context.Request["user"],
+                        context.Request["username"],
+                        context.Request.Cookies["gunny_user"]?.Value);
+                    pwd = FirstNonEmpty(
+                        context.Request["key"],
+                        context.Request["password"],
+                        context.Request.Cookies["gunny_key"]?.Value,
+                        "Gunny2026");
+                    newPwd = FirstNonEmpty(context.Request["np"], "local");
+                    nickname = FirstNonEmpty(
+                        context.Request["nickname"],
+                        context.Request.Cookies["gunny_nick"]?.Value,
+                        "");
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        Console.WriteLine("[Login.ashx] missing RSA p and user — reject");
+                        return;
+                    }
+                    if (string.IsNullOrEmpty(nickname))
+                    {
+                        nickname = string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : name;
+                    }
+                    Console.WriteLine($"[Login.ashx] local bypass login user={name} nick={nickname}");
                 }
-                byte[] src = CryptoHelper.RsaDecryt2(StaticFunction.RsaCryptor, p);
-                string[] strList = Encoding.UTF8.GetString(src, 7, src.Length - 7).Split(',');
-                if (strList.Length != 4)
+                else
                 {
-                    return;
+                    // RAW/RSA OK nhưng nick trống → CreateLogin/ActivePlayer dễ NRE (DBNull cast).
+                    if (string.IsNullOrEmpty(nickname))
+                    {
+                        nickname = FirstNonEmpty(
+                            context.Request["nickname"],
+                            context.Request.Cookies["gunny_nick"]?.Value,
+                            string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase) ? "Admin" : name);
+                    }
                 }
-                string name = strList[0];
-                string pwd = strList[1];
-                string newPwd = strList[2];
-                string nickname = strList[3];
                 //if (PlayerManager.Login(name, pwd))
                 //if (PlayerManager.Login(name, pwd/*.ToUpper()*/)/* || ValidDate == "1"*/)
                 if(true)
@@ -114,9 +144,23 @@ namespace Tank.Request
             }
             catch (Exception ex)
             {
-                byte[] numArray = Convert.FromBase64String(p);
-                log.Error("User Login error: (--" + StaticFunction.RsaCryptor.KeySize + "--)" + ex.ToString());
-                log.Error("--dataarray: " + Marshal.ToHexDump("fuckingbitch " + numArray.Length, numArray));
+                try
+                {
+                    if (!string.IsNullOrEmpty(p))
+                    {
+                        byte[] numArray = Convert.FromBase64String(p);
+                        log.Error("User Login error: (--" + StaticFunction.RsaCryptor.KeySize + "--)" + ex.ToString());
+                        log.Error("--dataarray: " + Marshal.ToHexDump("login-p " + numArray.Length, numArray));
+                    }
+                    else
+                    {
+                        log.Error("User Login error (no p): " + ex);
+                    }
+                }
+                catch
+                {
+                    log.Error("User Login error: " + ex);
+                }
                 value = false;
                 message = LanguageMgr.GetTranslation("Tank.Request.Login.Fail2");
             }
@@ -125,8 +169,73 @@ namespace Tank.Request
                 result.Add(new XAttribute("value", value));
                 result.Add(new XAttribute("message", message));
                 context.Response.ContentType = "text/plain";
-                context.Response.Write(result.ToString(check: false));
+                // UTF8 không BOM — Flash/Ruffle new XML() fail nếu có EF BB BF → treo 13/13
+                context.Response.BinaryWrite(new System.Text.UTF8Encoding(false).GetBytes(result.ToString(check: false)));
             }
+        }
+
+        private static string FirstNonEmpty(params string[] values)
+        {
+            foreach (string v in values)
+            {
+                if (!string.IsNullOrWhiteSpace(v))
+                {
+                    return v.Trim();
+                }
+            }
+            return null;
+        }
+
+        private static bool TryParseLoginPayload(string p, out string name, out string pwd, out string newPwd, out string nickname)
+        {
+            name = pwd = newPwd = nickname = null;
+            if (string.IsNullOrEmpty(p))
+            {
+                return false;
+            }
+            // Patched Flash CrytoUtils.rsaEncry4 → "RAW:" + Base64(dateHeader+user,pass,np,nick)
+            if (p.StartsWith("RAW:", StringComparison.Ordinal))
+            {
+                try
+                {
+                    byte[] raw = Convert.FromBase64String(p.Substring(4));
+                    return TrySplitLoginFields(raw, out name, out pwd, out newPwd, out nickname);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[Login.ashx] RAW payload parse failed: " + ex.Message);
+                    return false;
+                }
+            }
+            try
+            {
+                byte[] src = CryptoHelper.RsaDecryt2(StaticFunction.RsaCryptor, p);
+                return TrySplitLoginFields(src, out name, out pwd, out newPwd, out nickname);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[Login.ashx] RSA decrypt failed, will try local bypass: " + ex.Message);
+                return false;
+            }
+        }
+
+        private static bool TrySplitLoginFields(byte[] src, out string name, out string pwd, out string newPwd, out string nickname)
+        {
+            name = pwd = newPwd = nickname = null;
+            if (src == null || src.Length <= 7)
+            {
+                return false;
+            }
+            string[] strList = Encoding.UTF8.GetString(src, 7, src.Length - 7).Split(',');
+            if (strList.Length != 4)
+            {
+                return false;
+            }
+            name = strList[0];
+            pwd = strList[1];
+            newPwd = strList[2];
+            nickname = strList[3];
+            return !string.IsNullOrEmpty(name);
         }
     }
 }

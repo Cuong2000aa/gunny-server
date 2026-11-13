@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Linq;
 using SqlDataProvider.Data;
 
@@ -214,7 +214,9 @@ namespace Road.Flash
                 new XAttribute("ConsortiaRename", info.ConsortiaRename ? (info.NickName == info.ChairmanName) : info.ConsortiaRename), 
                 new XAttribute("EscapeCount", info.Escape), 
                 new XAttribute("IsFirst", info.IsFirst),
-                new XAttribute("LastDate", DateTime.Now.AddDays(-1.0)));
+                // Flash DateUtils.decodeDated expects yyyy-MM-ddTHH:mm:ss
+                // (raw DateTime → ISO with ms/offset breaks Ruffle Date → treo sau SelectList)
+                new XAttribute("LastDate", DateTime.Now.AddDays(-1.0).ToString("yyyy-MM-ddTHH:mm:ss")));
         }
 
         public static XElement CreateQuestInfo(QuestInfo info)

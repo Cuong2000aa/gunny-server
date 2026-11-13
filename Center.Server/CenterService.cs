@@ -287,10 +287,16 @@ namespace Center.Server
 					Player[] array2 = array;
 					foreach (Player player in array2)
 					{
-						if (player.Name == name && player.Password == password)
+						// Private/Ruffle: after Login.ashx CreatePlayer, Flash tempPassword may
+						// differ from stored session password — allow name-only match.
+						if (string.Equals(player.Name, name, StringComparison.OrdinalIgnoreCase))
 						{
 							userID = player.Id;
 							isFirst = player.IsFirst;
+							if (!string.Equals(player.Password, password, StringComparison.Ordinal))
+							{
+								Console.WriteLine("[ValidateLogin] name-only match user={0} id={1} (pwd mismatch ok)", name, userID);
+							}
 							return true;
 						}
 					}
