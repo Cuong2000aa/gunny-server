@@ -21,7 +21,7 @@
 3. **Màn Hình Đa Tỉ Lệ & Giao Diện Tùy Biến**:
    - Khóa chuẩn tỉ lệ vàng $10:6$ ($1000 \times 600$), hỗ trợ các preset kích thước: **100% (1000x600)**, **125% (1250x750)**, **150% (1500x900)** và **Toàn Màn Hình (Fullscreen)** có letterbox viền đen chống biến dạng.
    - Ghi nhớ tùy chọn người dùng tự động bằng `localStorage`.
-   - Tích hợp sẵn Bàn phím ảo (Virtual Gamepad) cho thiết bị di động (iOS / Android qua mạng LAN).
+   - Phím ảo (Virtual Gamepad) cho iOS; Android dùng tay cầm vật lý (phím ảo ẩn), chặn bàn phím tự bật + nút ⌨ mở khi cần chat.
 
 4. **Asset Proxy Thông Minh & Caching Cục Bộ**:
    - Máy chủ `Tank.Request` tích hợp cơ chế cache tài nguyên cục bộ (`Resources/`) cho vũ khí, trang phục theo mốc cường hóa và crater hố nổ, hạn chế tối đa độ trễ giật lag mạng giữa trận đấu.
@@ -61,7 +61,7 @@ Gunny/
 ```
 - Start container `gunny-sql` (SA: `Gunny@2026Mac`)
 - Restore `Database/*.bak` → `Db_Membership` / `Project_Game34` / `Project_Player34`
-- Apply `scripts/seed-max-users.sql` + `scripts/seed-bags-cards-pets.sql`:
+- Apply `scripts/seed-max-users.sql` + `seed-bags-cards-pets.sql` + `fix-stats-and-safe-gear.sql` + `seed-admin-legend-bag.sql` (48 món LEGEND/full cho admin):
   - **admin** — Lv60, VIP12, full xu, đồ mặc +15, túi trang bị ~90, đạo cụ ~60, thẻ 50, pet 18
   - **max40** — Lv40, cùng set nhưng +12, túi/thẻ/pet ít hơn
 
@@ -82,6 +82,13 @@ Sync-GameAssets.bat
 http://127.0.0.1:828/web/play.html
 ```
 LAN / Cloudflare: xem `cloudflare/README.md` (`.\cloudflare\start-quick-tunnel.ps1`).
+
+---
+
+## 📚 Tài liệu
+
+Toàn bộ docs: [`docs/README.md`](docs/README.md) — vận hành, database, vũ khí/đạn, web client mobile, công cụ Flash, troubleshooting, bảo mật.
+Kiến trúc: [`SOURCE-ARCHITECTURE.md`](SOURCE-ARCHITECTURE.md). Máy mới: [`SETUP-OTHER-MACHINE.md`](SETUP-OTHER-MACHINE.md).
 
 ---
 

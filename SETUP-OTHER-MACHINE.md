@@ -2,7 +2,10 @@
 
 Repo: https://github.com/Cuong2000aa/gunny-server
 
-**Kiến trúc / flow chi tiết (cho AI đọc):** [`SOURCE-ARCHITECTURE.md`](./SOURCE-ARCHITECTURE.md)
+**Kiến trúc / flow chi tiết (cho AI đọc):** [`SOURCE-ARCHITECTURE.md`](./SOURCE-ARCHITECTURE.md) · **Bộ docs:** [`docs/README.md`](./docs/README.md)
+
+Windows nhanh: `.\scripts\restore-databases.ps1` (restore + seed) → `Sync-GameAssets.bat` → `.\scripts\start-gunny-stack.ps1`.
+Công cụ Flash (FFDec, JRE) không có trong git — xem `docs/TOOLS-FLASH.md`.
 
 ## 1. Pull
 ```bat

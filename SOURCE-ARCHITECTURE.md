@@ -2,7 +2,7 @@
 
 > Doc này mô tả **cách source thực sự hoạt động** trên repo `gunny-server`.  
 > Mục tiêu: AI hoặc dev máy khác đọc xong là hiểu flow, port, path, patch quan trọng — **không đoán bừa**.  
-> Setup máy mới: xem thêm `SETUP-OTHER-MACHINE.md`.
+> Setup máy mới: xem thêm `SETUP-OTHER-MACHINE.md`. Bộ docs chi tiết: [`docs/README.md`](docs/README.md).
 
 **Repo:** https://github.com/Cuong2000aa/gunny-server  
 **Stack:** .NET 8 + Azure SQL Edge (Docker) + Flash client qua **Ruffle** (WASM) trên browser.
@@ -227,6 +227,12 @@ Khi AI sửa code, **giữ** các hành vi sau:
 7. **Thiên sứ / phụ R:** giữ fallback `BallConfig → Property1` và nhánh `Property3==31` vs đạn phụ trong `Player.UseSecondWeapon` / `SecondWeaponCommand`.
 8. **Không ffdec-replace `HallStateView` toàn class** nếu không cần — từng gây `VerifyError: Stack depth unbalanced` trên Ruffle.
 9. **Alice / network inspector:** N/A repo này (rule ACFC khác workspace).
+10. **Mọi vũ khí phải có `BallConfig`** + có trong `bombconfig.xml`; thiếu → client NPE `LoadBombManager` → treo loading vào trận. Xem `docs/WEAPONS-AND-BALLS.md`.
+11. **Mọi TemplateID trong túi người chơi phải có trong `TemplateAlllist.xml`**; thiếu → màn vàng khi vào sảnh (`StoreModel`). Xem `docs/DATABASE.md` §5.
+12. **`BaseGame.AddDeputyWeaponBombs()`** trong `PVPGame.StartLoading` — preload đạn trợ thủ ngoài SpecialBomb `[1,3,4,64,59,97,98]`.
+13. **Asset `image/bomb/` có candidate lowercase** (`GetAssetPathCandidates`) — CDN phân biệt hoa thường.
+14. **`play.html` mobile:** `setupMobileKeyboardGuard` (inputmode none trong shadow DOM + nút ⌨), ẩn phím ảo trên Android, remote console → `/clientlog`. Xem `docs/WEB-CLIENT.md`.
+15. **Road `logconfig.xml` không dùng console appender** (block MAIN khi cửa sổ minimized).
 
 SWF core: `Source Flash/FlashSV1/2.png` — edit bằng FFDec (`-replace` / `-export script`). Backup trước khi patch.
 
@@ -246,10 +252,15 @@ SWF core: `Source Flash/FlashSV1/2.png` — edit bằng FFDec (`-replace` / `-ex
 | Đào “thủng” nhưng nền vàng | Lỗ đục `fore` lộ màu `dead` layer | Đừng xóa dead; đó là layer đá `digable=false` |
 | Phụ R / thiên sứ không ăn | BallConfig thiếu hoặc code fallback mất | Restore Game34.bak; giữ patch `Player.cs` / `SecondWeaponCommand` |
 | Log `can't find bomb file` | Thiếu `GameAssets/bomb/<id>.bomb` | `Sync-GameAssets` + đủ bak/assets |
+| Treo loading **vào trận** | Vũ khí thiếu `BallConfig` | Thêm BallConfig, regenerate `bombconfig.xml` |
+| Màn vàng **khi vào sảnh** | Item trong túi không có trong `TemplateAlllist.xml` | Xóa item (stop Road) |
+
+Chi tiết + post-mortem: `docs/TROUBLESHOOTING.md`.
 
 Logs hay dùng:
 - Mac Request/Road stdout: `/tmp/tankrequest.log`, `/tmp/road.log` hoặc `/tmp/gunny-logs/`
-- Road log4net: `Road.Service/bin/Debug/net8.0/logs/`
+- Road log4net: `Road.Service/bin/Release/net8.0/logs/` (Debug build: `bin/Debug/...`)
+- Client (browser/mobile): `Tank.Request/logs/client.log`
 
 ---
 
@@ -298,4 +309,4 @@ CDN                → https://gunny.vcdn.vn/<image|sound path>
 
 ---
 
-*Last aligned: dig crater sanitizer + thiên sứ deputy-weapon patches documented; DigAssetSanitizer tries python3/python.*
+*Last aligned 2026-11-14: BallConfig/bombconfig rules, client template rule, deputy bomb preload, mobile keyboard guard, remote client log.*
