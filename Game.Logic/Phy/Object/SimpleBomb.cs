@@ -227,7 +227,16 @@ namespace Game.Logic.Phy.Object
 								}
 								else
 								{
-									num2 = (int)((double)((Player)m_owner).PlayerDetail.SecondWeapon.Template.Property7 * Math.Pow(1.1, ((Player)m_owner).PlayerDetail.SecondWeapon.StrengthenLevel) * num);
+									Player ownerPlayer = m_owner as Player;
+									ItemInfo angel = ownerPlayer?.PlayerDetail?.SecondWeapon ?? ownerPlayer?.DeputyWeapon;
+									if (angel?.Template == null)
+									{
+										num2 = (int)(500 * num);
+									}
+									else
+									{
+										num2 = (int)((double)angel.Template.Property7 * Math.Pow(1.1, angel.StrengthenLevel) * num);
+									}
 									num2 += m_owner.FightBuffers.ConsortionAddBloodGunCount;
 									num2 += m_owner.PetEffects.IncreaseAngelicPoint;
 									if (item3 is Player)

@@ -13,16 +13,17 @@ namespace Game.Server.RingStation.Action
 
         protected override void ExecuteImp(VirtualGamePlayer player, long tick)
         {
-            if (m_loading > 1000 || player.CurRoom.IsAutoBot)
+            // Fighting IsAllComplete cần >= 100 (không phải 1000)
+            if (m_loading > 100 || player.CurRoom.IsAutoBot)
             {
-                m_loading = 1000;
+                m_loading = 100;
             }
 
             player.SendLoadingComplete(m_loading);
-            if (m_loading < 1000)
+            if (m_loading < 100)
             {
                 Random random = new Random();
-                player.AddAction(new PlayerLoadingAction(m_loading + random.Next(200, 400), 10000));
+                player.AddAction(new PlayerLoadingAction(Math.Min(100, m_loading + random.Next(20, 40)), 200));
             }
 
             Finish(tick);

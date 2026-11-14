@@ -29,6 +29,16 @@ graphify-out/
 RecordLog/
 logs/
 *.log
+*.bak_*
+
+# Local reverse-engineering tools (download separately, see docs/TOOLS-FLASH.md)
+tools/jre17/
+tools/jre17.zip
+tools/ffdec/
+tools/ffdec.zip
+tools/export_*/
+tools/verify_*/
+tools/as3dump/
 
 # OS Generated Files
 .DS_Store

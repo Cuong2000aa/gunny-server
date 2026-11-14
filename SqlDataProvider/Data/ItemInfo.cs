@@ -534,11 +534,11 @@ namespace SqlDataProvider.Data
         {
             get
             {
-                if (IsGold && GoldEquip != null)
+                if (IsGold && GoldEquip != null && GoldEquip.Pic != null)
                 {
                     return GoldEquip.Pic;
                 }
-                return _template.Pic;
+                return _template?.Pic ?? "";
             }
         }
 

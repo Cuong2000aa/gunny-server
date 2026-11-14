@@ -69,8 +69,16 @@ namespace Fighting.Server.GameObjects
 			ItemInfo info = null;
 			if (Healstone != 0)
 			{
-				info = ItemInfo.CreateFromTemplate(ItemMgr.FindItemTemplate(Healstone), 1, 1);
-				info.Count = HealstoneCount;
+				ItemTemplateInfo tpl = ItemMgr.FindItemTemplate(Healstone);
+				if (tpl == null)
+				{
+					return null;
+				}
+				info = ItemInfo.CreateFromTemplate(tpl, 1, 1);
+				if (info != null)
+				{
+					info.Count = HealstoneCount;
+				}
 			}
 			return info;
         }
@@ -80,8 +88,16 @@ namespace Fighting.Server.GameObjects
 			ItemInfo info = null;
 			if (SecondWeapon != 0)
 			{
-				info = ItemInfo.CreateFromTemplate(ItemMgr.FindItemTemplate(SecondWeapon), 1, 1);
-				info.StrengthenLevel = StrengthLevel;
+				ItemTemplateInfo tpl = ItemMgr.FindItemTemplate(SecondWeapon);
+				if (tpl == null)
+				{
+					return null;
+				}
+				info = ItemInfo.CreateFromTemplate(tpl, 1, 1);
+				if (info != null)
+				{
+					info.StrengthenLevel = StrengthLevel;
+				}
 			}
 			return info;
         }
@@ -89,12 +105,17 @@ namespace Fighting.Server.GameObjects
         public ItemInfo GetItemTemplateInfo()
         {
 			ItemInfo itemInfo = null;
-			if (TemplateId != 0)
+			int tid = TemplateId != 0 ? TemplateId : 7008;
+			ItemTemplateInfo tpl = ItemMgr.FindItemTemplate(tid) ?? ItemMgr.FindItemTemplate(7008);
+			if (tpl != null)
 			{
-				itemInfo = ItemInfo.CreateFromTemplate(ItemMgr.FindItemTemplate(TemplateId), 1, 1);
-				itemInfo.StrengthenLevel = WeaponStrengthLevel;
+				itemInfo = ItemInfo.CreateFromTemplate(tpl, 1, 1);
+				if (itemInfo != null)
+				{
+					itemInfo.StrengthenLevel = WeaponStrengthLevel;
+				}
 			}
-			if (GoldTemplateId != 0)
+			if (itemInfo != null && GoldTemplateId != 0)
 			{
 				itemInfo.GoldEquip = ItemMgr.FindItemTemplate(GoldTemplateId);
 				itemInfo.goldBeginTime = goldBeginTime;

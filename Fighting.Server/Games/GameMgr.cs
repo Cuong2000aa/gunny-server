@@ -200,9 +200,31 @@ namespace Fighting.Server.Games
         {
 			try
 			{
-				Map map = MapMgr.CloneMap(MapMgr.GetMapIndex(mapIndex, (byte)roomType, m_serverId));
+				int resolvedMap = MapMgr.GetMapIndex(mapIndex, (byte)roomType, m_serverId);
+				log.WarnFormat("[Match] StartBattleGame begin mapIndex={0} resolved={1} roomType={2} gameType={3} red={4} blue={5}",
+					mapIndex, resolvedMap, roomType, gameType, red?.Count ?? -1, blue?.Count ?? -1);
+				if (red != null)
+				{
+					foreach (IGamePlayer p in red)
+					{
+						log.WarnFormat("[Match] RED player={0} grade={1} autoBot={2} weapon={3}",
+							p?.PlayerCharacter?.NickName, p?.PlayerCharacter?.Grade, p?.PlayerCharacter?.IsAutoBot,
+							p?.MainWeapon?.TemplateID);
+					}
+				}
+				if (blue != null)
+				{
+					foreach (IGamePlayer p in blue)
+					{
+						log.WarnFormat("[Match] BLUE player={0} grade={1} autoBot={2} weapon={3}",
+							p?.PlayerCharacter?.NickName, p?.PlayerCharacter?.Grade, p?.PlayerCharacter?.IsAutoBot,
+							p?.MainWeapon?.TemplateID);
+					}
+				}
+				Map map = MapMgr.CloneMap(resolvedMap);
 				if (map == null)
 				{
+					log.ErrorFormat("[Match] StartBattleGame FAIL: CloneMap null for resolvedMap={0}", resolvedMap);
 					return null;
 				}
 				BattleGame game = new BattleGame(m_gameId++, red, roomRed, blue, roomBlue, map, roomType, gameType, timeType);
@@ -212,6 +234,7 @@ namespace Fighting.Server.Games
 				}
 				game.Prepare();
 				SendStartMessage(game);
+				log.WarnFormat("[Match] StartBattleGame OK gameId={0} mapId={1} players={2}", game.Id, map.Info?.ID, game.PlayerCount);
 				return game;
 			}
 			catch (Exception ex)
@@ -231,8 +254,17 @@ namespace Fighting.Server.Games
 				{
 					foreach (Player allFightPlayer in game.GetAllFightPlayers())
 					{
-						(allFightPlayer.PlayerDetail as ProxyPlayer).m_antiAddictionRate = 1.0;
-						GSPacketIn pkg2 = SendBufferList(allFightPlayer, (allFightPlayer.PlayerDetail as ProxyPlayer).Buffers);
+						ProxyPlayer proxy = allFightPlayer.PlayerDetail as ProxyPlayer;
+						if (proxy == null)
+						{
+							continue;
+						}
+						proxy.m_antiAddictionRate = 1.0;
+						if (proxy.Buffers == null)
+						{
+							continue;
+						}
+						GSPacketIn pkg2 = SendBufferList(allFightPlayer, proxy.Buffers);
 						game.SendToAll(pkg2);
 					}
 					//GSPacketIn pkg3 = smethod_3(DateTime.Now);

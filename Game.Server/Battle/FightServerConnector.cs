@@ -357,14 +357,26 @@ namespace Game.Server.Battle
 
         protected void HandleStartGame(GSPacketIn pkg)
         {
+            int roomId = pkg.Parameter1;
+            int gameId = pkg.Parameter2;
+            log.WarnFormat("[MatchTrace] Road←Fight HandleStartGame room={0} gameId={1}", roomId, gameId);
             ProxyGame game = new ProxyGame(pkg.Parameter2, this, (eRoomType)pkg.ReadInt(), (eGameType)pkg.ReadInt(), pkg.ReadInt());
-            m_server.StartGame(pkg.Parameter1, game);
+            m_server.StartGame(roomId, game);
         }
 
         protected void HandleSendToRoom(GSPacketIn pkg)
         {
             int clientID = pkg.ClientID;
             GSPacketIn pkg2 = pkg.ReadPacket();
+            byte tankCmd = 0;
+            try
+            {
+                if (pkg2 != null && pkg2.Code == 91 && pkg2.Length > 20 && pkg2.Buffer != null)
+                    tankCmd = pkg2.Buffer[20];
+            }
+            catch { }
+            log.WarnFormat("[MatchTrace] Road←Fight HandleSendToRoom room={0} code={1} tankCmd={2} len={3} exceptP1={4}",
+                clientID, pkg2?.Code, tankCmd, pkg2?.Length, pkg.Parameter1);
             m_server.SendToRoom(clientID, pkg2, pkg.Parameter1, pkg.Parameter2);
         }
 

@@ -166,6 +166,25 @@ namespace Game.Server
 
         public override void SendTCP(GSPacketIn pkg)
         {
+			try
+			{
+				if (pkg != null && pkg.Code == 91 && pkg.Length > 20 && pkg.Buffer != null)
+				{
+					byte tankCmd = pkg.Buffer[20];
+					if (tankCmd == 16 || tankCmd == 99 || tankCmd == 103)
+					{
+						string name = tankCmd == 16 ? "LOAD" : tankCmd == 99 ? "START_GAME" : "GAME_LOAD";
+						log.WarnFormat("[MatchTrace] TCP→Client nick={0} ep={1} code=91 tankCmd={2}({3}) len={4} connected={5}",
+							m_player?.PlayerCharacter?.NickName ?? "?",
+							TcpEndpoint,
+							tankCmd,
+							name,
+							pkg.Length,
+							IsConnected);
+					}
+				}
+			}
+			catch { }
 			base.SendTCP(pkg);
         }
 

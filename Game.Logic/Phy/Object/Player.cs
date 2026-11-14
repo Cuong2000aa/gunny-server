@@ -120,7 +120,19 @@ namespace Game.Logic.Phy.Object
             10011,
             10012,
             10018,
-            10021
+            10021,
+            // Thiên sứ / khiên — vẫn dùng được khi đang cầm đạn special (64/97/…)
+            17000,
+            17001,
+            17002,
+            17005,
+            17007,
+            17010,
+            17017,
+            17100,
+            17101,
+            17102,
+            17201
         };
 
         private Random rand;
@@ -276,7 +288,7 @@ namespace Game.Logic.Phy.Object
 
         public bool IsActive => m_isActive;
 
-        public bool IsSpecialSkill => m_currentBall.ID == m_spBallId;
+        public bool IsSpecialSkill => m_currentBall != null && m_currentBall.ID == m_spBallId;
 
         public int LoadingProcess
         {
@@ -543,11 +555,23 @@ namespace Game.Logic.Phy.Object
 
         public bool CanUseItem(ItemTemplateInfo item)
         {
-            if (m_currentBall.IsSpecial() && !AllowedItems.Contains(item.TemplateID))
+            if (item == null)
             {
                 return false;
             }
-            if (m_energy < item.Property4)
+            // Category 17/31 = vũ khí phụ (thiên sứ / khiên) — không bị chặn bởi đạn IsSpecial
+            bool isDeputy = item.CategoryID == 17 || item.CategoryID == 31;
+            if (m_currentBall != null && m_currentBall.IsSpecial() && !isDeputy && !AllowedItems.Contains(item.TemplateID))
+            {
+                return false;
+            }
+            // Thiên sứ LEGEND Property4=110 — nếu thiếu năng lượng vẫn cho dùng với cost tối đa energy hiện có
+            int energyCost = item.Property4;
+            if (isDeputy && energyCost > m_energy && m_energy >= 40)
+            {
+                energyCost = m_energy;
+            }
+            if (m_energy < energyCost)
             {
                 return false;
             }
@@ -568,7 +592,12 @@ namespace Game.Logic.Phy.Object
 
         public bool CanUseItem(ItemTemplateInfo item, int place)
         {
-            if (m_currentBall.IsSpecial() && !AllowedItems.Contains(item.TemplateID))
+            if (item == null)
+            {
+                return false;
+            }
+            bool isDeputy = item.CategoryID == 17 || item.CategoryID == 31;
+            if (m_currentBall != null && m_currentBall.IsSpecial() && !isDeputy && !AllowedItems.Contains(item.TemplateID))
             {
                 return false;
             }
@@ -580,7 +609,7 @@ namespace Game.Logic.Phy.Object
             {
                 return true;
             }
-            if (m_energy < item.Property4)
+            if (m_energy < item.Property4 && !(isDeputy && m_energy >= 40))
             {
                 return false;
             }
@@ -1437,8 +1466,16 @@ namespace Game.Logic.Phy.Object
 
         public void InitFightBuffer(List<BufferInfo> buffers)
         {
+            if (buffers == null)
+            {
+                return;
+            }
             foreach (BufferInfo info in buffers)
             {
+                if (info == null)
+                {
+                    continue;
+                }
                 switch (info.Type)
                 {
                     case 101:
@@ -1549,6 +1586,10 @@ namespace Game.Logic.Phy.Object
 
         public void InitCardBuffer(List<int> cards)
         {
+            if (cards == null || cards.Count == 0)
+            {
+                return;
+            }
             int minLv = 30;
             foreach (int card in cards)
             {
@@ -2145,9 +2186,9 @@ namespace Game.Logic.Phy.Object
             PetEffects.DisibleActiveSkill = false;
             m_flyCoolDown--;
             SetCurrentWeapon(PlayerDetail.MainWeapon);
-            if (m_currentBall.ID != m_mainBallId)
+            if (m_currentBall == null || m_currentBall.ID != m_mainBallId)
             {
-                m_currentBall = BallMgr.FindBall(m_mainBallId);
+                m_currentBall = BallMgr.FindBall(m_mainBallId) ?? BallMgr.FindBall(121) ?? BallMgr.FindBall(1);
             }
             if (!base.IsLiving)
             {
@@ -2220,16 +2261,19 @@ namespace Game.Logic.Phy.Object
 
         public override void Reset()
         {
-            if (m_game.RoomType == eRoomType.Dungeon)
+            if (m_game != null)
             {
-                m_game.Cards = new int[21];
+                if (m_game.RoomType == eRoomType.Dungeon)
+                {
+                    m_game.Cards = new int[21];
+                }
+                else
+                {
+                    m_game.Cards = new int[9];
+                }
             }
-            else
-            {
-                m_game.Cards = new int[9];
-            }
-            base.EffectList.StopAllEffect();
-            base.CardEffectList.StopAllEffect();
+            base.EffectList?.StopAllEffect();
+            base.CardEffectList?.StopAllEffect();
             base.Dander = 0;
             //base.PetMP = 0;
             base.PetMP = 10;
@@ -2242,19 +2286,44 @@ namespace Game.Logic.Phy.Object
             }
             else
             {
-                base.VaneOpen = m_player.PlayerCharacter.Grade >= 9;
+                base.VaneOpen = m_player?.PlayerCharacter != null && m_player.PlayerCharacter.Grade >= 9;
             }
-            InitFightBuffer(m_player.FightBuffs);
-            InitCardBuffer(PlayerDetail.CardBuff);
+            InitFightBuffer(m_player?.FightBuffs);
+            InitCardBuffer(PlayerDetail?.CardBuff);
+            if (m_player == null || m_player.PlayerCharacter == null)
+            {
+                base.Reset();
+                return;
+            }
             m_Healstone = m_player.Healstone;
             m_changeSpecialball = 0;
             m_DeputyWeapon = m_player.SecondWeapon;
             m_weapon = m_player.MainWeapon;
-            BallConfigInfo info = BallConfigMgr.FindBall(m_weapon.TemplateID);
-            m_mainBallId = info.Common;
-            m_spBallId = info.Special;
-            m_AddWoundBallId = info.CommonAddWound;
-            m_MultiBallId = info.CommonMultiBall;
+            // AutoBot / incomplete proxy payloads can omit MainWeapon — keep match from crashing
+            if (m_weapon == null || m_weapon.Template == null)
+            {
+                ItemTemplateInfo fallbackTpl = ItemMgr.FindItemTemplate(7008) ?? ItemMgr.FindItemTemplate(7015);
+                if (fallbackTpl != null)
+                {
+                    m_weapon = ItemInfo.CreateFromTemplate(fallbackTpl, 1, 1);
+                }
+            }
+            BallConfigInfo info = m_weapon != null ? BallConfigMgr.FindBall(m_weapon.TemplateID) : null;
+            if (info != null)
+            {
+                m_mainBallId = info.Common;
+                m_spBallId = info.Special;
+                m_AddWoundBallId = info.CommonAddWound;
+                m_MultiBallId = info.CommonMultiBall;
+            }
+            else if (m_weapon?.Template != null && m_weapon.Template.Property1 > 0)
+            {
+                int ballId = m_weapon.Template.Property1;
+                m_mainBallId = ballId;
+                m_spBallId = ballId;
+                m_AddWoundBallId = ballId;
+                m_MultiBallId = ballId;
+            }
             BaseDamage = m_player.GetBaseAttack();
             BaseGuard = m_player.GetBaseDefence();
             Attack = m_player.PlayerCharacter.Attack;
@@ -2312,6 +2381,22 @@ namespace Game.Logic.Phy.Object
             }
             m_maxBlood += PetEffects == null ? 0 : PetEffects.AddMaxBloodValue;
             m_currentBall = BallMgr.FindBall(m_mainBallId);
+            // Missing BallConfig / exotic ball ID → keep fight shootable (client SWF packs are incomplete)
+            if (m_currentBall == null)
+            {
+                foreach (int fallbackId in new[] { 121, 161, 1, 4 })
+                {
+                    m_currentBall = BallMgr.FindBall(fallbackId);
+                    if (m_currentBall != null)
+                    {
+                        m_mainBallId = fallbackId;
+                        if (m_spBallId <= 0) m_spBallId = fallbackId;
+                        if (m_AddWoundBallId <= 0) m_AddWoundBallId = fallbackId;
+                        if (m_MultiBallId <= 0) m_MultiBallId = fallbackId;
+                        break;
+                    }
+                }
+            }
             m_shootCount = 1;
             m_ballCount = 1;
             CurrentIsHitTarget = false;
@@ -2325,12 +2410,15 @@ namespace Game.Logic.Phy.Object
             GainGP = 0;
             GainOffer = 0;
             Ready = false;
-            PlayerDetail.ClearTempBag();
+            PlayerDetail?.ClearTempBag();
             LoadingProcess = 0;
-            base.PetEffects.CritRate = 0;
+            if (base.PetEffects != null)
+            {
+                base.PetEffects.CritRate = 0;
+            }
             m_killedPunishmentOffer = 0;
             m_prop = 0;
-            InitBuffer(m_player.EquipEffect);
+            InitBuffer(m_player?.EquipEffect);
             CanFly = true;
             if (m_DeputyWeapon != null)
             {
@@ -2364,13 +2452,21 @@ namespace Game.Logic.Phy.Object
 
         public void SetBall(int ballId, bool special)
         {
-            if (ballId != m_currentBall.ID)
+            if (m_currentBall == null || ballId != m_currentBall.ID)
             {
-                if (BallMgr.FindBall(ballId) != null)
+                BallInfo found = BallMgr.FindBall(ballId);
+                if (found != null)
                 {
-                    m_currentBall = BallMgr.FindBall(ballId);
+                    m_currentBall = found;
                 }
-                m_game.SendGameUpdateBall(this, special);
+                else if (m_currentBall == null)
+                {
+                    m_currentBall = BallMgr.FindBall(121) ?? BallMgr.FindBall(1);
+                }
+                if (m_currentBall != null)
+                {
+                    m_game.SendGameUpdateBall(this, special);
+                }
             }
         }
 
@@ -2456,6 +2552,14 @@ namespace Game.Logic.Phy.Object
 
         public bool Shoot(int x, int y, int force, int angle)
         {
+            if (m_currentBall == null)
+            {
+                m_currentBall = BallMgr.FindBall(m_mainBallId) ?? BallMgr.FindBall(121) ?? BallMgr.FindBall(1);
+            }
+            if (m_currentBall == null || m_weapon?.Template == null)
+            {
+                return false;
+            }
             if (m_game.FreeFatal && PlayerDetail.PlayerCharacter.Grade <= 15)
             {
                 new FatalEffect(0, 15112004).Start(this);
@@ -2533,7 +2637,16 @@ namespace Game.Logic.Phy.Object
                     if (m_shootCount <= 0 || !base.IsLiving)
                     {
                         StopAttacking();
-                        AddDelay(m_currentBall.Delay + (m_weapon.isGold ? m_weapon.GoldEquip.Property8 : m_weapon.Template.Property8));
+                        int weaponDelay = 0;
+                        if (m_weapon.isGold && m_weapon.GoldEquip != null)
+                        {
+                            weaponDelay = m_weapon.GoldEquip.Property8;
+                        }
+                        else if (m_weapon.Template != null)
+                        {
+                            weaponDelay = m_weapon.Template.Property8;
+                        }
+                        AddDelay(m_currentBall.Delay + weaponDelay);
                         AddDander(20);
                         AddPetMP(10);
                         m_prop = 0;
@@ -2886,7 +2999,12 @@ namespace Game.Logic.Phy.Object
                 OnPlayerCure();
             }
             ShootCount = 1;
-            m_energy -= m_DeputyWeapon.Template.Property4;
+            int cost = m_DeputyWeapon.Template.Property4;
+            if (cost > m_energy)
+            {
+                cost = Math.Max(0, m_energy);
+            }
+            m_energy -= cost;
             m_delay += m_DeputyWeapon.Template.Property5;
             m_game.SendPlayerUseProp(this, -2, -2, m_DeputyWeapon.Template.TemplateID);
             if (deputyWeaponResCount > 0)
@@ -2905,7 +3023,10 @@ namespace Game.Logic.Phy.Object
                 if (base.Dander >= 200)
                 {
                     SetBall(m_spBallId, special: true);
-                    m_ballCount = m_currentBall.Amount;
+                    if (m_currentBall != null)
+                    {
+                        m_ballCount = m_currentBall.Amount;
+                    }
                     SetDander(0);
                 }
             }

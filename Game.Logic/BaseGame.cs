@@ -357,6 +357,47 @@ namespace Game.Logic
 			}
 		}
 
+		// Client chỉ tự preload đạn vũ khí chính + SpecialBomb; đạn trợ thủ (offhand) phải gửi qua loading files,
+		// nếu không viên đạn trợ thủ bay vô hình.
+		private static readonly int[] ClientSpecialBombs = { 1, 3, 4, 64, 59, 97, 98 };
+
+		public void AddDeputyWeaponBombs()
+		{
+			var ids = new HashSet<int>();
+			foreach (Player p in GetAllFightPlayers())
+			{
+				ItemInfo deputy = p?.DeputyWeapon;
+				if (deputy?.Template == null || deputy.Template.Property3 == 31)
+				{
+					continue;
+				}
+				BallConfigInfo cfg = BallConfigMgr.FindBall(deputy.TemplateID);
+				if (cfg != null)
+				{
+					ids.Add(cfg.Common);
+					ids.Add(cfg.Special);
+					ids.Add(cfg.CommonAddWound);
+					ids.Add(cfg.CommonMultiBall);
+				}
+				else if (deputy.Template.Property1 > 0)
+				{
+					ids.Add(deputy.Template.Property1);
+				}
+			}
+			foreach (int id in ids)
+			{
+				if (id <= 0 || Array.IndexOf(ClientSpecialBombs, id) >= 0 || BallMgr.FindBall(id) == null)
+				{
+					continue;
+				}
+				if (m_loadingFiles.Exists(f => f.Type == 1 && f.ClassName == "tank.resource.bombs.Bomb" + id))
+				{
+					continue;
+				}
+				AddLoadingFile(1, "bombs/" + id + ".swf", "tank.resource.bombs.Bomb" + id);
+			}
+		}
+
 		public virtual void AddNormalBoss(Living living)
 		{
 			m_map.AddPhysical(living);
@@ -2926,6 +2967,7 @@ namespace Game.Logic
 				pkg.WriteString(info2.Path);
 				pkg.WriteString(info2.ClassName);
 			}
+			int petCount = 0;
 			if (IsSpecialPVE())
 			{
 				pkg.WriteInt(0);
@@ -2933,6 +2975,7 @@ namespace Game.Logic
 			else
 			{
 				GameNeedPetSkillInfo[] list = PetMgr.GetGameNeedPetSkill();
+				petCount = list.Length;
 				pkg.WriteInt(list.Length);
 				GameNeedPetSkillInfo[] array = list;
 				foreach (GameNeedPetSkillInfo info in array)
@@ -2941,6 +2984,8 @@ namespace Game.Logic
 					pkg.WriteString(info.EffectPic);
 				}
 			}
+			log.WarnFormat("[MatchTrace] SEND cmd103 StartLoading gameId={0} map={1} maxTime={2} files={3} pets={4} len={5}",
+				Id, m_map?.Info?.ID, maxTime, m_loadingFiles.Count, petCount, pkg.Length);
 			SendToAll(pkg);
 		}
 

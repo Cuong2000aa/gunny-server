@@ -87,6 +87,9 @@ namespace Tank.Request
             contentTypeProvider.Mappings[".otf"] = "font/otf";
             contentTypeProvider.Mappings[".woff"] = "font/woff";
             contentTypeProvider.Mappings[".woff2"] = "font/woff2";
+            contentTypeProvider.Mappings[".webmanifest"] = "application/manifest+json";
+            contentTypeProvider.Mappings[".json"] = "application/json";
+
 
             string rootDir = Directory.GetParent(builder.Environment.ContentRootPath)?.FullName ?? builder.Environment.ContentRootPath;
             string flashDir = Path.Combine(rootDir, "Source Flash", "FlashSV1");
@@ -101,7 +104,8 @@ namespace Tank.Request
             };
             var cdnHttpClient = new HttpClient(httpClientHandler)
             {
-                Timeout = TimeSpan.FromSeconds(2)
+                // Bullet/blastOut SWFs are large; 2s caused silent 404 → no in-fight projectile FX
+                Timeout = TimeSpan.FromSeconds(15)
             };
             cdnHttpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 GunnyClient");
 
@@ -244,8 +248,51 @@ namespace Tank.Request
                                 return;
                             }
                         }
+                        else if (normalizedPath.Contains("/image/map/", StringComparison.OrdinalIgnoreCase)
+                            && (normalizedPath.EndsWith("/back.jpg", StringComparison.OrdinalIgnoreCase)
+                                || normalizedPath.EndsWith("/back.png", StringComparison.OrdinalIgnoreCase)
+                                || normalizedPath.EndsWith("/dead.png", StringComparison.OrdinalIgnoreCase)
+                                || normalizedPath.EndsWith("/dead.jpg", StringComparison.OrdinalIgnoreCase)
+                                || normalizedPath.EndsWith("/show.png", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            // Map back/dead 404 → fore.png (tránh 404/1x1 làm Ruffle Android treo màn vàng)
+                            string foreRel = normalizedPath
+                                .Replace("/back.jpg", "/fore.png", StringComparison.OrdinalIgnoreCase)
+                                .Replace("/back.png", "/fore.png", StringComparison.OrdinalIgnoreCase)
+                                .Replace("/dead.jpg", "/fore.png", StringComparison.OrdinalIgnoreCase)
+                                .Replace("/dead.png", "/fore.png", StringComparison.OrdinalIgnoreCase)
+                                .Replace("/show.png", "/fore.png", StringComparison.OrdinalIgnoreCase);
+                            string forePath = Path.Combine(resourcesDir, foreRel.Replace('/', Path.DirectorySeparatorChar));
+                            if (!File.Exists(forePath))
+                            {
+                                try
+                                {
+                                    string remoteFore = $"https://gunny.vcdn.vn/{foreRel}";
+                                    var foreResp = await cdnHttpClient.GetAsync(remoteFore);
+                                    if (foreResp.IsSuccessStatusCode)
+                                    {
+                                        byte[] foreData = await foreResp.Content.ReadAsByteArrayAsync();
+                                        string? foreDir = Path.GetDirectoryName(forePath);
+                                        if (!string.IsNullOrEmpty(foreDir)) Directory.CreateDirectory(foreDir);
+                                        await File.WriteAllBytesAsync(forePath, foreData);
+                                    }
+                                    foreResp.Dispose();
+                                }
+                                catch { }
+                            }
+                            if (File.Exists(forePath))
+                            {
+                                context.Response.StatusCode = 200;
+                                context.Response.ContentType = "image/png";
+                                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                                context.Response.Headers.Append("Cache-Control", "public, max-age=86400");
+                                await context.Response.SendFileAsync(forePath);
+                                return;
+                            }
+                        }
                         else if (normalizedPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                         {
+
                             // Trigger background download to pre-cache asset for next time
                             _ = Task.Run(async () =>
                             {
@@ -413,6 +460,32 @@ namespace Tank.Request
             app.UseSystemWebAdapters();
 
             // LAN / Cloudflare helper: show Wi‑Fi IP + public origin (tunnel)
+            string clientLogPath = Path.Combine(tankRequestDir, "logs", "client.log");
+            Directory.CreateDirectory(Path.GetDirectoryName(clientLogPath)!);
+            object clientLogLock = new object();
+            app.MapPost("/clientlog", async (Microsoft.AspNetCore.Http.HttpContext context) =>
+            {
+                using var reader = new StreamReader(context.Request.Body);
+                string body = await reader.ReadToEndAsync();
+                try
+                {
+                    using var doc = System.Text.Json.JsonDocument.Parse(body);
+                    string sid = doc.RootElement.GetProperty("sid").GetString() ?? "?";
+                    string dev = doc.RootElement.GetProperty("dev").GetString() ?? "?";
+                    var sb = new System.Text.StringBuilder();
+                    foreach (var line in doc.RootElement.GetProperty("lines").EnumerateArray())
+                    {
+                        sb.Append('[').Append(dev).Append(' ').Append(sid).Append("] ").AppendLine(line.GetString());
+                    }
+                    lock (clientLogLock)
+                    {
+                        File.AppendAllText(clientLogPath, sb.ToString());
+                    }
+                }
+                catch { }
+                context.Response.StatusCode = 204;
+            });
+
             app.MapGet("/api/lan-info", (Microsoft.AspNetCore.Http.HttpContext context) =>
             {
                 string lanIp = GetLanIPv4() ?? "127.0.0.1";
@@ -444,7 +517,8 @@ namespace Tank.Request
                 {
                     int money = Convert.ToInt32(reader["Money"]);
                     int grade = Convert.ToInt32(reader["Grade"]);
-                    if (money > 50000000 || grade >= 65)
+                    // MaxLevel in this build is 60 — never use Grade 65 (breaks LevelInfo / hall).
+                    if (money > 50000000 || grade >= 60)
                     {
                         isMax = true;
                     }
@@ -454,7 +528,7 @@ namespace Tank.Request
                 bool toMax = !isMax;
                 cmd.CommandText = toMax ?
                     @"UPDATE Sys_Users_Detail 
-                      SET Grade = 65, GP = 150000000, Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
+                      SET Grade = 60, GP = 1280550, Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
                       WHERE UserID = 1;" :
                     @"UPDATE Sys_Users_Detail 
                       SET Grade = 30, GP = 2500000, Money = 50000, Gold = 100000, GiftToken = 20000, Medal = 500 
@@ -467,7 +541,7 @@ namespace Tank.Request
                     success = true,
                     isMax = toMax,
                     message = toMax ?
-                        "⚡ Đã BẬT Max Tài Nguyên (Level 65, 99.999.999 Xu/Vàng/Lễ Kim)! Nếu đang trong game, gõ /max để cập nhật ngay." :
+                        "⚡ Đã BẬT Max Tài Nguyên (Level 60, 99.999.999 Xu/Vàng/Lễ Kim)! Nếu đang trong game, gõ /max để cập nhật ngay." :
                         "🛡️ Đã TẮT Max Tài Nguyên (Level 30, tài nguyên chuẩn cân bằng)! Nếu đang trong game, gõ /normal để cập nhật ngay."
                 });
             });
@@ -492,7 +566,7 @@ namespace Tank.Request
                 {
                     int grade = Convert.ToInt32(reader["Grade"]);
                     int money = Convert.ToInt32(reader["Money"]);
-                    bool isMax = money > 50000000 || grade >= 65;
+                    bool isMax = money > 50000000 || grade >= 60;
                     context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
                     await context.Response.WriteAsJsonAsync(new
                     {
@@ -667,6 +741,8 @@ namespace Tank.Request
             LanguageMgr.Setup(baseDir);
             log4net.Config.XmlConfigurator.Configure();
             StaticsMgr.Setup();
+            // Celeb/tofflist XML must be written where static files are served (ContentRoot), not bin/
+            StaticsMgr.CurrentPath = tankRequestDir;
             PlayerManager.Setup();
 
             // Discover all IHttpHandler types
@@ -776,6 +852,15 @@ namespace Tank.Request
         private static List<string> GetAssetPathCandidates(string normalizedPath)
         {
             var list = new List<string> { normalizedPath };
+            // CDN is case-sensitive: client requests image/bomb/blastOut/blastOut{id}.swf, CDN has blastout/blastout{id}.swf
+            if (normalizedPath.StartsWith("image/bomb/", StringComparison.OrdinalIgnoreCase))
+            {
+                string lower = normalizedPath.ToLowerInvariant();
+                if (!list.Contains(lower))
+                {
+                    list.Add(lower);
+                }
+            }
             if (normalizedPath.EndsWith("/craterbrink.png", StringComparison.OrdinalIgnoreCase))
             {
                 int slash = normalizedPath.LastIndexOf('/');

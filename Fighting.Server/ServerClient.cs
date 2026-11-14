@@ -407,11 +407,22 @@ namespace Fighting.Server
         public void HanleSendToGame(GSPacketIn pkg)
         {
 			BaseGame game = GameMgr.FindGame(pkg.ClientID);
-			if (game != null)
+			GSPacketIn pkg2 = pkg.ReadPacket();
+			bool isLoad = pkg2 != null && pkg2.Length > 20 && pkg2.Buffer[20] == 16;
+			if (game == null)
 			{
-				GSPacketIn pkg2 = pkg.ReadPacket();
-				game.ProcessData(pkg2);
+				if (isLoad)
+				{
+					ilog_1.WarnFormat("[MatchTrace] Road→Fight LOAD DROP game not found gameId={0} p1={1}", pkg.ClientID, pkg2.Parameter1);
+				}
+				return;
 			}
+			if (isLoad && !game.Players.ContainsKey(pkg2.Parameter1))
+			{
+				ilog_1.WarnFormat("[MatchTrace] Road→Fight LOAD DROP player not found gameId={0} p1={1} keys=[{2}]",
+					pkg.ClientID, pkg2.Parameter1, string.Join(",", game.Players.Keys));
+			}
+			game.ProcessData(pkg2);
         }
 
         public void SendRSAKey(byte[] m, byte[] e)
@@ -449,6 +460,15 @@ namespace Fighting.Server
 				p.Parameter2 = 0;
 			}
 			p.WritePacket(pkg);
+			byte tankCmd = 0;
+			try
+			{
+				if (pkg != null && pkg.Code == 91 && pkg.Length > 20 && pkg.Buffer != null)
+					tankCmd = pkg.Buffer[20];
+			}
+			catch { }
+			ilog_1.WarnFormat("[MatchTrace] Fight→Road SendToRoom room={0} outer=67 code={1} tankCmd={2} len={3} except={4}",
+				roomId, pkg?.Code, tankCmd, pkg?.Length, except?.PlayerCharacter?.NickName ?? "-");
 			SendTCP(p);
         }
 
@@ -460,6 +480,8 @@ namespace Fighting.Server
 			pkg.WriteInt((int)game.RoomType);
 			pkg.WriteInt((int)game.GameType);
 			pkg.WriteInt(game.TimeType);
+			ilog_1.WarnFormat("[MatchTrace] Fight→Road SendStartGame room={0} gameId={1} type={2}/{3}",
+				roomId, game.Id, game.RoomType, game.GameType);
 			SendTCP(pkg);
         }
 

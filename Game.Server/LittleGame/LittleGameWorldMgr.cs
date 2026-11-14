@@ -52,8 +52,8 @@ namespace Game.Server.LittleGame
             {
                 InitializeMap();
                 ReloadConfig();
-                // Schedule timer is commented out in TaskMgr — keep event always open for private server.
-                OpenLittleGameSetup();
+                // Do not OpenLittleGameSetup during Road boot — bogu spawn/fanout stalled MAIN and blocked AutoBot.
+                IsOpen = false;
                 result = true;
             }
             catch (Exception e)
@@ -90,21 +90,19 @@ namespace Game.Server.LittleGame
         {
             try
             {
-                lock (ScenariObjects)
+                boguCount2 = 0;
+                boguCount = 0;
+                playerCount = 0;
+                // Do not hold ScenariObjects lock across BoguGenerator (nested lock + packet fanout can stall MAIN startup)
+                BoguGenerator();
+                _ScanTimer = new Timer(ScanTimerProc, null, 60000, 60000);
+                _SpawTimer = new Timer(SpawnTimerProc, null, 60000, 60000);
+                IsOpen = true;
+                log.Warn("LittleGame Opened");
+                foreach (var player in WorldMgr.GetAllPlayers())
                 {
-                    boguCount2 = 0;
-                    boguCount = 0;
-                    playerCount = 0;
-                    BoguGenerator();
-                    _ScanTimer = new Timer(ScanTimerProc, null, 60000, 60000);
-                    _SpawTimer = new Timer(SpawnTimerProc, null, 60000, 60000);
-                    IsOpen = true;
-                    log.Warn("LittleGame Opened");
-                    foreach (var player in WorldMgr.GetAllPlayers())
-                    {
-                        player.Actives.SendLittleGameActived();
-                        player.Out.SendMessage(eMessageType.Normal, "Sự kiện Đại chiến Hút Gà đã bắt đầu! Hãy tham gia từ mục Đặc Sắc tại sảnh game nhé!");
-                    }
+                    player.Actives.SendLittleGameActived();
+                    player.Out.SendMessage(eMessageType.Normal, "Sự kiện Đại chiến Hút Gà đã bắt đầu! Hãy tham gia từ mục Đặc Sắc tại sảnh game nhé!");
                 }
             }
             catch (Exception e)
@@ -170,16 +168,25 @@ namespace Game.Server.LittleGame
 
         private static void BoguGenerator()
         {
+            if (Map?.points == null || Map.points.Count == 0)
+            {
+                log.Warn("LittleGame BoguGenerator skipped: map has no walkable points");
+                return;
+            }
             if (boguCount > Config.MaxBoguCount)
                 return;
+
+            int spawn = Config.MaxBoguCount;
+            if (spawn > 80)
+                spawn = 80; // hard cap so Init cannot stall MAIN forever
 
             lock (ScenariObjects)
             {
                 RemoveAllBogu();
-                for (int i = 0; i < Config.MaxBoguCount; i++)
+                for (int i = 0; i < spawn; i++)
                 {
                     int rand = ThreadSafeRandom.NextStatic(0, 1000);
-                    Point p = Map.points[ThreadSafeRandom.NextStatic(Map.points.Count - 1)];
+                    Point p = Map.points[ThreadSafeRandom.NextStatic(0, Map.points.Count)];
                     int id = 1000000000 + boguCount2;
                     Bogu b;
                     if (rand > 900 && rand < 920)

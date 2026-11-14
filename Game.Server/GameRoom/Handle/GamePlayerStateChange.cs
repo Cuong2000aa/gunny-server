@@ -22,7 +22,9 @@ namespace Game.Server.GameRoom.Handle
 			{
 				byte state = packet.ReadByte();
 				RoomMgr.UpdatePlayerState(Player, state);
-				log.Error(string.Concat(Player.PlayerCharacter.NickName, " -> to State ", state.ToString()));
+				// state 2 = đang load trận; log WARN để lọc dễ hơn
+				log.WarnFormat("[Match] RoomState nick={0} state={1} room={2}",
+					Player.PlayerCharacter.NickName, state, Player.CurrentRoom?.RoomId);
 			}
 			return true;
         }

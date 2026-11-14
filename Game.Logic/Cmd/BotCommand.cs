@@ -95,31 +95,30 @@ namespace Game.Logic.Cmd
                 float time_s = 1.0f;
                 int boomcount = 1;
                 int delayy = 1000;
+                // Aim scatter: bot không được ballistics “tự trúng” quanh chân đối thủ
+                void ScatterAim(int missScale = 1)
+                {
+                    int dx = rd.Next(-140, 141) * missScale;
+                    int dy = rd.Next(-90, 91) * missScale;
+                    // ~35% lệch mạnh hơn (hụt rõ)
+                    if (rd.Next(0, 100) < 35)
+                    {
+                        dx += rd.Next(-220, 221);
+                        dy += rd.Next(-140, 141);
+                    }
+                    d = target.X + dx;
+                    e = target.Y + dy;
+                }
                 if (Math.Abs(player.X - target.X) > 60)
                 {
                     if (nt == 0)
                     {
-                        int ngu = rd.Next(0, 2);
-                        if (ngu == 0)
-                        {
-                            boomcount = 1;
-                            a = 0;
-                            b = 0;
-                            c = 0;
-                            d = target.X;
-                            e = target.Y;
-                            k = 1;
-                        }
-                        else
-                        {
-                            boomcount = 1;
-                            a = 0;
-                            b = 0;
-                            c = 0;
-                            d = target.X + rd.Next(1, 3) * rd.Next(-10, 20);
-                            e = target.Y;
-                            k = 1;
-                        }
+                        boomcount = 1;
+                        a = 0;
+                        b = 0;
+                        c = 0;
+                        ScatterAim(1);
+                        k = 1;
                     }
                     else
                     {
@@ -132,8 +131,7 @@ namespace Game.Logic.Cmd
                                 a = 0;
                                 b = 0;
                                 c = 0;
-                                d = target.X + rd.Next(1, 5) * rd.Next(-10, 20);
-                                e = target.Y;
+                                ScatterAim(1);
                                 k = 1;
                             }
                             else
@@ -142,8 +140,7 @@ namespace Game.Logic.Cmd
                                 a = 10001;
                                 b = 10003;
                                 c = 10004;
-                                d = target.X + rd.Next(1, 2) * rd.Next(-10, 20);
-                                e = target.Y;
+                                ScatterAim(1);
                                 k = 3;
                             }
                         }
@@ -157,7 +154,8 @@ namespace Game.Logic.Cmd
                             a = 0;
                             b = 10016;
                             c = 10010;
-                            e = target.Y - 100;
+                            e = target.Y - 100 + rd.Next(-80, 81);
+                            d += rd.Next(-160, 161);
                             k = 1;
                         }
                         else
@@ -166,8 +164,7 @@ namespace Game.Logic.Cmd
                             a = 10001;
                             b = 10004;
                             c = 10004;
-                            d = target.X + rd.Next(1, 3) * rd.Next(-10, 20);
-                            e = target.Y;
+                            ScatterAim(1);
                             k = 3;
                         }
                     }
@@ -218,41 +215,39 @@ namespace Game.Logic.Cmd
                         time_s = 3.5f;
                     }
                 }
-                else
-                {
-                    rd = new Random();
-                    int nt2 = rd.Next(0, 4);
-                    if (nt2 == 0 && player.TurnNum >= 2)
-                    {
-                        boomcount = 1;
-                        b = 10010;
-                        c = 10016;
-                        e = player.Y + rd.Next(-10, 10) * 20;
-                        k = 1;
-                        time_s = 4.0f;
-                        if (player.X > 700)
-                            d = (player.X - 600);
-                        else
-                            d = (player.X + 600);
-                        ItemTemplateInfo itemTemplate1 = ItemMgr.FindItemTemplate(b);
-                        ItemTemplateInfo itemTemplate2 = ItemMgr.FindItemTemplate(c);
-                        //player.UseItem(itemTemplate2);
-                        //player.UseItem(itemTemplate1);
-                        player.CallFuction(delegate { player.UseItem(itemTemplate2); }, delayy);
-                        player.CallFuction(delegate { player.UseItem(itemTemplate1); }, delayy + 500);
-
-                    }
                     else
                     {
-                        boomcount = 1;
-                        a = 0;
-                        b = 0;
-                        c = 0;
-                        d = target.X + rd.Next(1, 3) * rd.Next(-10, 20);
-                        e = target.Y;
-                        k = 1;
+                        rd = new Random();
+                        int nt2 = rd.Next(0, 4);
+                        if (nt2 == 0 && player.TurnNum >= 2)
+                        {
+                            boomcount = 1;
+                            b = 10010;
+                            c = 10016;
+                            e = player.Y + rd.Next(-10, 10) * 20;
+                            k = 1;
+                            time_s = 4.0f;
+                            if (player.X > 700)
+                                d = (player.X - 600);
+                            else
+                                d = (player.X + 600);
+                            d += rd.Next(-120, 121);
+                            ItemTemplateInfo itemTemplate1 = ItemMgr.FindItemTemplate(b);
+                            ItemTemplateInfo itemTemplate2 = ItemMgr.FindItemTemplate(c);
+                            player.CallFuction(delegate { player.UseItem(itemTemplate2); }, delayy);
+                            player.CallFuction(delegate { player.UseItem(itemTemplate1); }, delayy + 500);
+
+                        }
+                        else
+                        {
+                            boomcount = 1;
+                            a = 0;
+                            b = 0;
+                            c = 0;
+                            ScatterAim(1);
+                            k = 1;
+                        }
                     }
-                }
 
                 int delayDisX = game.GetDelayDistance(player.X, target.X, 6) + 1200;
                 player.CallFuction(delegate

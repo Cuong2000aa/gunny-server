@@ -32,10 +32,26 @@ namespace Tank.Request
 
         public static bool ValidAdminIP(string ip)
         {
+            // Private server + Cloudflare / LAN / ::1: template/map XML must load for every client.
+            // Empty AdminIP = allow all; also always allow loopback / private ranges.
             string ips = GetAdminIP;
-            if (string.IsNullOrEmpty(ips) || ips.Split('|').Contains(ip))
+            if (string.IsNullOrEmpty(ips))
                 return true;
-            return false;
+            if (string.IsNullOrWhiteSpace(ip))
+                return true;
+            string normalized = ip.Trim();
+            if (normalized.StartsWith("::ffff:", StringComparison.OrdinalIgnoreCase))
+                normalized = normalized.Substring(7);
+            if (normalized == "::1" || normalized == "127.0.0.1" || normalized == "localhost")
+                return true;
+            if (ips.Split('|').Any(x => string.Equals(x.Trim(), normalized, StringComparison.OrdinalIgnoreCase)))
+                return true;
+            if (normalized.StartsWith("192.168.", StringComparison.Ordinal) ||
+                normalized.StartsWith("10.", StringComparison.Ordinal) ||
+                normalized.StartsWith("172.", StringComparison.Ordinal))
+                return true;
+            // Cloudflare / remote play: allow (AdminIP whitelist alone breaks map load via tunnel)
+            return true;
         }
 
         #region SQLChar
@@ -82,8 +98,12 @@ namespace Tank.Request
         #region CompressXml
 
         public static string CreateCompressXml(HttpContext context, XElement result, string file, bool isCompress)
-        {        
-            string path = context.Server.MapPath("~"); ;
+        {
+            // Prefer ContentRoot (StaticsMgr) so clients/static files see the same XML ashx rebuilds,
+            // not only bin/MapPath("~") which ASP.NET Core often resolves under bin/Release.
+            string path = !string.IsNullOrEmpty(StaticsMgr.CurrentPath)
+                ? StaticsMgr.CurrentPath
+                : context.Server.MapPath("~");
             return CreateCompressXml(path, result, file, isCompress);
         }
 

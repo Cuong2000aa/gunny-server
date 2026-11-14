@@ -69,6 +69,7 @@ namespace Game.Logic
 			case 97:
 			case 98:
 			case 120:
+			case 298: // LEGEND-Thiên Sứ Ban Phúc
 			case 10009:
 				return BombType.CURE;
 			case 110:
@@ -175,6 +176,9 @@ namespace Game.Logic
 			}
 			candidates.Add(Path.Combine(baseDir, "bomb", $"{ball.ID}.bomb"));
 			candidates.Add(Path.Combine("bomb", $"{ball.ID}.bomb"));
+			// Last resort only — wrong size dig if used for every missing crater
+			candidates.Add(Path.Combine(baseDir, "bomb", "4.bomb"));
+			candidates.Add(Path.Combine("bomb", "4.bomb"));
 
 			foreach (string path in candidates)
 			{

@@ -6,6 +6,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="application-name" content="Gunny II">
+    <meta name="apple-mobile-web-app-title" content="Gunny II">
+    <meta name="theme-color" content="#e94560">
+    <meta name="msapplication-TileColor" content="#16213e">
+    <meta name="msapplication-TileImage" content="/web/pwa/icon-192.png">
+    <link rel="manifest" href="/web/manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="48x48" href="/web/pwa/icon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/web/pwa/icon-192.png">
+    <link rel="apple-touch-icon" href="/web/pwa/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/web/pwa/icon-48.png">
     <title>Gunny II - Chiến Trường Gà (.NET 8 macOS & Mobile Web)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
@@ -233,6 +243,12 @@
             }
         }
 
+        /* Android (RG557 có nút thật): không dùng phím ảo trên màn hình */
+        html.is-android #virtual-gamepad,
+        html.is-android #btn-toggle-gamepad {
+            display: none !important;
+        }
+
         /* Virtual Gamepad for Mobile */
         #virtual-gamepad {
             width: 100%;
@@ -349,6 +365,56 @@
             user-select: all;
         }
     </style>
+    <!-- Remote console: đẩy console/Ruffle log của thiết bị về Tank.Request /clientlog -->
+    <script>
+        (function () {
+            var queue = [];
+            var sid = Math.random().toString(36).slice(2, 8);
+            var ua = navigator.userAgent || "";
+            var dev = /Android/i.test(ua) ? "android" : (/iPhone|iPad/i.test(ua) ? "ios" : "pc");
+            function fmt(a) {
+                var out = [];
+                for (var i = 0; i < a.length; i++) {
+                    var v = a[i];
+                    try {
+                        if (v instanceof Error) out.push(v.name + ": " + v.message + " " + (v.stack || ""));
+                        else if (typeof v === "object") out.push(JSON.stringify(v));
+                        else out.push(String(v));
+                    } catch (e) { out.push(String(v)); }
+                }
+                return out.join(" ").slice(0, 4000);
+            }
+            function push(level, msg) {
+                if (queue.length > 2000) return;
+                queue.push(new Date().toISOString().slice(11, 23) + " " + level + " " + msg);
+            }
+            ["log", "info", "warn", "error", "debug"].forEach(function (lv) {
+                var orig = console[lv];
+                console[lv] = function () {
+                    try { push(lv.toUpperCase(), fmt(arguments)); } catch (e) {}
+                    if (orig) return orig.apply(console, arguments);
+                };
+            });
+            window.addEventListener("error", function (e) {
+                push("ONERROR", (e.message || "") + " @" + (e.filename || "") + ":" + (e.lineno || "") + " " + (e.error && e.error.stack || ""));
+            });
+            window.addEventListener("unhandledrejection", function (e) {
+                push("REJECT", fmt([e.reason]));
+            });
+            document.addEventListener("visibilitychange", function () { push("PAGE", "hidden=" + document.hidden); });
+            window.addEventListener("pagehide", function () { push("PAGE", "pagehide"); flush(true); });
+            function flush(beacon) {
+                if (!queue.length) return;
+                var body = JSON.stringify({ sid: sid, dev: dev, lines: queue.splice(0, queue.length) });
+                try {
+                    if (beacon && navigator.sendBeacon) { navigator.sendBeacon("/clientlog", body); return; }
+                    fetch("/clientlog", { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true }).catch(function () {});
+                } catch (e) {}
+            }
+            setInterval(function () { flush(false); }, 1000);
+            push("PAGE", "start ua=" + ua);
+        })();
+    </script>
     <!-- Configure Ruffle BEFORE loading script -->
     <script>
         // Cloudflare / reverse-proxy: bỏ :443/:80 (và port rỗng). LAN vẫn dùng :828.
@@ -390,14 +456,14 @@
             });
         }
 
-        // iOS: giới hạn DPR để canvas Ruffle nhẹ hơn (Chrome iOS hay scale 2–3x)
-        if (isIOS && window.devicePixelRatio > 2) {
-            try {
-                Object.defineProperty(window, "devicePixelRatio", { get: function () { return 2; } });
-            } catch (e) {}
-        }
+        // Giữ native DPR (không cắt resolution). Mượt bằng quality + frameRate, không giảm nét.
+        // (Trước đây iOS cap DPR=2 → nhẹ máy nhưng mờ hơn.)
 
-        var ruffleQuality = isIOS ? "low" : (isMobile ? "medium" : "high");
+        // Cố định 30 FPS (không cho đổi). Hơi nhanh hơn SWF gốc ~25.
+        var ruffleFrameRate = 30;
+        window.__gunnyFps = 30;
+        // Chất lượng ảnh cao nhất (Flash quality=best / MSAA cao). Không cắt DPR.
+        var ruffleQuality = "best";
         var ruffleLetterbox = isMobile ? "off" : "on";
 
         // publicPath bắt buộc: không thì WASM/chunk bị request nhầm /web/*.wasm (404 → đen)
@@ -436,16 +502,17 @@
             })(),
             allowScriptAccess: true,
             quality: ruffleQuality,
+            frameRate: ruffleFrameRate,
             letterbox: ruffleLetterbox,
             scale: "showAll",
             forceScale: true,
             forceAlign: true,
             warnOnUnsupportedContent: false,
             // Giảm log / polyfill nặng trên mobile
-            logLevel: isMobile ? "warn" : "info",
+            logLevel: "info",
             maxExecutionDuration: isIOS ? 60 : 90
         };
-        console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
+        console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "fps=", ruffleFrameRate, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
     </script>
     <!-- Local Ruffle sync-ish (cache-bust); CDN fallback -->
     <script>
@@ -486,8 +553,10 @@
     </header>
 
     <div class="controls">
-        <label for="username">Tài khoản:</label>
-        <input type="text" id="username" value="admin" style="width: 110px;" />
+        <span class="user-label">Tài khoản:</span>
+        <input type="text" id="username" value="admin" style="width: 110px;"
+               autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+               inputmode="none" readonly tabindex="-1" enterkeyhint="done" />
         <button onclick="launchWithRuffle()">▶ Tải Lại Game</button>
         
         <div class="scale-selector">
@@ -498,7 +567,7 @@
             <button class="btn-scale" data-scale="full" onclick="toggleFullscreen()">⛶ Toàn Màn</button>
         </div>
 
-        <button class="btn-alt" onclick="toggleGamepad()">🎮 Phím Ảo</button>
+        <button class="btn-alt" id="btn-toggle-gamepad" onclick="toggleGamepad()">🎮 Phím Ảo</button>
         <span id="pad-status" title="Trạng thái tay cầm / RG557" style="margin-left:8px;padding:4px 10px;border-radius:6px;font-size:12px;background:#6c757d;color:#fff;">Tay cầm: chờ…</span>
         <button id="btnToggleMax" style="background:#28a745; margin-left:8px;" onclick="toggleMaxResources()">⚡ Max Tài Nguyên: [BẬT]</button>
     </div>
@@ -676,12 +745,14 @@
                 backgroundColor: "#000000",
                 preferredRenderer: "wgpu-webgl",
                 deviceFontRenderer: "canvas",
-                quality: iosNow ? "low" : (mobileNow ? "medium" : "high"),
+                quality: "best",
+                frameRate: 30,
                 letterbox: mobileNow ? "off" : "on",
                 scale: "showAll",
                 forceScale: true,
                 autoplay: "on",
                 socketProxy: sockProxy,
+                logLevel: "info",
                 parameters: {
                     user: document.getElementById("username").value.trim() || "admin",
                     key: "Gunny2026",
@@ -689,6 +760,7 @@
                 }
             }).then(function () {
                 console.log("[Gunny] SWF loaded OK");
+                dismissMobileKeyboard();
                 document.addEventListener("visibilitychange", function () {
                     try {
                         if (document.hidden) {
@@ -699,6 +771,125 @@
                     } catch (e) {}
                 }, { passive: true });
             });
+        }
+
+        /** Mobile keyboard: chỉ blur khi INPUT thật được focus — KHÔNG cướp focus Ruffle (làm treo màn vàng). */
+        var allowAccountEdit = false;
+
+        function dismissMobileKeyboard() {
+            try {
+                var ae = document.activeElement;
+                if (!ae) return;
+                if (allowAccountEdit && ae.id === "username") return;
+                var tag = (ae.tagName || "").toUpperCase();
+                if (tag === "INPUT" || tag === "TEXTAREA" || ae.isContentEditable) {
+                    if (ae.id !== "username") {
+                        try {
+                            ae.setAttribute("readonly", "readonly");
+                            ae.setAttribute("inputmode", "none");
+                        } catch (e) {}
+                    }
+                    try { ae.blur(); } catch (e) {}
+                }
+            } catch (e) {}
+        }
+
+        function setupMobileKeyboardGuard() {
+            var userInp = document.getElementById("username");
+            if (userInp) {
+                userInp.readOnly = true;
+                userInp.setAttribute("readonly", "readonly");
+                userInp.setAttribute("inputmode", "none");
+                userInp.tabIndex = -1;
+                userInp.addEventListener("pointerdown", function () {
+                    allowAccountEdit = true;
+                    userInp.readOnly = false;
+                    userInp.removeAttribute("readonly");
+                    userInp.setAttribute("inputmode", "text");
+                    userInp.tabIndex = 0;
+                });
+                userInp.addEventListener("blur", function () {
+                    allowAccountEdit = false;
+                    userInp.readOnly = true;
+                    userInp.setAttribute("readonly", "readonly");
+                    userInp.setAttribute("inputmode", "none");
+                    userInp.tabIndex = -1;
+                });
+                userInp.addEventListener("keydown", function (ev) {
+                    if (ev.key === "Enter") userInp.blur();
+                });
+            }
+
+            if (!isMobile) return;
+
+            // Ruffle giữ 1 ô input ẩn trong shadow DOM của <ruffle-player>. Flash tự focus TextField chat
+            // ngay trong cùng cú chạm nút vào/tạo phòng, nên không phân biệt được bằng thời gian chạm.
+            // Luôn giữ inputmode="none" (không bật bàn phím, phím vật lý/tay cầm vẫn vào Ruffle);
+            // chỉ mở bàn phím khi bấm nút ⌨.
+            var keyboardUnlocked = false;
+
+            function ruffleInputs() {
+                var out = [];
+                document.querySelectorAll("ruffle-player, ruffle-object, ruffle-embed").forEach(function (p) {
+                    if (!p.shadowRoot) return;
+                    p.shadowRoot.querySelectorAll("input, textarea").forEach(function (i) { out.push(i); });
+                });
+                return out;
+            }
+
+            function applyInputMode() {
+                var want = keyboardUnlocked ? "text" : "none";
+                ruffleInputs().forEach(function (i) {
+                    if (i.getAttribute("inputmode") !== want) i.setAttribute("inputmode", want);
+                    if (!i.__gunnyKb) {
+                        i.__gunnyKb = true;
+                        i.addEventListener("blur", function () {
+                            if (keyboardUnlocked) {
+                                keyboardUnlocked = false;
+                                applyInputMode();
+                            }
+                        });
+                    }
+                });
+            }
+            setInterval(applyInputMode, 300);
+
+            document.addEventListener("focusin", function (ev) {
+                if (keyboardUnlocked) return;
+                var t = (ev.composedPath && ev.composedPath()[0]) || ev.target;
+                if (!t || t.id === "username") return;
+                var tag = (t.tagName || "").toUpperCase();
+                if (tag !== "INPUT" && tag !== "TEXTAREA") return;
+                if (t.getAttribute("inputmode") === "none") return;
+                t.setAttribute("inputmode", "none");
+                try { t.blur(); t.focus({ preventScroll: true }); } catch (e) {}
+                console.log("[Keyboard] blocked auto keyboard");
+            }, true);
+
+            var kb = document.createElement("div");
+            kb.id = "btn-keyboard";
+            kb.textContent = "⌨";
+            kb.title = "Mở bàn phím để chat (bấm vào ô chat trước)";
+            kb.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:9999;width:40px;height:40px;border-radius:50%;"
+                + "background:rgba(0,0,0,.55);color:#fff;font-size:22px;line-height:40px;text-align:center;user-select:none;-webkit-user-select:none;";
+            kb.addEventListener("pointerdown", function (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                var inputs = ruffleInputs();
+                if (!inputs.length) return;
+                if (keyboardUnlocked) {
+                    keyboardUnlocked = false;
+                    applyInputMode();
+                    try { inputs[0].blur(); inputs[0].focus({ preventScroll: true }); } catch (e) {}
+                    return;
+                }
+                try { inputs[0].blur(); } catch (e) {}
+                keyboardUnlocked = true;
+                applyInputMode();
+                try { inputs[0].focus({ preventScroll: true }); } catch (e) {}
+                console.log("[Keyboard] opened by user");
+            });
+            document.body.appendChild(kb);
         }
 
         function launchWithRuffle() {
@@ -769,6 +960,7 @@
         document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 
         function toggleGamepad() {
+            if (isAndroid) return;
             var pad = document.getElementById("virtual-gamepad");
             pad.style.display = (pad.style.display === "none") ? "flex" : "none";
         }
@@ -984,7 +1176,7 @@
                 var data = await res.json();
                 if (data.isMax) {
                     btn.style.background = "#28a745";
-                    btn.innerHTML = "⚡ Max Tài Nguyên: [BẬT] (Lv 65)";
+                    btn.innerHTML = "⚡ Max Tài Nguyên: [BẬT] (Lv 60)";
                 } else {
                     btn.style.background = "#6c757d";
                     btn.innerHTML = "🛡️ Max Tài Nguyên: [TẮT] (Lv 30)";
@@ -1008,6 +1200,17 @@
             }
         }
 
+        // PWA / Chrome “Cài đặt” + lối tắt dùng icon /web/pwa/*
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/web/sw.js", { scope: "/web/" }).then(function (reg) {
+                    console.log("[PWA] SW registered", reg.scope);
+                }).catch(function (err) {
+                    console.warn("[PWA] SW register failed", err);
+                });
+            });
+        }
+
         // Tự động khởi chạy khi vào trang
         window.addEventListener("DOMContentLoaded", function() {
             var savedPreset = "100";
@@ -1015,6 +1218,7 @@
                 savedPreset = localStorage.getItem("gunny_scale_preset") || "100";
             } catch(e) {}
             setScalePreset(savedPreset);
+            setupMobileKeyboardGuard();
             launchWithRuffle();
             updateResourceStatus();
         });

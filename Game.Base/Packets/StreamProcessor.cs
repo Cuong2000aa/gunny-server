@@ -297,7 +297,7 @@ namespace Game.Base.Packets
             {
                 packet.WriteHeader();
                 packet.Offset = 0;
-                if (!m_client.Socket.Connected)
+                if (m_client.Socket == null || !m_client.Socket.Connected)
                 {
                     return;
                 }

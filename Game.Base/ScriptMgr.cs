@@ -44,7 +44,8 @@ namespace Game.Server.Managers
 			ArrayList files = ParseDirectory(new DirectoryInfo(path), compileVB ? "*.vb" : "*.cs", deep: true);
 			if (files.Count == 0)
 			{
-				return true;
+				// .NET 8: no scripts/*.cs — load prebuilt GameServerScripts.dll (PVE AI).
+				return TryLoadPrebuiltScriptsDll(dllName);
 			}
 			if (File.Exists(dllName))
 			{
@@ -100,41 +101,7 @@ namespace Game.Server.Managers
 					log.Error("CompileScripts", e);
 				}
 				// .NET Core/macOS: CodeDom C# compiler unsupported — load prebuilt DLL if present
-				try
-				{
-					string normalized = (dllName ?? string.Empty).Replace('\\', Path.DirectorySeparatorChar);
-					string fileName = Path.GetFileName(normalized);
-					if (string.IsNullOrEmpty(fileName))
-					{
-						fileName = "GameServerScripts.dll";
-					}
-					string[] candidates =
-					{
-						Path.IsPathRooted(normalized) ? normalized : Path.Combine(Directory.GetCurrentDirectory(), normalized),
-						Path.Combine(AppContext.BaseDirectory, fileName),
-						Path.Combine(Directory.GetCurrentDirectory(), fileName),
-						Path.Combine(Directory.GetCurrentDirectory(), "bin", "Debug", "net8.0", fileName),
-					};
-					foreach (string fallback in candidates)
-					{
-						if (string.IsNullOrEmpty(fallback) || !File.Exists(fallback))
-						{
-							continue;
-						}
-						Assembly asm = Assembly.LoadFrom(Path.GetFullPath(fallback));
-						InsertAssembly(asm);
-						log.ErrorFormat("Loaded prebuilt scripts assembly: {0}", fallback);
-						return true;
-					}
-					log.ErrorFormat("Prebuilt scripts DLL not found (cwd={0}, base={1}, target={2})", Directory.GetCurrentDirectory(), AppContext.BaseDirectory, dllName);
-				}
-				catch (Exception loadEx)
-				{
-					if (log.IsErrorEnabled)
-					{
-						log.Error("Load prebuilt GameServerScripts.dll failed", loadEx);
-					}
-				}
+				return TryLoadPrebuiltScriptsDll(dllName);
 			}
 			if (res != null && !res.Errors.HasErrors)
 			{
@@ -216,6 +183,55 @@ namespace Game.Server.Managers
 			{
 				return m_scripts.Remove(ass.FullName);
 			}
+        }
+
+        private static bool TryLoadPrebuiltScriptsDll(string dllName)
+        {
+			try
+			{
+				// ScriptCompilationTarget is often a comma-list of refs, not the scripts DLL name.
+				string fileName = "GameServerScripts.dll";
+				if (!string.IsNullOrWhiteSpace(dllName) && !dllName.Contains(',') &&
+				    dllName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+				{
+					fileName = Path.GetFileName(dllName.Replace('\\', Path.DirectorySeparatorChar));
+				}
+				string[] candidates =
+				{
+					Path.Combine(AppContext.BaseDirectory, fileName),
+					Path.Combine(Directory.GetCurrentDirectory(), fileName),
+					Path.Combine(Directory.GetCurrentDirectory(), "bin", "Release", "net8.0", fileName),
+					Path.Combine(Directory.GetCurrentDirectory(), "bin", "Debug", "net8.0", fileName),
+					Path.Combine(AppContext.BaseDirectory, "GameServerScripts.dll"),
+					Path.Combine(Directory.GetCurrentDirectory(), "GameServerScripts.dll"),
+				};
+				foreach (string fallback in candidates.Distinct(StringComparer.OrdinalIgnoreCase))
+				{
+					if (string.IsNullOrEmpty(fallback) || !File.Exists(fallback))
+					{
+						continue;
+					}
+					Assembly asm = Assembly.LoadFrom(Path.GetFullPath(fallback));
+					InsertAssembly(asm);
+					if (log.IsInfoEnabled)
+					{
+						log.InfoFormat("Loaded prebuilt scripts assembly: {0}", fallback);
+					}
+					return true;
+				}
+				if (log.IsErrorEnabled)
+				{
+					log.ErrorFormat("Prebuilt scripts DLL not found (cwd={0}, base={1}, target={2})", Directory.GetCurrentDirectory(), AppContext.BaseDirectory, dllName);
+				}
+			}
+			catch (Exception loadEx)
+			{
+				if (log.IsErrorEnabled)
+				{
+					log.Error("Load prebuilt GameServerScripts.dll failed", loadEx);
+				}
+			}
+			return false;
         }
     }
 }

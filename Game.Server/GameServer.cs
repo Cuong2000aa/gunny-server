@@ -1353,45 +1353,33 @@ namespace Game.Server
                 {
                     return false;
                 }
-                if (!InitComponent(LittleGameWorldMgr.Init(), "LittleGameWorldMgr Init"))
+                // Optional systems — never block AutoBot/Fighting link. InitComponent+log4net was stalling MAIN here.
+                try
                 {
-                    return false;
+                    LittleGameWorldMgr.Init();
+                    TaskMgr.Init();
+                    AccumulActiveLoginMgr.Init();
+                    NewTitleMgr.Init();
+                    ConsortiaTaskMgr.Init();
+                    ActiveMgr.Init();
+                    WorldEventMgr.Init();
+                    ActiveSystemMgr.Init();
+                    FightSpiritTemplateMgr.Init();
+                    ClothGroupTemplateInfoMgr.Init();
+                    ClothPropertyTemplateInfoMgr.Init();
+                    TotemMgr.Init();
+                    TotemHonorMgr.Init();
+                    Console.WriteLine("Optional mgrs init done");
                 }
-                if (!InitComponent(TaskMgr.Init(), "TaskMgr Init"))
+                catch (Exception optEx)
                 {
-                    return false;
+                    Console.WriteLine("Optional mgrs init error: " + optEx.Message);
                 }
-                if (!InitComponent(AccumulActiveLoginMgr.Init(), "AccumulActiveLoginMgr Init"))
-                {
-                    return false;
-                }
-                if (!InitComponent(NewTitleMgr.Init(), "NewTitleMgr Init"))
-                {
-                    return false;
-                }
-                if (!InitComponent(ConsortiaTaskMgr.Init(), "ConsortiaTaskMgr.Init"))
-                    return false;
-                if (!InitComponent(ActiveMgr.Init(), "ActiveMgr Init"))
-                    return false;
-                if (!InitComponent(WorldEventMgr.Init(), "WorldEventMgr Init"))
-                    return false;
-                if (!InitComponent(ActiveSystemMgr.Init(), "ActiveSystemMgr Init"))
-                    return false;
-                if (!InitComponent(FightSpiritTemplateMgr.Init(), "FightSpiritTemplateMgr Init"))
-                    return false;
-                if (!InitComponent(ClothGroupTemplateInfoMgr.Init(), "ClothGroupTemplateInfoMgr Setup"))
-                    return false;
-                if (!InitComponent(ClothPropertyTemplateInfoMgr.Init(), "ClothPropertyTemplateInfoMgr Setup"))
-                    return false;
-                if (!InitComponent(TotemMgr.Init(), "TotemMgr Init"))
-                    return false;
-                if (!InitComponent(TotemHonorMgr.Init(), "TotemHonorMgr Init"))
-                    return false;
-                //if (!InitComponent(DailyLeagueAwardMgr.Init(), "DailyLeagueAwardMgr Init"))
-                //    return false;
                 RoomMgr.Start();
                 GameMgr.Start();
                 BattleMgr.Start();
+                // AutoBot matchmaking uses a second Fighting link; connect after BattleMgr so Fighting is up
+                RingStationMgr.ConnectBattle();
                 MacroDropMgr.Start();
                 if (!InitComponent(base.Start(), "base.Start()"))
                 {

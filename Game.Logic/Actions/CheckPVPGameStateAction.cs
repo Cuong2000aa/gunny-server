@@ -25,18 +25,31 @@ namespace Game.Logic.Actions
 			PVPGame pvp = game as PVPGame;
 			if (pvp != null)
 			{
+				log.WarnFormat("[MatchTrace] CheckState gameId={0} state={1} allComplete={2} turn={3}",
+					pvp.Id, game.GameState, pvp.IsAllComplete(), pvp.TurnIndex);
 				switch (game.GameState)
 				{
 					case eGameState.Inited:
+						log.WarnFormat("[MatchTrace] → Prepare gameId={0}", pvp.Id);
 						pvp.Prepare();
 						break;
 					case eGameState.Prepared:
+						log.WarnFormat("[MatchTrace] → StartLoading gameId={0}", pvp.Id);
 						pvp.StartLoading();
 						break;
 					case eGameState.Loading:
 						if (pvp.IsAllComplete())
 						{
+							log.WarnFormat("[MatchTrace] → StartGame (all loaded) gameId={0}", pvp.Id);
 							pvp.StartGame();
+						}
+						else
+						{
+							foreach (var pl in pvp.GetAllFightPlayers())
+							{
+								log.WarnFormat("[MatchTrace]   waiting nick={0} load={1}%",
+									pl?.PlayerDetail?.PlayerCharacter?.NickName, pl?.LoadingProcess);
+							}
 						}
 						break;
 					case eGameState.Playing:
@@ -44,19 +57,24 @@ namespace Game.Logic.Actions
 						{
 							if (pvp.TurnIndex >= 100 && pvp.RoomType == eRoomType.Match)
 							{
+								log.WarnFormat("[MatchTrace] → GameOver turnCap gameId={0} turn={1}", pvp.Id, pvp.TurnIndex);
 								pvp.GameOver();
 							}
 							if (pvp.CanGameOver())
 							{
+								log.WarnFormat("[MatchTrace] → GameOver canGameOver gameId={0}", pvp.Id);
 								pvp.GameOver();
 							}
 							else
 							{
+								log.WarnFormat("[MatchTrace] → NextTurn gameId={0} turn={1} current={2}",
+									pvp.Id, pvp.TurnIndex, pvp.CurrentPlayer?.PlayerDetail?.PlayerCharacter?.NickName);
 								pvp.NextTurn();
 							}
 						}
 						break;
 					case eGameState.GameOver:
+						log.WarnFormat("[MatchTrace] → Stop gameId={0}", pvp.Id);
 						pvp.Stop();
 						break;
 				}

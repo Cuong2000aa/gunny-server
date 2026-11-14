@@ -1545,66 +1545,73 @@ namespace Game.Base.Packets
 
         public void SendUpdateInventorySlot(PlayerInventory bag, int[] updatedSlots)
         {
-            if (m_gameClient.Player == null)
+            if (m_gameClient.Player == null || updatedSlots == null || updatedSlots.Length == 0)
             {
                 return;
             }
-            GSPacketIn pkg = new GSPacketIn((byte)ePackageType.GRID_GOODS, m_gameClient.Player.PlayerCharacter.ID, 10240);
-            pkg.WriteInt(bag.BagType);
-            pkg.WriteInt(updatedSlots.Length);
-            foreach (int num in updatedSlots)
+            // Chunk slots — one fat GRID_GOODS packet overflows client/Ruffle and icons only appear on hover.
+            const int chunkSize = 12;
+            for (int offset = 0; offset < updatedSlots.Length; offset += chunkSize)
             {
-                pkg.WriteInt(num);
-                ItemInfo itemAt = bag.GetItemAt(num);
-                if (itemAt == null)
+                int count = Math.Min(chunkSize, updatedSlots.Length - offset);
+                GSPacketIn pkg = new GSPacketIn((byte)ePackageType.GRID_GOODS, m_gameClient.Player.PlayerCharacter.ID, 10240);
+                pkg.WriteInt(bag.BagType);
+                pkg.WriteInt(count);
+                for (int i = 0; i < count; i++)
                 {
-                    pkg.WriteBoolean(val: false);
-                    continue;
+                    int num = updatedSlots[offset + i];
+                    pkg.WriteInt(num);
+                    ItemInfo itemAt = bag.GetItemAt(num);
+                    if (itemAt == null || itemAt.Template == null)
+                    {
+                        pkg.WriteBoolean(val: false);
+                        continue;
+                    }
+                    pkg.WriteBoolean(val: true);
+                    pkg.WriteInt(itemAt.UserID);
+                    pkg.WriteInt(itemAt.ItemID);
+                    pkg.WriteInt(itemAt.Count);
+                    pkg.WriteInt(itemAt.Place);
+                    pkg.WriteInt(itemAt.TemplateID);
+                    pkg.WriteInt(itemAt.AttackCompose);
+                    pkg.WriteInt(itemAt.DefendCompose);
+                    pkg.WriteInt(itemAt.AgilityCompose);
+                    pkg.WriteInt(itemAt.LuckCompose);
+                    pkg.WriteInt(itemAt.StrengthenLevel);
+                    pkg.WriteInt(itemAt.StrengthenExp);
+                    pkg.WriteBoolean(itemAt.IsBinds);
+                    pkg.WriteBoolean(itemAt.IsJudge);
+                    pkg.WriteDateTime(itemAt.BeginDate);
+                    pkg.WriteInt(itemAt.ValidDate);
+                    pkg.WriteString((itemAt.Color == null) ? "" : itemAt.Color);
+                    pkg.WriteString((itemAt.Skin == null) ? "" : itemAt.Skin);
+                    pkg.WriteBoolean(itemAt.IsUsed);
+                    pkg.WriteInt(itemAt.Hole1);
+                    pkg.WriteInt(itemAt.Hole2);
+                    pkg.WriteInt(itemAt.Hole3);
+                    pkg.WriteInt(itemAt.Hole4);
+                    pkg.WriteInt(itemAt.Hole5);
+                    pkg.WriteInt(itemAt.Hole6);
+                    pkg.WriteString(itemAt.Pic ?? "");
+                    pkg.WriteInt(itemAt.RefineryLevel);
+                    pkg.WriteDateTime(DateTime.Now.AddDays(5.0));
+                    pkg.WriteInt(itemAt.StrengthenTimes);
+                    pkg.WriteByte((byte)itemAt.Hole5Level);
+                    pkg.WriteInt(itemAt.Hole5Exp);
+                    pkg.WriteByte((byte)itemAt.Hole6Level);
+                    pkg.WriteInt(itemAt.Hole6Exp);
+                    pkg.WriteBoolean(itemAt.isGold);
+                    if (itemAt.isGold)
+                    {
+                        pkg.WriteInt(itemAt.goldValidDate);
+                        pkg.WriteDateTime(itemAt.goldBeginTime);
+                    }
+                    pkg.WriteString(itemAt.latentEnergyCurStr ?? "0,0,0,0");
+                    pkg.WriteString(itemAt.latentEnergyCurStr ?? "0,0,0,0");
+                    pkg.WriteDateTime(itemAt.latentEnergyEndTime == default ? DateTime.Now : itemAt.latentEnergyEndTime);
                 }
-                pkg.WriteBoolean(val: true);
-                pkg.WriteInt(itemAt.UserID);
-                pkg.WriteInt(itemAt.ItemID);
-                pkg.WriteInt(itemAt.Count);
-                pkg.WriteInt(itemAt.Place);
-                pkg.WriteInt(itemAt.TemplateID);
-                pkg.WriteInt(itemAt.AttackCompose);
-                pkg.WriteInt(itemAt.DefendCompose);
-                pkg.WriteInt(itemAt.AgilityCompose);
-                pkg.WriteInt(itemAt.LuckCompose);
-                pkg.WriteInt(itemAt.StrengthenLevel);
-                pkg.WriteInt(itemAt.StrengthenExp);
-                pkg.WriteBoolean(itemAt.IsBinds);
-                pkg.WriteBoolean(itemAt.IsJudge);
-                pkg.WriteDateTime(itemAt.BeginDate);
-                pkg.WriteInt(itemAt.ValidDate);
-                pkg.WriteString((itemAt.Color == null) ? "" : itemAt.Color);
-                pkg.WriteString((itemAt.Skin == null) ? "" : itemAt.Skin);
-                pkg.WriteBoolean(itemAt.IsUsed);
-                pkg.WriteInt(itemAt.Hole1);
-                pkg.WriteInt(itemAt.Hole2);
-                pkg.WriteInt(itemAt.Hole3);
-                pkg.WriteInt(itemAt.Hole4);
-                pkg.WriteInt(itemAt.Hole5);
-                pkg.WriteInt(itemAt.Hole6);
-                pkg.WriteString(itemAt.Pic);
-                pkg.WriteInt(itemAt.RefineryLevel);
-                pkg.WriteDateTime(DateTime.Now.AddDays(5.0));
-                pkg.WriteInt(itemAt.StrengthenTimes);
-                pkg.WriteByte((byte)itemAt.Hole5Level);
-                pkg.WriteInt(itemAt.Hole5Exp);
-                pkg.WriteByte((byte)itemAt.Hole6Level);
-                pkg.WriteInt(itemAt.Hole6Exp);
-                pkg.WriteBoolean(itemAt.isGold);
-                if (itemAt.isGold)
-                {
-                    pkg.WriteInt(itemAt.goldValidDate);
-                    pkg.WriteDateTime(itemAt.goldBeginTime);
-                }
-                pkg.WriteString(itemAt.latentEnergyCurStr);
-                pkg.WriteString(itemAt.latentEnergyCurStr);
-                pkg.WriteDateTime(itemAt.latentEnergyEndTime);
+                SendTCP(pkg);
             }
-            SendTCP(pkg);
         }
 
         public void SendUpdateCardData(CardInventory bag, int[] updatedSlots)

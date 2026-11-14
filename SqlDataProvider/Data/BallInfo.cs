@@ -58,6 +58,7 @@ namespace SqlDataProvider.Data
 			case 64:
 			case 97:
 			case 98:
+			case 298: // LEGEND-Thiên Sứ Ban Phúc
 			case 110:
 			case 117:
 			case 10001:

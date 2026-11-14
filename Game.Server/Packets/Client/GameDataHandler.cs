@@ -18,6 +18,7 @@ namespace Game.Server.Packets.Client
 				{
 					packet.Parameter1 = client.Player.GamePlayerId;
 				}
+				TraceLoad(client, packet);
 				if (client.Player.CurrentRoom.Game == null)
 				{
 					GSPacketIn gSPacketIn = packet.Clone();
@@ -45,6 +46,29 @@ namespace Game.Server.Packets.Client
 				client.Player.CurrentRoom.ProcessData(packet);
 			}
 			return 0;
+        }
+
+        private static void TraceLoad(GameClient client, GSPacketIn packet)
+        {
+			try
+			{
+				if (packet.Length <= 20 || packet.Buffer[20] != 16)
+				{
+					return;
+				}
+				var room = client.Player.CurrentRoom;
+				log4net.LogManager.GetLogger(typeof(GameDataHandler)).WarnFormat(
+					"[MatchTrace] Client→Road LOAD nick={0} p1={1} tempGameId={2} gamePlayerId={3} game={4} gameId={5}",
+					client.Player.PlayerCharacter?.NickName,
+					packet.Parameter1,
+					client.Player.TempGameId,
+					client.Player.GamePlayerId,
+					room.Game?.GetType().Name ?? "null",
+					room.Game?.Id);
+			}
+			catch
+			{
+			}
         }
 
         private bool UseBackupID(eRoomType roomType)

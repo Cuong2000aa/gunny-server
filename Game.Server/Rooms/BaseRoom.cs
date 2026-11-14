@@ -402,12 +402,41 @@ namespace Game.Server.Rooms
             {
                 return;
             }
+            byte tankCmd = 0;
+            bool trace = false;
+            try
+            {
+                if (pkg != null && pkg.Code == 91 && pkg.Length > 20 && pkg.Buffer != null)
+                {
+                    tankCmd = pkg.Buffer[20];
+                    trace = tankCmd == 16 || tankCmd == 99 || tankCmd == 103;
+                }
+            }
+            catch { }
+            int sent = 0;
             for (int i = 0; i < array.Length; i++)
             {
                 if (array[i] != null && array[i] != except)
                 {
+                    if (trace)
+                    {
+                        log4net.LogManager.GetLogger(typeof(BaseRoom)).WarnFormat(
+                            "[MatchTrace] Room.SendToAll room={0} → nick={1} id={2} tankCmd={3} len={4}",
+                            RoomId,
+                            array[i].PlayerCharacter?.NickName,
+                            array[i].PlayerId,
+                            tankCmd,
+                            pkg?.Length);
+                    }
                     array[i].Out.SendTCP(pkg);
+                    sent++;
                 }
+            }
+            if (trace)
+            {
+                log4net.LogManager.GetLogger(typeof(BaseRoom)).WarnFormat(
+                    "[MatchTrace] Room.SendToAll DONE room={0} tankCmd={1} sent={2}/{3}",
+                    RoomId, tankCmd, sent, PlayerCount);
             }
         }
 

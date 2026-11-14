@@ -772,71 +772,97 @@ namespace Game.Logic
         {
             if (base.GameState != eGameState.Loading)
             {
+                log.WarnFormat("[MatchTrace] StartGame SKIP gameId={0} state={1} (need Loading)", Id, GameState);
                 return;
             }
-            m_gameState = eGameState.Playing;
-            ClearWaitTimer();
-            SendSyncLifeTime();
-            List<Player> allFightPlayers = GetAllFightingPlayers();
-            MapPoint mapRandomPos = MapMgr.GetMapRandomPos(m_map.Info.ID);
-            //GSPacketIn pkg2 = new GSPacketIn(3);
-            //pkg2.WriteInt(2);
-            //pkg2.WriteString($"Kết hợp trận đấu thành công.");
-            //SendToAll(pkg2, null);
-            GSPacketIn pkg = new GSPacketIn(91);
-            pkg.WriteByte(99);
-            pkg.WriteInt(allFightPlayers.Count);
-            foreach (Player player in allFightPlayers)
+            try
             {
-                int kill = Load_Kill_Suit(player.PlayerDetail.PlayerCharacter.ID);
-                if (kill > 0)
+                log.WarnFormat("[MatchTrace] StartGame BEGIN gameId={0} map={1} players={2}", Id, m_map?.Info?.ID, PlayerCount);
+                m_gameState = eGameState.Playing;
+                ClearWaitTimer();
+                SendSyncLifeTime();
+                List<Player> allFightPlayers = GetAllFightingPlayers();
+                MapPoint mapRandomPos = MapMgr.GetMapRandomPos(m_map.Info.ID);
+                GSPacketIn pkg = new GSPacketIn(91);
+                pkg.WriteByte(99);
+                pkg.WriteInt(allFightPlayers.Count);
+                foreach (Player player in allFightPlayers)
                 {
-                    GSPacketIn pkg3 = new GSPacketIn(3);
-                    pkg3.WriteInt(2);
-                    pkg3.WriteString($"Trang bị VIP giúp [{player.PlayerDetail.PlayerCharacter.NickName}] giảm thương thêm {kill}%");
-                    SendToAll(pkg3, null);
+                    string nick = player?.PlayerDetail?.PlayerCharacter?.NickName ?? "?";
+                    try
+                    {
+                        int kill = Load_Kill_Suit(player.PlayerDetail.PlayerCharacter.ID);
+                        if (kill > 0)
+                        {
+                            GSPacketIn pkg3 = new GSPacketIn(3);
+                            pkg3.WriteInt(2);
+                            pkg3.WriteString($"Trang bị VIP giúp [{player.PlayerDetail.PlayerCharacter.NickName}] giảm thương thêm {kill}%");
+                            SendToAll(pkg3, null);
+                        }
+                        player.Reset();
+                        Point playerPoint = GetPlayerPoint(mapRandomPos, player.Team);
+                        player.SetXY(playerPoint);
+                        m_map.AddPhysical(player);
+                        player.StartMoving();
+                        player.StartGame();
+                        var buffs = player.PlayerDetail?.FightBuffs;
+                        int buffCount = buffs?.Count ?? 0;
+                        pkg.WriteInt(player.Id);
+                        pkg.WriteInt(player.X);
+                        pkg.WriteInt(player.Y);
+                        pkg.WriteInt(player.Direction);
+                        pkg.WriteInt(player.Blood);
+                        pkg.WriteInt(player.MaxBlood);
+                        pkg.WriteInt(player.Team);
+                        pkg.WriteInt(player.Weapon?.RefineryLevel ?? 0);
+                        pkg.WriteInt(50);
+                        pkg.WriteInt(player.Dander);
+                        pkg.WriteInt(buffCount);
+                        if (buffs != null)
+                        {
+                            foreach (BufferInfo fightBuff in buffs)
+                            {
+                                if (fightBuff == null) continue;
+                                pkg.WriteInt(fightBuff.Type);
+                                pkg.WriteInt(fightBuff.Value);
+                            }
+                        }
+                        pkg.WriteInt(0);
+                        pkg.WriteBoolean(player.IsFrost);
+                        pkg.WriteBoolean(player.IsHide);
+                        pkg.WriteBoolean(player.IsNoHole);
+                        pkg.WriteBoolean(val: false);
+                        pkg.WriteInt(0);
+                        log.WarnFormat("[MatchTrace] StartGame player ok nick={0} id={1} xy={2},{3} hp={4}/{5} weapon={6} buffs={7}",
+                            nick, player.Id, player.X, player.Y, player.Blood, player.MaxBlood,
+                            player.Weapon?.TemplateID, buffCount);
+                    }
+                    catch (Exception exPlayer)
+                    {
+                        log.Error($"[MatchTrace] StartGame PLAYER FAIL nick={nick}", exPlayer);
+                        throw;
+                    }
                 }
-                player.Reset();
-                Point playerPoint = GetPlayerPoint(mapRandomPos, player.Team);
-                player.SetXY(playerPoint);
-                m_map.AddPhysical(player);
-                player.StartMoving();
-                player.StartGame();
-                pkg.WriteInt(player.Id);
-                pkg.WriteInt(player.X);
-                pkg.WriteInt(player.Y);
-                pkg.WriteInt(player.Direction);
-                pkg.WriteInt(player.Blood);
-                pkg.WriteInt(player.MaxBlood);
-                pkg.WriteInt(player.Team);
-                pkg.WriteInt(player.Weapon.RefineryLevel);
-                pkg.WriteInt(50);
-                pkg.WriteInt(player.Dander);
-                pkg.WriteInt(player.PlayerDetail.FightBuffs.Count);
-                foreach (BufferInfo fightBuff in player.PlayerDetail.FightBuffs)
+                pkg.WriteDateTime(DateTime.Now);
+                log.WarnFormat("[MatchTrace] StartGame SEND cmd99 len={0} to all", pkg.Length);
+                SendToAll(pkg);
+                foreach (Player p in allFightPlayers)
                 {
-                    pkg.WriteInt(fightBuff.Type);
-                    pkg.WriteInt(fightBuff.Value);
+                    if (p.PlayerDetail.IsViewer)
+                    {
+                        p.Die();
+                    }
                 }
-                pkg.WriteInt(0);
-                pkg.WriteBoolean(player.IsFrost);
-                pkg.WriteBoolean(player.IsHide);
-                pkg.WriteBoolean(player.IsNoHole);
-                pkg.WriteBoolean(val: false);
-                pkg.WriteInt(0);
+                VaneLoading();
+                WaitTime(allFightPlayers.Count * 1000);
+                OnGameStarted();
+                log.WarnFormat("[MatchTrace] StartGame DONE gameId={0} state={1}", Id, GameState);
             }
-            pkg.WriteDateTime(DateTime.Now);
-            SendToAll(pkg);
-            foreach (Player p in allFightPlayers)
+            catch (Exception ex)
             {
-                if (p.PlayerDetail.IsViewer)
-                {
-                    p.Die();
-                }
+                log.Error($"[MatchTrace] StartGame EXCEPTION gameId={Id} state={GameState}", ex);
+                throw;
             }
-            VaneLoading();
-            WaitTime(allFightPlayers.Count * 1000);
-            OnGameStarted();
         }
 
         public void StartLoading()
@@ -844,6 +870,10 @@ namespace Game.Logic
             if (base.GameState == eGameState.Prepared)
             {
                 ClearWaitTimer();
+                log.WarnFormat("[MatchTrace] StartLoading gameId={0} map={1} roomType={2} players=[{3}]",
+                    Id, m_map?.Info?.ID, RoomType,
+                    string.Join(",", GetAllFightPlayers().ConvertAll(p => p.PlayerDetail?.PlayerCharacter?.NickName + ":" + p.Id)));
+                AddDeputyWeaponBombs();
                 SendStartLoading(60);
                 VaneLoading();
                 AddAction(new WaitPlayerLoadingAction(this, 61000));

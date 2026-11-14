@@ -1,13 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using Game.Base;
 using Game.Base.Packets;
+using log4net;
+using System.Reflection;
 
 namespace Game.Server.RingStation.Battle
 {
     public class RingStationBattleServer
     {
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private int m_serverId;
 
         private RingStationFightConnector m_server;
+
+        private int m_reconnectTries;
 
         public RingStationFightConnector Server
         {
@@ -25,12 +34,13 @@ namespace Game.Server.RingStation.Battle
             m_ip = ip;
             m_port = port;
             m_server = new RingStationFightConnector(this, ip, port, loginKey);
+            m_server.Disconnected += OnDisconnected;
             m_rooms = new Dictionary<int, BaseRoomRingStation>();
         }
 
         public bool IsActive
         {
-            get { return m_server.IsConnected; }
+            get { return m_server != null && m_server.IsConnected; }
         }
 
         public string Ip
@@ -45,7 +55,50 @@ namespace Game.Server.RingStation.Battle
 
         public bool Start()
         {
-            return m_server.Connect();
+            return EnsureConnected();
+        }
+
+        /// <summary>
+        /// Matchmaking AutoBot rooms need a live link to Fighting.
+        /// BattleMgr reconnects on its own; RingStation did not — so Connect can die forever after Fighting restart.
+        /// </summary>
+        public bool EnsureConnected()
+        {
+            if (IsActive)
+            {
+                return true;
+            }
+
+            try
+            {
+                if (m_server.Connect())
+                {
+                    m_reconnectTries = 0;
+                    // RSA login handshake before SendAddRoom
+                    Thread.Sleep(400);
+                    return IsActive;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error("RingStation EnsureConnected failed", ex);
+            }
+
+            return false;
+        }
+
+        private void OnDisconnected(BaseClient client)
+        {
+            log.WarnFormat("RingStation disconnected from Fighting {0}:{1}, will retry on next AutoBot", m_ip, m_port);
+            if (m_reconnectTries < 5)
+            {
+                m_reconnectTries++;
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    Thread.Sleep(2000);
+                    EnsureConnected();
+                });
+            }
         }
 
         public void Stop()
@@ -55,6 +108,12 @@ namespace Game.Server.RingStation.Battle
 
         public bool AddRoom(BaseRoomRingStation room)
         {
+            if (!EnsureConnected())
+            {
+                log.Error("RingStation AddRoom aborted: not connected to Fighting (AutoBot opponent cannot join queue)");
+                return false;
+            }
+
             bool flag = false;
             BaseRoomRingStation exitRoom = null;
             lock (m_rooms)
@@ -108,7 +167,6 @@ namespace Game.Server.RingStation.Battle
         public void RemoveRoomImp(int roomId)
         {
             BaseRoomRingStation room = null;
-            //Console.WriteLine("roomId {0}", roomId);
             lock (m_rooms)
             {
                 if (m_rooms.ContainsKey(roomId))
@@ -172,15 +230,9 @@ namespace Game.Server.RingStation.Battle
             BaseRoomRingStation result = null;
             lock (m_rooms)
             {
-                try
+                if (m_rooms.ContainsKey(roomId))
                 {
-                    if (m_rooms.ContainsKey(roomId))
-                    {
-                        result = m_rooms[roomId];
-                    }
-                }
-                finally
-                {
+                    result = m_rooms[roomId];
                 }
             }
 
@@ -193,7 +245,6 @@ namespace Game.Server.RingStation.Battle
             if (playerById != null)
             {
                 playerById.GamePlayerId = gamePlayerId;
-                //Console.WriteLine("gamePlayerId: " + gamePlayerId);
             }
         }
 

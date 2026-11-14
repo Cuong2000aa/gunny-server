@@ -69,7 +69,7 @@ namespace Game.Server.RingStation
                         m_ringPlayers.Clear();
                     }
 
-                    m_server.Start();
+                    // Connect after BattleMgr.Start via ConnectBattle() — Fighting may not be up yet here
                     if (!SetupVirtualPlayer())
                         return false;
 
@@ -107,6 +107,25 @@ namespace Game.Server.RingStation
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Call after BattleMgr.Start so Fighting is accepting; also used before CreateAutoBot.
+        /// </summary>
+        public static bool ConnectBattle()
+        {
+            if (m_server == null)
+            {
+                log.Error("RingStation ConnectBattle: server not inited");
+                return false;
+            }
+
+            bool ok = m_server.EnsureConnected();
+            if (ok)
+                log.Info("RingStation connected to Fighting (AutoBot matchmaking ready)");
+            else
+                log.Error("RingStation failed to connect to Fighting — waiting-room bots will not appear");
+            return ok;
         }
 
         public static bool ReLoadBattleField()
@@ -1027,6 +1046,31 @@ namespace Game.Server.RingStation
             return 71944; // Safe verified fallback
         }
 
+        /// <summary>
+        /// Style slot 6 = vũ khí hiển thị. TemplateID = đạn thật.
+        /// Bot MAX từng set TemplateID random nhưng Style vẫn 7008 (phi tiêu) → nhìn 1 đằng ném 1 nẻo.
+        /// </summary>
+        private static string ApplyWeaponToStyle(string style, int weaponId)
+        {
+            ItemTemplateInfo tem = ItemMgr.FindItemTemplate(weaponId);
+            if (tem == null || weaponId <= 0)
+            {
+                return style;
+            }
+            string[] parts = string.IsNullOrEmpty(style) ? new string[15] : style.Split(',');
+            if (parts.Length < 15)
+            {
+                Array.Resize(ref parts, 15);
+            }
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (parts[i] == null)
+                    parts[i] = "";
+            }
+            parts[6] = weaponId + "|" + tem.Pic;
+            return string.Join(",", parts);
+        }
+
         public static void CreateAutoBot(GamePlayer player, int roomtype, int gametype, int npcId, int playerCount)
         {
             BaseRoomRingStation room = new BaseRoomRingStation(RingStationConfiguration.NextRoomId())
@@ -1081,22 +1125,29 @@ namespace Game.Server.RingStation
                     rp.StrengthLevel = player.MainWeapon != null ? player.MainWeapon.StrengthenLevel : 0;
                 }
                 VirtualPlayerInfo vp = GetVirtualPlayerInfo();
-                rp.Style = vp.Style;
                 rp.Colors = ",,,,,,,,,,,,,,,";
                 rp.Hide = 1111111111;
                 if (!isMaxPlayer)
                 {
                     rp.TemplateID = vp.Weapon;
                 }
+                // Đồng bộ skin vũ khí với TemplateID (đạn) — tránh phi tiêu mà bắn súng khác
+                rp.Style = ApplyWeaponToStyle(vp.Style, rp.TemplateID);
                 rp.WeaklessGuildProgressStr = weaklessGuildProgressStr;
                 rp.ID = RingStationConfiguration.NextPlayerID();
                 AddPlayer(rp.ID, rp);
                 room.AddPlayer(rp);
             }
 
-            if (m_server != null)
+            if (m_server == null)
             {
-                m_server.AddRoom(room);
+                log.Error("CreateAutoBot: RingStation server null");
+                return;
+            }
+
+            if (!m_server.AddRoom(room))
+            {
+                log.ErrorFormat("CreateAutoBot: failed to add bot room npcId={0} (Fighting link down?)", npcId);
             }
         }
 
@@ -1158,13 +1209,13 @@ namespace Game.Server.RingStation
                 }
 
                 VirtualPlayerInfo vp = GetVirtualPlayerInfo();
-                rp.Style = vp.Style;
                 rp.Colors = ",,,,,,,,,,,,,,,";
                 rp.Hide = 1111111111;
                 if (!isMaxPlayer)
                 {
                     rp.TemplateID = vp.Weapon;
                 }
+                rp.Style = ApplyWeaponToStyle(vp.Style, rp.TemplateID);
                 rp.WeaklessGuildProgressStr = weaklessGuildProgressStr;
                 rp.ID = npcId + x;
                 AddPlayer(rp.ID, rp);

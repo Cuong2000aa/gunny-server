@@ -6,6 +6,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="application-name" content="Gunny II">
+    <meta name="apple-mobile-web-app-title" content="Gunny II">
+    <meta name="theme-color" content="#e94560">
+    <meta name="msapplication-TileColor" content="#16213e">
+    <meta name="msapplication-TileImage" content="/web/pwa/icon-192.png">
+    <link rel="manifest" href="/web/manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="48x48" href="/web/pwa/icon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/web/pwa/icon-192.png">
+    <link rel="apple-touch-icon" href="/web/pwa/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/web/pwa/icon-48.png">
     <title>Gunny II - Chiến Trường Gà (.NET 8 macOS & Mobile Web)</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
@@ -390,14 +400,14 @@
             });
         }
 
-        // iOS: giới hạn DPR để canvas Ruffle nhẹ hơn (Chrome iOS hay scale 2–3x)
-        if (isIOS && window.devicePixelRatio > 2) {
-            try {
-                Object.defineProperty(window, "devicePixelRatio", { get: function () { return 2; } });
-            } catch (e) {}
-        }
+        // Giữ native DPR (không cắt resolution). Mượt bằng quality + frameRate, không giảm nét.
+        // (Trước đây iOS cap DPR=2 → nhẹ máy nhưng mờ hơn.)
 
-        var ruffleQuality = isIOS ? "low" : (isMobile ? "medium" : "high");
+        // Cố định 30 FPS (không cho đổi). Hơi nhanh hơn SWF gốc ~25.
+        var ruffleFrameRate = 30;
+        window.__gunnyFps = 30;
+        // Chất lượng ảnh cao nhất (Flash quality=best / MSAA cao). Không cắt DPR.
+        var ruffleQuality = "best";
         var ruffleLetterbox = isMobile ? "off" : "on";
 
         // publicPath bắt buộc: không thì WASM/chunk bị request nhầm /web/*.wasm (404 → đen)
@@ -436,6 +446,7 @@
             })(),
             allowScriptAccess: true,
             quality: ruffleQuality,
+            frameRate: ruffleFrameRate,
             letterbox: ruffleLetterbox,
             scale: "showAll",
             forceScale: true,
@@ -445,7 +456,7 @@
             logLevel: isMobile ? "warn" : "info",
             maxExecutionDuration: isIOS ? 60 : 90
         };
-        console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
+        console.log("[Ruffle Config] mobile=", isMobile, "ios=", isIOS, "quality=", ruffleQuality, "fps=", ruffleFrameRate, "proxy=", wsProxyUrl, "publicPath=", rufflePublicPath);
     </script>
     <!-- Local Ruffle sync-ish (cache-bust); CDN fallback -->
     <script>
@@ -486,8 +497,10 @@
     </header>
 
     <div class="controls">
-        <label for="username">Tài khoản:</label>
-        <input type="text" id="username" value="admin" style="width: 110px;" />
+        <span class="user-label">Tài khoản:</span>
+        <input type="text" id="username" value="admin" style="width: 110px;"
+               autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+               inputmode="none" readonly tabindex="-1" enterkeyhint="done" />
         <button onclick="launchWithRuffle()">▶ Tải Lại Game</button>
         
         <div class="scale-selector">
@@ -676,7 +689,8 @@
                 backgroundColor: "#000000",
                 preferredRenderer: "wgpu-webgl",
                 deviceFontRenderer: "canvas",
-                quality: iosNow ? "low" : (mobileNow ? "medium" : "high"),
+                quality: "best",
+                frameRate: 30,
                 letterbox: mobileNow ? "off" : "on",
                 scale: "showAll",
                 forceScale: true,
@@ -689,6 +703,7 @@
                 }
             }).then(function () {
                 console.log("[Gunny] SWF loaded OK");
+                dismissMobileKeyboard();
                 document.addEventListener("visibilitychange", function () {
                     try {
                         if (document.hidden) {
@@ -699,6 +714,74 @@
                     } catch (e) {}
                 }, { passive: true });
             });
+        }
+
+        /** Mobile keyboard: chỉ blur khi INPUT thật được focus — KHÔNG cướp focus Ruffle (làm treo màn vàng). */
+        var allowAccountEdit = false;
+
+        function dismissMobileKeyboard() {
+            try {
+                var ae = document.activeElement;
+                if (!ae) return;
+                if (allowAccountEdit && ae.id === "username") return;
+                var tag = (ae.tagName || "").toUpperCase();
+                if (tag === "INPUT" || tag === "TEXTAREA" || ae.isContentEditable) {
+                    if (ae.id !== "username") {
+                        try {
+                            ae.setAttribute("readonly", "readonly");
+                            ae.setAttribute("inputmode", "none");
+                        } catch (e) {}
+                    }
+                    try { ae.blur(); } catch (e) {}
+                }
+            } catch (e) {}
+        }
+
+        function setupMobileKeyboardGuard() {
+            var userInp = document.getElementById("username");
+            if (userInp) {
+                userInp.readOnly = true;
+                userInp.setAttribute("readonly", "readonly");
+                userInp.setAttribute("inputmode", "none");
+                userInp.tabIndex = -1;
+                userInp.addEventListener("pointerdown", function () {
+                    allowAccountEdit = true;
+                    userInp.readOnly = false;
+                    userInp.removeAttribute("readonly");
+                    userInp.setAttribute("inputmode", "text");
+                    userInp.tabIndex = 0;
+                });
+                userInp.addEventListener("blur", function () {
+                    allowAccountEdit = false;
+                    userInp.readOnly = true;
+                    userInp.setAttribute("readonly", "readonly");
+                    userInp.setAttribute("inputmode", "none");
+                    userInp.tabIndex = -1;
+                });
+                userInp.addEventListener("keydown", function (ev) {
+                    if (ev.key === "Enter") userInp.blur();
+                });
+            }
+
+            // Chỉ chặn khi Ruffle/Flash tạo ô input và focus nó
+            document.addEventListener("focusin", function (ev) {
+                var t = ev.target;
+                if (!t) return;
+                if (allowAccountEdit && t.id === "username") return;
+                var tag = (t.tagName || "").toUpperCase();
+                if (tag === "INPUT" || tag === "TEXTAREA") {
+                    if (t.id === "username") return;
+                    try {
+                        t.setAttribute("readonly", "readonly");
+                        t.setAttribute("inputmode", "none");
+                        t.blur();
+                    } catch (e) {}
+                }
+            }, true);
+
+            var st = document.createElement("style");
+            st.textContent = "ruffle-player input,ruffle-player textarea{inputmode:none!important;}";
+            document.head.appendChild(st);
         }
 
         function launchWithRuffle() {
@@ -984,7 +1067,7 @@
                 var data = await res.json();
                 if (data.isMax) {
                     btn.style.background = "#28a745";
-                    btn.innerHTML = "⚡ Max Tài Nguyên: [BẬT] (Lv 65)";
+                    btn.innerHTML = "⚡ Max Tài Nguyên: [BẬT] (Lv 60)";
                 } else {
                     btn.style.background = "#6c757d";
                     btn.innerHTML = "🛡️ Max Tài Nguyên: [TẮT] (Lv 30)";
@@ -1008,6 +1091,17 @@
             }
         }
 
+        // PWA / Chrome “Cài đặt” + lối tắt dùng icon /web/pwa/*
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("/web/sw.js", { scope: "/web/" }).then(function (reg) {
+                    console.log("[PWA] SW registered", reg.scope);
+                }).catch(function (err) {
+                    console.warn("[PWA] SW register failed", err);
+                });
+            });
+        }
+
         // Tự động khởi chạy khi vào trang
         window.addEventListener("DOMContentLoaded", function() {
             var savedPreset = "100";
@@ -1015,6 +1109,7 @@
                 savedPreset = localStorage.getItem("gunny_scale_preset") || "100";
             } catch(e) {}
             setScalePreset(savedPreset);
+            setupMobileKeyboardGuard();
             launchWithRuffle();
             updateResourceStatus();
         });

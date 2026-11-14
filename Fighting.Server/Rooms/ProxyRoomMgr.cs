@@ -333,15 +333,23 @@ namespace Fighting.Server.Rooms
             {
                 gameType = proxyRoom_0.GameType;
             }
+            log.WarnFormat("[Match] StartMatchGame rooms {0} vs {1} mapIndex={2} type={3}/{4}",
+                proxyRoom_0?.RoomId, proxyRoom_1?.RoomId, mapIndex, roomType, gameType);
             BaseGame game = GameMgr.StartBattleGame(proxyRoom_0.GetPlayers(), proxyRoom_0, proxyRoom_1.GetPlayers(), proxyRoom_1, mapIndex, roomType, gameType, 2);
             if (game != null)
             {
                 proxyRoom_1.StartGame(game);
                 proxyRoom_0.StartGame(game);
+                log.WarnFormat("[Match] rooms bound to gameId={0}", game.Id);
                 if (game.GameType == eGameType.Guild)
                 {
                     proxyRoom_0.Client.SendConsortiaAlly(proxyRoom_0.GetPlayers()[0].PlayerCharacter.ConsortiaID, proxyRoom_1.GetPlayers()[0].PlayerCharacter.ConsortiaID, game.Id);
                 }
+            }
+            else
+            {
+                log.ErrorFormat("[Match] StartMatchGame FAILED (StartBattleGame returned null) rooms {0} vs {1}",
+                    proxyRoom_0?.RoomId, proxyRoom_1?.RoomId);
             }
         }
 

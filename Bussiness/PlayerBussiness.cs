@@ -2079,7 +2079,8 @@ namespace Bussiness
             List<PlayerInfo> list = new List<PlayerInfo>();
             try
             {
-                string queryWhere = " IsExist=1 and IsFirst<> 0 ";
+                // Private-server seeds often leave IsFirst=0 even after NickName is set; still list them on tofflist
+                string queryWhere = " IsExist=1 and (IsFirst<> 0 OR (NickName IS NOT NULL AND NickName <> '')) ";
                 if (userID != -1)
                 {
                     queryWhere = queryWhere + " and UserID =" + userID + " ";
@@ -2137,75 +2138,91 @@ namespace Bussiness
                         break;
                 }
                 string fdOreder = str + ",UserID";
+                int I(DataRow r, string col)
+                {
+                    object v = r[col];
+                    return (v == null || v == DBNull.Value) ? 0 : Convert.ToInt32(v);
+                }
+                string S(DataRow r, string col)
+                {
+                    object v = r[col];
+                    return (v == null || v == DBNull.Value) ? "" : v.ToString();
+                }
+                bool B(DataRow r, string col)
+                {
+                    object v = r[col];
+                    return (v == null || v == DBNull.Value) ? false : Convert.ToBoolean(v);
+                }
                 foreach (DataRow dataRow in GetPage("V_Sys_Users_Detail", queryWhere, page, size, "*", fdOreder, "UserID", ref total).Rows)
                 {
                     PlayerInfo playerInfo = new PlayerInfo();
-                    playerInfo.Agility = (int)dataRow["Agility"];
-                    playerInfo.Attack = (int)dataRow["Attack"];
-                    playerInfo.Colors = ((dataRow["Colors"] == null) ? "" : dataRow["Colors"].ToString());
-                    playerInfo.ConsortiaID = (int)dataRow["ConsortiaID"];
-                    playerInfo.Defence = (int)dataRow["Defence"];
-                    playerInfo.Gold = (int)dataRow["Gold"];
-                    playerInfo.GP = (int)dataRow["GP"];
-                    playerInfo.Grade = (int)dataRow["Grade"];
-                    playerInfo.ID = (int)dataRow["UserID"];
-                    playerInfo.Luck = (int)dataRow["Luck"];
-                    playerInfo.Money = (int)dataRow["Money"];
-                    playerInfo.NickName = ((dataRow["NickName"] == null) ? "" : dataRow["NickName"].ToString());
-                    playerInfo.Sex = (bool)dataRow["Sex"];
-                    playerInfo.State = (int)dataRow["State"];
-                    playerInfo.Style = ((dataRow["Style"] == null) ? "" : dataRow["Style"].ToString());
-                    playerInfo.Hide = (int)dataRow["Hide"];
-                    playerInfo.Repute = (int)dataRow["Repute"];
-                    playerInfo.UserName = ((dataRow["UserName"] == null) ? "" : dataRow["UserName"].ToString());
-                    playerInfo.ConsortiaName = ((dataRow["ConsortiaName"] == null) ? "" : dataRow["ConsortiaName"].ToString());
-                    playerInfo.Offer = (int)dataRow["Offer"];
-                    playerInfo.Skin = ((dataRow["Skin"] == null) ? "" : dataRow["Skin"].ToString());
-                    playerInfo.IsBanChat = (bool)dataRow["IsBanChat"];
-                    playerInfo.ReputeOffer = (int)dataRow["ReputeOffer"];
-                    playerInfo.ConsortiaRepute = (int)dataRow["ConsortiaRepute"];
-                    playerInfo.ConsortiaLevel = (int)dataRow["ConsortiaLevel"];
-                    playerInfo.StoreLevel = (int)dataRow["StoreLevel"];
-                    playerInfo.ShopLevel = (int)dataRow["ShopLevel"];
-                    playerInfo.SmithLevel = (int)dataRow["SmithLevel"];
-                    playerInfo.ConsortiaHonor = (int)dataRow["ConsortiaHonor"];
-                    playerInfo.RichesOffer = (int)dataRow["RichesOffer"];
-                    playerInfo.RichesRob = (int)dataRow["RichesRob"];
-                    playerInfo.DutyLevel = (int)dataRow["DutyLevel"];
-                    playerInfo.DutyName = ((dataRow["DutyName"] == null) ? "" : dataRow["DutyName"].ToString());
-                    playerInfo.Right = (int)dataRow["Right"];
-                    playerInfo.ChairmanName = ((dataRow["ChairmanName"] == null) ? "" : dataRow["ChairmanName"].ToString());
-                    playerInfo.Win = (int)dataRow["Win"];
-                    playerInfo.Total = (int)dataRow["Total"];
-                    playerInfo.Escape = (int)dataRow["Escape"];
-                    playerInfo.AddDayGP = (int)dataRow["AddDayGP"];
-                    playerInfo.AddDayOffer = (int)dataRow["AddDayOffer"];
-                    playerInfo.AddWeekGP = (int)dataRow["AddWeekGP"];
-                    playerInfo.AddWeekOffer = (int)dataRow["AddWeekOffer"];
-                    playerInfo.ConsortiaRiches = (int)dataRow["ConsortiaRiches"];
-                    playerInfo.CheckCount = (int)dataRow["CheckCount"];
-                    playerInfo.Nimbus = (int)dataRow["Nimbus"];
-                    playerInfo.GiftToken = (int)dataRow["GiftToken"];
-                    playerInfo.QuestSite = ((dataRow["QuestSite"] == null) ? new byte[200] : ((byte[])dataRow["QuestSite"]));
-                    playerInfo.PvePermission = ((dataRow["PvePermission"] == null) ? "" : dataRow["PvePermission"].ToString());
-                    playerInfo.FightLabPermission = ((dataRow["FightLabPermission"] == DBNull.Value) ? "" : dataRow["FightLabPermission"].ToString());
-                    playerInfo.FightPower = (int)dataRow["FightPower"];
-                    playerInfo.AchievementPoint = (int)dataRow["AchievementPoint"];
-                    playerInfo.Honor = (string)dataRow["Honor"];
-                    playerInfo.IsShowConsortia = (bool)dataRow["IsShowConsortia"];
-                    playerInfo.OptionOnOff = (int)dataRow["OptionOnOff"];
-                    playerInfo.badgeID = (int)dataRow["badgeID"];
-                    playerInfo.EliteScore = (int)dataRow["EliteScore"];
-                    playerInfo.apprenticeshipState = (int)dataRow["apprenticeshipState"];
-                    playerInfo.masterID = (int)dataRow["masterID"];
-                    playerInfo.graduatesCount = (int)dataRow["graduatesCount"];
-                    playerInfo.masterOrApprentices = ((dataRow["masterOrApprentices"] == DBNull.Value) ? "" : dataRow["masterOrApprentices"].ToString());
-                    playerInfo.honourOfMaster = ((dataRow["honourOfMaster"] == DBNull.Value) ? "" : dataRow["honourOfMaster"].ToString());
-                    playerInfo.IsMarried = (bool)dataRow["IsMarried"];
-                    playerInfo.typeVIP = Convert.ToByte(dataRow["typeVIP"]);
-                    playerInfo.VIPLevel = (int)dataRow["VIPLevel"];
-                    playerInfo.SpouseID = (int)dataRow["SpouseID"];
-                    playerInfo.SpouseName = ((dataRow["SpouseName"] == DBNull.Value) ? "" : dataRow["SpouseName"].ToString());
+                    playerInfo.Agility = I(dataRow, "Agility");
+                    playerInfo.Attack = I(dataRow, "Attack");
+                    playerInfo.Colors = S(dataRow, "Colors");
+                    playerInfo.ConsortiaID = I(dataRow, "ConsortiaID");
+                    playerInfo.Defence = I(dataRow, "Defence");
+                    playerInfo.Gold = I(dataRow, "Gold");
+                    playerInfo.GP = I(dataRow, "GP");
+                    playerInfo.Grade = I(dataRow, "Grade");
+                    playerInfo.ID = I(dataRow, "UserID");
+                    playerInfo.Luck = I(dataRow, "Luck");
+                    playerInfo.Money = I(dataRow, "Money");
+                    playerInfo.NickName = S(dataRow, "NickName");
+                    playerInfo.Sex = B(dataRow, "Sex");
+                    playerInfo.State = I(dataRow, "State");
+                    playerInfo.Style = S(dataRow, "Style");
+                    playerInfo.Hide = I(dataRow, "Hide");
+                    playerInfo.Repute = I(dataRow, "Repute");
+                    playerInfo.UserName = S(dataRow, "UserName");
+                    playerInfo.ConsortiaName = S(dataRow, "ConsortiaName");
+                    playerInfo.Offer = I(dataRow, "Offer");
+                    playerInfo.Skin = S(dataRow, "Skin");
+                    playerInfo.IsBanChat = B(dataRow, "IsBanChat");
+                    playerInfo.ReputeOffer = I(dataRow, "ReputeOffer");
+                    playerInfo.ConsortiaRepute = I(dataRow, "ConsortiaRepute");
+                    playerInfo.ConsortiaLevel = I(dataRow, "ConsortiaLevel");
+                    playerInfo.StoreLevel = I(dataRow, "StoreLevel");
+                    playerInfo.ShopLevel = I(dataRow, "ShopLevel");
+                    playerInfo.SmithLevel = I(dataRow, "SmithLevel");
+                    playerInfo.ConsortiaHonor = I(dataRow, "ConsortiaHonor");
+                    playerInfo.RichesOffer = I(dataRow, "RichesOffer");
+                    playerInfo.RichesRob = I(dataRow, "RichesRob");
+                    playerInfo.DutyLevel = I(dataRow, "DutyLevel");
+                    playerInfo.DutyName = S(dataRow, "DutyName");
+                    playerInfo.Right = I(dataRow, "Right");
+                    playerInfo.ChairmanName = S(dataRow, "ChairmanName");
+                    playerInfo.Win = I(dataRow, "Win");
+                    playerInfo.Total = I(dataRow, "Total");
+                    playerInfo.Escape = I(dataRow, "Escape");
+                    playerInfo.AddDayGP = I(dataRow, "AddDayGP");
+                    playerInfo.AddDayOffer = I(dataRow, "AddDayOffer");
+                    playerInfo.AddWeekGP = I(dataRow, "AddWeekGP");
+                    playerInfo.AddWeekOffer = I(dataRow, "AddWeekOffer");
+                    playerInfo.ConsortiaRiches = I(dataRow, "ConsortiaRiches");
+                    playerInfo.CheckCount = I(dataRow, "CheckCount");
+                    playerInfo.Nimbus = I(dataRow, "Nimbus");
+                    playerInfo.GiftToken = I(dataRow, "GiftToken");
+                    object questSite = dataRow["QuestSite"];
+                    playerInfo.QuestSite = (questSite == null || questSite == DBNull.Value) ? new byte[200] : (byte[])questSite;
+                    playerInfo.PvePermission = S(dataRow, "PvePermission");
+                    playerInfo.FightLabPermission = S(dataRow, "FightLabPermission");
+                    playerInfo.FightPower = I(dataRow, "FightPower");
+                    playerInfo.AchievementPoint = I(dataRow, "AchievementPoint");
+                    playerInfo.Honor = S(dataRow, "Honor");
+                    playerInfo.IsShowConsortia = B(dataRow, "IsShowConsortia");
+                    playerInfo.OptionOnOff = I(dataRow, "OptionOnOff");
+                    playerInfo.badgeID = I(dataRow, "badgeID");
+                    playerInfo.EliteScore = I(dataRow, "EliteScore");
+                    playerInfo.apprenticeshipState = I(dataRow, "apprenticeshipState");
+                    playerInfo.masterID = I(dataRow, "masterID");
+                    playerInfo.graduatesCount = I(dataRow, "graduatesCount");
+                    playerInfo.masterOrApprentices = S(dataRow, "masterOrApprentices");
+                    playerInfo.honourOfMaster = S(dataRow, "honourOfMaster");
+                    playerInfo.IsMarried = B(dataRow, "IsMarried");
+                    playerInfo.typeVIP = (byte)I(dataRow, "typeVIP");
+                    playerInfo.VIPLevel = I(dataRow, "VIPLevel");
+                    playerInfo.SpouseID = I(dataRow, "SpouseID");
+                    playerInfo.SpouseName = S(dataRow, "SpouseName");
                     list.Add(playerInfo);
                 }
                 resultValue = true;
@@ -2494,7 +2511,11 @@ namespace Bussiness
 
                 while (reader.Read())
                 {
-                    items.Add(InitItem(reader));
+                    ItemInfo bagItem = InitItem(reader);
+                    if (bagItem != null)
+                    {
+                        items.Add(bagItem);
+                    }
                 }
 
             }
@@ -2526,7 +2547,11 @@ namespace Bussiness
                 db.GetReader(ref resultDataReader, "SP_Users_Bead_Equip", sqlParameters);
                 while (resultDataReader.Read())
                 {
-                    list.Add(InitItem(resultDataReader));
+                    ItemInfo beadItem = InitItem(resultDataReader);
+                    if (beadItem != null)
+                    {
+                        list.Add(beadItem);
+                    }
                 }
                 return list;
             }
@@ -2845,7 +2870,11 @@ namespace Bussiness
                 db.GetReader(ref resultDataReader, "SP_Users_Items_Equip", sqlParameters);
                 while (resultDataReader.Read())
                 {
-                    list.Add(InitItem(resultDataReader));
+                    ItemInfo eqItem = InitItem(resultDataReader);
+                    if (eqItem != null)
+                    {
+                        list.Add(eqItem);
+                    }
                 }
                 return list;
             }
@@ -2881,7 +2910,11 @@ namespace Bussiness
                 db.GetReader(ref resultDataReader, "SP_Users_Items_Equip_By_Nick", sqlParameters);
                 while (resultDataReader.Read())
                 {
-                    list.Add(InitItem(resultDataReader));
+                    ItemInfo nickEq = InitItem(resultDataReader);
+                    if (nickEq != null)
+                    {
+                        list.Add(nickEq);
+                    }
                 }
                 return list;
             }
@@ -3001,7 +3034,11 @@ namespace Bussiness
                 db.GetReader(ref resultDataReader, "SP_Users_Items_All", sqlParameters);
                 while (resultDataReader.Read())
                 {
-                    list.Add(InitItem(resultDataReader));
+                    ItemInfo allItem = InitItem(resultDataReader);
+                    if (allItem != null)
+                    {
+                        list.Add(allItem);
+                    }
                 }
             }
             catch (Exception exception)
@@ -3586,7 +3623,17 @@ namespace Bussiness
 
         public ItemInfo InitItem(SqlDataReader reader)
         {
-            ItemInfo item = new ItemInfo(ItemMgr.FindItemTemplate((int)reader["TemplateID"]));
+            int templateId = (int)reader["TemplateID"];
+            ItemTemplateInfo template = ItemMgr.FindItemTemplate(templateId);
+            if (template == null)
+            {
+                if (log.IsWarnEnabled)
+                {
+                    log.Warn("InitItem: missing template " + templateId + ", skip goods row");
+                }
+                return null;
+            }
+            ItemInfo item = new ItemInfo(template);
             item.AgilityCompose = (int)reader["AgilityCompose"];
             item.AttackCompose = (int)reader["AttackCompose"];
             item.Color = reader["Color"].ToString();
@@ -3596,7 +3643,7 @@ namespace Bussiness
             item.LuckCompose = (int)reader["LuckCompose"];
             item.Place = (int)reader["Place"];
             item.StrengthenLevel = (int)reader["StrengthenLevel"];
-            item.TemplateID = (int)reader["TemplateID"];
+            item.TemplateID = templateId;
             item.UserID = (int)reader["UserID"];
             item.ValidDate = (int)reader["ValidDate"];
             item.IsDirty = false;

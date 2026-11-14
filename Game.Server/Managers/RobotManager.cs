@@ -1038,6 +1038,7 @@ namespace Game.Server.Managers
     "Antoine" };
             #endregion
             Random r = new Random();
+            // Hall bots unused — matchmaking AutoBot is RingStation/Fighting PickUpRooms
             int countBot = 0;
             List<Robot> listPlayer = new List<Robot>();
             for (int i = 0; i < countBot; i++)

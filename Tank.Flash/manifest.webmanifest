@@ -1,0 +1,40 @@
+{
+  "name": "Gunny II - Chiến Trường Gà",
+  "short_name": "Gunny II",
+  "description": "Gunny II private server — chơi trên Chrome / mobile web (Ruffle)",
+  "id": "/web/play.html",
+  "start_url": "/web/play.html",
+  "scope": "/web/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1a1a2e",
+  "theme_color": "#e94560",
+  "lang": "vi",
+  "categories": ["games"],
+  "icons": [
+    {
+      "src": "/web/pwa/icon-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/web/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/web/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/web/pwa/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -209,7 +209,15 @@ namespace Game.Server.Battle
 			BaseRoom baseRoom = FindRoom(roomId);
 			if (baseRoom != null)
 			{
+				log4net.LogManager.GetLogger(typeof(BattleServer)).WarnFormat(
+					"[MatchTrace] Road StartProxyGame room={0} gameId={1} players={2}",
+					roomId, game?.Id, baseRoom.PlayerCount);
 				RoomMgr.StartProxyGame(baseRoom, game);
+			}
+			else
+			{
+				log4net.LogManager.GetLogger(typeof(BattleServer)).WarnFormat(
+					"[MatchTrace] Road StartProxyGame FAIL room={0} not found gameId={1}", roomId, game?.Id);
 			}
         }
 
@@ -229,10 +237,22 @@ namespace Game.Server.Battle
         public void SendToRoom(int roomId, GSPacketIn pkg, int exceptId, int exceptGameId)
         {
 			BaseRoom baseRoom = FindRoom(roomId);
+			byte tankCmd = 0;
+			try
+			{
+				if (pkg != null && pkg.Code == 91 && pkg.Length > 20 && pkg.Buffer != null)
+					tankCmd = pkg.Buffer[20];
+			}
+			catch { }
 			if (baseRoom == null)
 			{
+				log4net.LogManager.GetLogger(typeof(BattleServer)).WarnFormat(
+					"[MatchTrace] Road SendToRoom FAIL room={0} not found code={1} tankCmd={2}", roomId, pkg?.Code, tankCmd);
 				return;
 			}
+			log4net.LogManager.GetLogger(typeof(BattleServer)).WarnFormat(
+				"[MatchTrace] Road→Room room={0} code={1} tankCmd={2}({3}) len={4} exceptId={5} players={6}",
+				roomId, pkg?.Code, tankCmd, TankCmdName(tankCmd), pkg?.Length, exceptId, baseRoom.PlayerCount);
 			if (exceptId != 0)
 			{
 				GamePlayer playerById = WorldMgr.GetPlayerById(exceptId);
@@ -267,6 +287,18 @@ namespace Game.Server.Battle
 				playerById.GamePlayerId = gamePlayerId;
 				playerById.TempGameId = gamePlayerId;
 			}
+        }
+
+        private static string TankCmdName(byte cmd)
+        {
+			return cmd switch
+			{
+				16 => "LOAD",
+				99 => "START_GAME",
+				103 => "GAME_LOAD",
+				131 => "SYNC_LIFE",
+				_ => "?"
+			};
         }
 
         public override string ToString()
