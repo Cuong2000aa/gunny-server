@@ -65,7 +65,8 @@ namespace Tank.Request
             {
                 string p = context.Request.Path.Value ?? "";
                 if (p.Equals("/play.html", StringComparison.OrdinalIgnoreCase)
-                    || p.Equals("/server_list.html", StringComparison.OrdinalIgnoreCase))
+                    || p.Equals("/server_list.html", StringComparison.OrdinalIgnoreCase)
+                    || p.Equals("/Tank.Flash/play.html", StringComparison.OrdinalIgnoreCase))
                 {
                     context.Response.Redirect("/web/play.html");
                     return;
@@ -117,7 +118,8 @@ namespace Tank.Request
                 string path = context.Request.Path.Value?.TrimStart('/') ?? "";
 
                 if (path.StartsWith("image/", StringComparison.OrdinalIgnoreCase) ||
-                    path.StartsWith("sound/", StringComparison.OrdinalIgnoreCase))
+                    path.StartsWith("sound/", StringComparison.OrdinalIgnoreCase) ||
+                    path.StartsWith("bombs/", StringComparison.OrdinalIgnoreCase))
                 {
                     // Flash PathManager historically requests craterBrink.png but CDN/local
                     // assets are craterbrink.png — wrong casing made dig edges 1x1 transparent.

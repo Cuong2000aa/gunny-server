@@ -38,7 +38,7 @@ namespace GameServerScript.AI.Messions
             base.OnStartGame();
             m_moive = Game.Createlayer(0, 0, "moive", "game.asset.living.BossBgAsset", "out", 1, 0);
             m_boss = Game.CreateBoss(bossID, 1000, -100, -1, 1);
-            m_boss.FallFrom(1000, 500, "fall", 0, 2, 1000);
+            m_boss.FallFrom(1000, 0, "", 0, 2, 1000);
             m_boss.SetRelateDemagemRect(-50, -180, 100, 180);
             m_boss.AddDelay(10);
             m_boss.Say("Đỉnh núi lửa — Tà Diệm Long thức tỉnh! Đây là trận quyết chiến!", 0, 2500);

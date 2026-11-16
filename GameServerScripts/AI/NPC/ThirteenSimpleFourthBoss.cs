@@ -25,14 +25,14 @@ namespace GameServerScript.AI.NPC
             if (nearest != null && Body.Distance(nearest.X, nearest.Y) < 180)
             {
                 Body.CurrentDamagePlus = 1.6f;
-                Body.Beat(nearest, "beat", 100, 0, 0);
+                Body.Beat(nearest, "beatA", 100, 0, 0);
                 return;
             }
             if (m_attackTurn == 0)
             {
                 Body.CurrentDamagePlus = 0.8f;
                 Body.Say("Kết thúc các ngươi!", 1, 0);
-                Body.PlayMovie("beat", 1000, 0);
+                Body.PlayMovie("beatA", 1000, 0);
                 Body.RangeAttacking(Body.X - 1000, Body.X + 1000, "cry", 3000, null);
                 m_attackTurn++;
             }
@@ -44,7 +44,7 @@ namespace GameServerScript.AI.NPC
                 {
                     int mtX = Game.Random.Next(t.X - 40, t.X + 40);
                     if (Body.ShootPoint(mtX, t.Y, 61, 1000, 10000, 1, 1.0f, 2000))
-                        Body.PlayMovie("beat", 1500, 0);
+                        Body.PlayMovie("beatA", 1500, 0);
                 }
                 m_attackTurn = 0;
             }

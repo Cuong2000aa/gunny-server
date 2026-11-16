@@ -17,14 +17,14 @@ namespace GameServerScript.AI.NPC
             base.OnStartAttacking();
             m_targer = Game.FindNearestPlayer(Body.X, Body.Y);
             if (m_targer == null) return;
-            if (!Body.Beat(m_targer, "beat", 100, 0, 0))
+            if (!Body.Beat(m_targer, "beatA", 100, 0, 0))
             {
                 int dis = (int)m_targer.Distance(Body.X, Body.Y);
                 if (dis > 90)
                 {
                     int step = Game.Random.Next(80, 160);
                     int nx = m_targer.X > Body.X ? Body.X + step : Body.X - step;
-                    Body.MoveTo(nx, Body.Y, "walk", 800, () => Body.Beat(m_targer, "beat", 100, 0, 0));
+                    Body.MoveTo(nx, Body.Y, "walk", 800, () => Body.Beat(m_targer, "beatA", 100, 0, 0));
                 }
             }
         }

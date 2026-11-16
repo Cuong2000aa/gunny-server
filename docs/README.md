@@ -12,7 +12,8 @@ Bộ tài liệu chuẩn cho repo `gunny-server`. Đọc theo thứ tự nếu m
 | 6 | [`WEB-CLIENT.md`](WEB-CLIENT.md) | `play.html`, Ruffle, mobile/Android, bàn phím, PWA, remote log |
 | 7 | [`TOOLS-FLASH.md`](TOOLS-FLASH.md) | FFDec, export script AS3, patch SWF `2.png` |
 | 8 | [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Triệu chứng → nguyên nhân → cách fix, kèm các sự cố đã gặp |
-| 9 | [`SECURITY.md`](SECURITY.md) | Rủi ro bảo mật đã biết khi public qua tunnel |
+| 9 | [`PVE-AND-PVP-BATTLE-FIXES.md`](PVE-AND-PVP-BATTLE-FIXES.md) | Sửa lỗi toàn diện PVE (Hang Rồng, Thời Gian, Dũng Sĩ) và fix kẹt 91% |
+| 10 | [`SECURITY.md`](SECURITY.md) | Rủi ro bảo mật đã biết khi public qua tunnel |
 
 ## Tóm tắt 30 giây
 

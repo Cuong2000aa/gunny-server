@@ -1031,7 +1031,7 @@ namespace Game.Server.RingStation
             70234, // WOW-Tivi Tủ Lạnh
             70994, // Legend-Boomerang
             70243, // SUPER-Boomerang (+12)
-            70273, // SUPER-Búa Minotaure (+12)
+            71844, // LEGEND-Gậy Như Ý
             7068,  // LEGEND-Nỏ Thần
             7082,  // LEGEND-Maya
             7086,  // Cuồng Long Trượng

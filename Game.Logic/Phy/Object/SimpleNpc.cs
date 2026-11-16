@@ -142,6 +142,10 @@ namespace Game.Logic.Phy.Object
 			{
 				ilog_1.ErrorFormat("SimpleNpc StartAttacking error:{1}", arg);
 			}
+			if (base.IsAttacking)
+			{
+				StopAttacking();
+			}
 		}
 		public override void OnBeforeTakedBomb()
 		{

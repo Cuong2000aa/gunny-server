@@ -27,7 +27,7 @@ namespace GameServerScript.AI.Messions
             foreach (Player p in Game.GetAllFightPlayers())
                 p.PlayerDetail.SendMessage("Bác học Vẹt xuất hiện!");
             var b0 = Game.CreateBoss(12016, 900, -80, -1, 1);
-            b0.FallFrom(900, 500, "fall", 0, 2, 1000);
+            b0.FallFrom(900, 0, "", 0, 2, 1000);
             b0.SetRelateDemagemRect(-42, -180, 84, 180);
             _bosses.Add(b0);
             Game.BossCardCount = 1;

@@ -9,6 +9,8 @@ Bước đầu với mọi lỗi client: đọc `Tank.Request/logs/client.log` (
 | Treo 13/13 khi login | Renderer không phải `wgpu-webgl`; thiếu `socketProxy` trên `player.load`; SQL chết; nhiều WS | `SOURCE-ARCHITECTURE.md` §4–5, §9 |
 | **Vào game là màn hình vàng** (sau login, trước sảnh) | Túi đồ có TemplateID **không có trong `TemplateAlllist.xml`** → `StoreModel.isProperTo_CanEmbedEquipList` null `Hole` | Xóa item đó (stop Road trước) hoặc thêm template vào XML client |
 | **Treo màn loading vàng khi vào trận** | Vũ khí của ai đó trong phòng thiếu `BallConfig` → `LoadBombManager.loadBomb` NPE → client không gửi LOAD | Thêm `BallConfig`, regenerate `bombconfig.xml`, tăng version |
+| **Kẹt loading 91% khi vào trận (PVP/PVE)** | Vũ khí (như Băng Vương Côn 7142) thiếu mã đạn trong bảng `Ball` & `BallList.xml` $\rightarrow$ NPE tại `.isComplete()` | Xem [`PVE-AND-PVP-BATTLE-FIXES.md`](PVE-AND-PVP-BATTLE-FIXES.md) §1 |
+| **PVE rơi vực, kẹt lượt 60s, lỗi animation** | Scan mặt đất từ $Y=500$, thiếu `StopAttacking`, animation `beat` thay vì `beatA` | Xem [`PVE-AND-PVP-BATTLE-FIXES.md`](PVE-AND-PVP-BATTLE-FIXES.md) |
 | Đạn bay không có hình | Asset 404 do CDN phân biệt hoa thường | Đã fix: candidate lowercase trong `GetAssetPathCandidates` |
 | Trợ thủ bắn không hiện hiệu ứng | Ball trợ thủ không nằm trong SpecialBomb preload | Đã fix: `BaseGame.AddDeputyWeaponBombs()` |
 | Bàn phím Android tự bật khi vào phòng | Flash focus ô chat | Đã fix: `setupMobileKeyboardGuard` + nút ⌨ |

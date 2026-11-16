@@ -58,6 +58,9 @@ namespace GameServerScript.AI.Messions
         {
             base.OnGameOver();
             Game.IsWin = Game.GetLivedLivings().Count == 0;
+            var loading = new List<LoadingFileInfo>();
+            loading.Add(new LoadingFileInfo(2, "image/map/12004/show2.jpg", ""));
+            Game.SendLoadResource(loading);
         }
     }
 }

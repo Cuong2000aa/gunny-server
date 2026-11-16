@@ -431,7 +431,7 @@
   <Item Name="DispatchesMoney" Value="200" />
   <Item Name="DismountGemMoney" Value="200" />
   <Item Name="CanExperience" Value="FALSE" />
-  <Item Name="MaxStrengthLevel" Value="15" />
+  <Item Name="MaxStrengthLevel" Value="12" />
   <Item Name="AASInterfaceSwitch" Value="0" />
   <Item Name="OpenHolesGold" Value="200" />
   <Item Name="DefaultGP" Value="1" />

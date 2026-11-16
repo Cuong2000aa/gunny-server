@@ -26,8 +26,8 @@ namespace GameServerScript.AI.Messions
             base.OnStartGame();
             foreach (Player p in Game.GetAllFightPlayers())
                 p.PlayerDetail.SendMessage("Mathias — trận chung kết!");
-            var b0 = Game.CreateBoss(13008, 900, -80, -1, 1);
-            b0.FallFrom(900, 500, "fall", 0, 2, 1000);
+            var b0 = Game.CreateBoss(13008, 260, 200, 1, 1);
+            b0.FallFrom(260, 0, "", 0, 2, 1000);
             b0.SetRelateDemagemRect(-42, -180, 84, 180);
             _bosses.Add(b0);
             Game.BossCardCount = 1;
