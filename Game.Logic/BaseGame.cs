@@ -1606,35 +1606,17 @@ namespace Game.Logic
 
 		public int getTurnTime()
 		{
-			return m_timeType switch
-			{
-				1 => 8,
-				2 => 10,
-				3 => 12,
-				4 => 16,
-				5 => 21,
-				6 => 31,
-				_ => 10,
-			};
+			return 40;
 		}
 
 		public int GetTurnWaitTime(bool isNextTurn)
 		{
-			return m_timeType switch
-			{
-				1 => 5,
-				2 => 7,
-				3 => 10,
-				4 => 15,
-				5 => 20,
-				6 => 30,
-				_ => 7,
-			};
+			return 40;
 		}
 
 		public int GetTurnWaitTime()
 		{
-			return m_timeType;
+			return GetTurnWaitTime(false);
 		}
 
 		public byte GetVane(int Wind, int param)

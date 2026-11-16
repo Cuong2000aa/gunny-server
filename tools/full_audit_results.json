@@ -1,0 +1,4596 @@
+[
+  {
+    "id": 1,
+    "name": "Lâu đài Gà",
+    "level": "14",
+    "desc": "Lâu đài Gà　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "GuluKingdomSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "GuluKingdomNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "GuluKingdomHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "GuluKingdomTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1071,
+        "name": "Cổng Lâu đài Gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Đảo Porti từng yên bình. Ba năm trước đế quốc xâm lược — hôm nay các ngươi đứng trước cổng. Hạ Gà hồng / tinh anh để mở đường.",
+        "in_db": true,
+        "script_class": "GD1071",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đảo Porti — cổng Lâu đài Gà. Hạ hết gà canh cổng để mở đường vào bên trong!"
+        ]
+      },
+      {
+        "mission_id": 1072,
+        "name": "Đội trưởng Baroff",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Cổng đã vỡ. Đội trưởng Baroff chặn hành lang đại điện.",
+        "in_db": true,
+        "script_class": "GD1072",
+        "script_exists": true,
+        "map_id": 1073,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1003,
+            "name": "Baroff",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SimpleCaptainAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Các ngươi dám xông vào lãnh địa của ta? Chuẩn bị đền tội đi!"
+        ]
+      },
+      {
+        "mission_id": 1171,
+        "name": "Cổng Lâu đài Gà",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Porti dưới bóng chiến tranh. Cổng lâu đài có thêm vệ binh — quét sạch để tiến sâu.",
+        "in_db": true,
+        "script_class": "GT1171",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Ba năm trước đế quốc xâm lược Porti… hôm nay các ngươi xông vào cổng Lâu đài Gà. Hạ hết Gà hồng và Gà tinh anh để mở đường!"
+        ]
+      },
+      {
+        "mission_id": 1172,
+        "name": "Đội trưởng Baroff",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Baroff — tay chân đắc lực của Quốc Vương — chặn giữa hành lang.",
+        "in_db": true,
+        "script_class": "GT1172",
+        "script_exists": true,
+        "map_id": 1073,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1103,
+            "name": "Baroff",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.NormalCaptainAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Các ngươi dám xông vào lãnh địa của ta? Chuẩn bị đền tội đi!"
+        ]
+      },
+      {
+        "mission_id": 1173,
+        "name": "Quốc Vương Gà",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Đại điện mở ra. Quốc Vương biến dị thức tỉnh cả hai dạng. Tiêu diệt hoàn toàn mới giải phóng Porti.",
+        "in_db": true,
+        "script_class": "GT1173",
+        "script_exists": true,
+        "map_id": 1076,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đám dân đen hạ đẳng các ngươi dám xông vào vương quốc của ta?!",
+          "Các ngươi đã chọc giận ta rồi! Ta sẽ không tha!"
+        ]
+      },
+      {
+        "mission_id": 1271,
+        "name": "Cổng Lâu đài Gà (Khó)",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ khó tăng — cổng dày đặc vệ binh tinh nhuệ.",
+        "in_db": true,
+        "script_class": "GK1271",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 1272,
+        "name": "Đội trưởng Baroff (Khó)",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Baroff giận dữ sau lần thua — lần này không còn đường lui.",
+        "in_db": true,
+        "script_class": "GK1272",
+        "script_exists": true,
+        "map_id": 1073,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1203,
+            "name": "Baroff",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.HardCaptainAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Các ngươi dám xông vào lãnh địa của ta? Chuẩn bị đền tội đi!"
+        ]
+      },
+      {
+        "mission_id": 1273,
+        "name": "Quốc Vương Gà (Khó)",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Quốc Vương hấp thụ tà thuật. Cả hai dạng phải bị đánh bại.",
+        "in_db": true,
+        "script_class": "GK1273",
+        "script_exists": true,
+        "map_id": 1076,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đám dân đen hạ đẳng các ngươi dám xông vào vương quốc của ta?!",
+          "Các ngươi đã chọc giận ta rồi! Ta sẽ không tha!"
+        ]
+      },
+      {
+        "mission_id": 1274,
+        "name": "Matthias",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Sau Quốc Vương xuất hiện Matthias — bóng đen đứng sau cuộc xâm lược.",
+        "in_db": true,
+        "script_class": "GK1274",
+        "script_exists": true,
+        "map_id": 1076,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1205,
+            "name": "Gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.HardKingFirst",
+            "script_exists": true
+          },
+          {
+            "boss_id": 1207,
+            "name": "Matthias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.HardKingLast",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Á~~ Đầu ta đau quá... Sao ta lại ở đây!? Vua Bom Matthias đâu rồi?... Ta nhớ ra rồi.",
+          "Cảm ơn các dũng sĩ! Ta là Quốc Vương Gà Nieruo. Không có các ngươi, ta không bao giờ thoát khỏi sự khống chế của Matthias.",
+          "Nhiều năm trước, tộc Bom tấn công Vương quốc Gà. Trong một trận chiến, ta trúng mưu của Vua Bom Matthias và bị lời nguyền khóa tinh thần.",
+          "Trong trận vừa rồi, lời nguyền đã vỡ, ta lấy lại tự do! Thời gian không còn nhiều — hắn chắc chắn cảm nhận được và đang lao tới đây!",
+          "Matthias cực kỳ mạnh. Giờ ta còn yếu, khó chống nổi lâu. Trước khi hắn tới, hãy mau rời khỏi đây!",
+          "Nieruo... không ngờ ngươi phá được khóa tinh thần của ta!",
+          "Hóa ra vậy... nhờ ngoại lực. Ta cho ngươi cơ hội cuối: đầu hàng ta, hoặc bị đày vào hư không chịu khổ mãi mãi?"
+        ]
+      },
+      {
+        "mission_id": 1371,
+        "name": "Cổng Lâu đài Gà (Anh hùng)",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Phiên bản anh hùng — chỉ đội mạnh nhất mới phá được cổng.",
+        "in_db": true,
+        "script_class": "GAH1371",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 1372,
+        "name": "Đội trưởng Baroff (Anh hùng)",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Baroff hình thái tối thượng canh giữ đại điện.",
+        "in_db": true,
+        "script_class": "GAH1372",
+        "script_exists": true,
+        "map_id": 1073,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1303,
+            "name": "Baroff",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TerrorCaptainAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": []
+      },
+      {
+        "mission_id": 1373,
+        "name": "Chìa khóa ma thuật",
+        "title": "TURN,Chiếm lĩnh",
+        "desc": "Cửa kết tinh khóa chặt ngai vàng. Thu đủ chìa khóa ma thuật để mở đường.",
+        "in_db": true,
+        "script_class": "GAH1373",
+        "script_exists": true,
+        "map_id": 1075,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 1374,
+        "name": "Quốc Vương Gà (Anh hùng)",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Quốc Vương hóa thân hoàn toàn — hai dạng hủy diệt.",
+        "in_db": true,
+        "script_class": "GAH1374",
+        "script_exists": true,
+        "map_id": 1076,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 1375,
+        "name": "Bóng ma Matthias",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Matthias không chết — linh hồn hắn bám lấy lâu đài.",
+        "in_db": true,
+        "script_class": "GAH1375",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1308,
+            "name": "Bóng ma Matthias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TerrorKingZhen",
+            "script_exists": true
+          }
+        ],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 2,
+    "name": "Huyệt Ma Kiến",
+    "level": "8",
+    "desc": "Huyệt Ma Kiến　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "AntCaveSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "AntCaveNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 2001,
+        "name": "Cửa hang Huyệt Ma Kiến",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Thương nhân mất hàng trong rừng ma pháp. Lần theo dấu vết tới cửa hang — đàn kiến tiên phong/trinh sát tràn ra.",
+        "in_db": true,
+        "script_class": "KD1120",
+        "script_exists": true,
+        "map_id": 1120,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Cửa hang tối om… đàn kiến tiên phong tràn ra! Quét sạch chúng rồi mới xuống sâu hơn tới Nữ Vương."
+        ]
+      },
+      {
+        "mission_id": 2002,
+        "name": "Nữ Vương Kiến Daniliz",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Sau lớp kiến lính là phòng trứng. Daniliz tuyên bố mọi thứ trong hang đều thuộc về nàng.",
+        "in_db": true,
+        "script_class": "KD1121",
+        "script_exists": true,
+        "map_id": 1121,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 2003,
+            "name": "Daniliz",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SimpleQueenAntAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": []
+      },
+      {
+        "mission_id": 2101,
+        "name": "Cửa hang Huyệt Ma Kiến (Thường)",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ thường — kiến đông hơn, phòng thủ dày.",
+        "in_db": true,
+        "script_class": "KT1120",
+        "script_exists": true,
+        "map_id": 1120,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Độ khó thường — đàn kiến dày hơn chặn cửa hang. Quét sạch rồi xuống gặp Daniliz!"
+        ]
+      },
+      {
+        "mission_id": 2102,
+        "name": "Nữ Vương Kiến Daniliz (Thường)",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Daniliz phòng thủ vững hơn. Hạ nàng để thông tuyến thương mại.",
+        "in_db": true,
+        "script_class": "KT1121",
+        "script_exists": true,
+        "map_id": 1121,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 2103,
+            "name": "Daniliz",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.NormalQueenAntAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 3,
+    "name": "Bộ lạc Tà thần",
+    "level": "18",
+    "desc": "Bộ lạc Tà thần　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "EvilTribeSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "EvilTribeNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "EvilTribeHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "EvilTribeTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 3101,
+        "name": "Bộ lạc Tà thần — Cổng làng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Bình gốm cổ vỡ lộ ra bản đồ bộ lạc. Cổng làng có dũng sĩ bộ lạc chặn lối — hạ họ để vào sâu.",
+        "in_db": true,
+        "script_class": "BLTTT1122",
+        "script_exists": true,
+        "map_id": 1122,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Dũng sĩ bộ lạc tràn ra!"
+        ]
+      },
+      {
+        "mission_id": 3102,
+        "name": "Bộ lạc Tà thần — Đậu thần",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Giữa làng, đậu thần khô héo. Hồi sinh đậu thần để mở nghi thức và cửa rừng.",
+        "in_db": true,
+        "script_class": "BLTTT1123",
+        "script_exists": true,
+        "map_id": 1123,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3107,
+            "name": "Đậu thần",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdNormalBloomNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Đậu thần xuất hiện — tiêu diệt vật tổ nguyền để hồi sinh nghi thức!"
+        ]
+      },
+      {
+        "mission_id": 3103,
+        "name": "Bộ lạc Tà thần — Anh em Bulan",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Anh em Bulan bảo vệ thánh địa. Hạ cả hai mới tới Chúa Tể.",
+        "in_db": true,
+        "script_class": "BLTTT1124",
+        "script_exists": true,
+        "map_id": 1124,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3108,
+            "name": "Bulanbala anh",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdNormalKingFirst",
+            "script_exists": true
+          },
+          {
+            "boss_id": 3109,
+            "name": "Bulanbala em",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdNormalKingSecond",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Anh em Bulanbala bảo vệ thánh địa!"
+        ]
+      },
+      {
+        "mission_id": 3106,
+        "name": "Bộ lạc Tà thần — Chúa Tể Rừng Xanh",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Thánh địa mở. Chúa Tể Rừng Xanh thức tỉnh — kết thúc hành trình bộ lạc.",
+        "in_db": true,
+        "script_class": "BLTTT1126",
+        "script_exists": true,
+        "map_id": 1126,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3116,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdNormalKingThird",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan — Chúa Tể Rừng Xanh!"
+        ]
+      },
+      {
+        "mission_id": 3201,
+        "name": "Bộ lạc Tà thần (Khó) — Cổng làng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ khó: dũng sĩ bộ lạc đông và mạnh hơn.",
+        "in_db": true,
+        "script_class": "BLTTK1122",
+        "script_exists": true,
+        "map_id": 1122,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Độ khó — cổng làng dày đặc!"
+        ]
+      },
+      {
+        "mission_id": 3202,
+        "name": "Bộ lạc Tà thần (Khó) — Đậu thần",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Đậu thần bị nguyền — phải hồi sinh dưới áp lực.",
+        "in_db": true,
+        "script_class": "BLTTK1123",
+        "script_exists": true,
+        "map_id": 1123,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3207,
+            "name": "Đậu thần",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdHardBloomNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Đậu thần bị nguyền!"
+        ]
+      },
+      {
+        "mission_id": 3203,
+        "name": "Bộ lạc Tà thần (Khó) — Anh em Bulan",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Bulan kích nộ. Hạ cả hai.",
+        "in_db": true,
+        "script_class": "BLTTK1124",
+        "script_exists": true,
+        "map_id": 1124,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3208,
+            "name": "Bulanbala anh",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdHardKingFirst",
+            "script_exists": true
+          },
+          {
+            "boss_id": 3209,
+            "name": "Bulanbala em",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdHardKingSecond",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Bulan kích nộ!"
+        ]
+      },
+      {
+        "mission_id": 3206,
+        "name": "Bộ lạc Tà thần (Khó) — Chúa Tể",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Chúa Tể Rừng Xanh hình thái khó.",
+        "in_db": true,
+        "script_class": "BLTTK1126",
+        "script_exists": true,
+        "map_id": 1126,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3216,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdHardKingThird",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan hình thái khó!"
+        ]
+      },
+      {
+        "mission_id": 3301,
+        "name": "Bộ lạc Tà thần (AH) — Cổng làng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Anh hùng: cổng làng là biển người.",
+        "in_db": true,
+        "script_class": "BLTTAH1122",
+        "script_exists": true,
+        "map_id": 1122,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Anh hùng — biển người!"
+        ]
+      },
+      {
+        "mission_id": 3302,
+        "name": "Bộ lạc Tà thần (AH) — Đậu thần",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Nghi thức đậu thần dưới lửa địa ngục.",
+        "in_db": true,
+        "script_class": "BLTTAH1123",
+        "script_exists": true,
+        "map_id": 1123,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3307,
+            "name": "Đậu thần",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdTerrorBloomNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Nghi thức dưới lửa địa ngục!"
+        ]
+      },
+      {
+        "mission_id": 3303,
+        "name": "Bộ lạc Tà thần (AH) — Anh em Bulan",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Bulan tối thượng.",
+        "in_db": true,
+        "script_class": "BLTTAH1124",
+        "script_exists": true,
+        "map_id": 1124,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3309,
+            "name": "Bulanbala em",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdTerrorKingSecond",
+            "script_exists": true
+          },
+          {
+            "boss_id": 3308,
+            "name": "Bulanbala anh AH",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdTerrorKingFirst",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Bulan tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 3306,
+        "name": "Bộ lạc Tà thần (AH) — Chúa Tể",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Chúa Tể Rừng Xanh tối thượng — trận cuối.",
+        "in_db": true,
+        "script_class": "BLTTAH1126",
+        "script_exists": true,
+        "map_id": 1126,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 3316,
+            "name": "Sulan AH",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirdTerrorKingThird",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan tối thượng!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 4,
+    "name": "Pháo đài hắc ám",
+    "level": "18",
+    "desc": "Pháo đài hắc ám　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "DarkCastleNormalGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "DarkCastleNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "DarkCastleHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "DarkCastleTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 4101,
+        "name": "Pháo đài hắc ám — Cửa thành",
+        "title": "TURN,Cửa thành bị vỡ",
+        "desc": "Cuộc phiêu lưu mới: phá vỡ cửa thành hắc ám để vào bên trong.",
+        "in_db": true,
+        "script_class": "PDHAT1142",
+        "script_exists": true,
+        "map_id": 1142,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4102,
+            "name": "Cửa phong ấn",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourNormalCycLoneNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Phá vỡ cửa thành!"
+        ]
+      },
+      {
+        "mission_id": 4102,
+        "name": "Pháo đài hắc ám — Sói Tinh & Chim Ưng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Trong sân thành, Sói Tinh và Chim Ưng phối hợp tấn công. Hạ cả hai.",
+        "in_db": true,
+        "script_class": "PDHAT1143",
+        "script_exists": true,
+        "map_id": 1143,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4106,
+            "name": "Sói sa mạc",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourNormalWolfNpc",
+            "script_exists": true
+          },
+          {
+            "boss_id": 4105,
+            "name": "Thần Ưng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourNormalHawkNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Hạ cả Sói và Ưng!"
+        ]
+      },
+      {
+        "mission_id": 4103,
+        "name": "Pháo đài hắc ám — Minotaur",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Hầm tối — Minotaur canh giữ lõi pháo đài. Đánh bại nó để giải phóng pháo đài.",
+        "in_db": true,
+        "script_class": "PDHAT1144",
+        "script_exists": true,
+        "map_id": 1144,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4108,
+            "name": "Minotaur",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourNormalCattleBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaur canh lõi pháo đài!"
+        ]
+      },
+      {
+        "mission_id": 4201,
+        "name": "Pháo đài hắc ám (Khó) — Cửa thành",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Cửa thành kiên cố hơn — phá vỡ bằng sức mạnh.",
+        "in_db": true,
+        "script_class": "PDHAK1142",
+        "script_exists": true,
+        "map_id": 1142,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4202,
+            "name": "Cửa phong ấn",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourHardCycLoneNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cửa thành kiên cố hơn!"
+        ]
+      },
+      {
+        "mission_id": 4202,
+        "name": "Pháo đài hắc ám (Khó) — Sói & Ưng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Sói Tinh và Chim Ưng điên cuồng.",
+        "in_db": true,
+        "script_class": "PDHAK1143",
+        "script_exists": true,
+        "map_id": 1143,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4205,
+            "name": "Thần Ưng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourHardHawkNpc",
+            "script_exists": true
+          },
+          {
+            "boss_id": 4206,
+            "name": "Sói sa mạc",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourHardWolfNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Song thủ điên cuồng!"
+        ]
+      },
+      {
+        "mission_id": 4203,
+        "name": "Pháo đài hắc ám (Khó) — Minotaur",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Minotaur hình thái khó.",
+        "in_db": true,
+        "script_class": "PDHAK1144",
+        "script_exists": true,
+        "map_id": 1144,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4208,
+            "name": "Minotaur",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourHardCattleBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaur hình thái khó!"
+        ]
+      },
+      {
+        "mission_id": 4301,
+        "name": "Pháo đài hắc ám (AH) — Cửa thành",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Anh hùng: cửa thành gần như bất khả xâm phạm.",
+        "in_db": true,
+        "script_class": "PDHAAH1142",
+        "script_exists": true,
+        "map_id": 1142,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4302,
+            "name": "Cửa phong ấn",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourTerrorCycLoneNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Phá cửa anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 4302,
+        "name": "Pháo đài hắc ám (AH) — Sói & Ưng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Song thủ hộ vệ tối thượng.",
+        "in_db": true,
+        "script_class": "PDHAAH1143",
+        "script_exists": true,
+        "map_id": 1143,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4305,
+            "name": "Thần Ưng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourTerrorHawkNpc",
+            "script_exists": true
+          },
+          {
+            "boss_id": 4306,
+            "name": "Sói sa mạc",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourTerrorWolfNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Song thủ tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 4303,
+        "name": "Pháo đài hắc ám (AH) — Minotaur",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Minotaur tối thượng — kết thúc pháo đài.",
+        "in_db": true,
+        "script_class": "PDHAAH1144",
+        "script_exists": true,
+        "map_id": 1144,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 4308,
+            "name": "Minotaur",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FourTerrorCattleBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaur tối thượng!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 5,
+    "name": "Đại chiến rồng",
+    "level": "18",
+    "desc": "Đại chiến rồng　 Đề nghị: 2-4 người",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "DragonWarNormalGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "DragonWarNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "DragonWarHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "DragonWarTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 5101,
+        "name": "Hang núi lửa — Quỷ Pochi",
+        "title": "TURN,Hạ Quỷ Pochi",
+        "desc": "Ngọn núi lửa giữa đảo. Quỷ Pochi chặn cửa hang.",
+        "in_db": true,
+        "script_class": "DCR5101",
+        "script_exists": true,
+        "map_id": 5101,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5101,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveNormalFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Hang núi lửa mở ra… Quỷ Pochi chặn lối! Tiêu diệt nó để tiến sâu hơn.",
+          "Hang núi lửa mở ra… Quỷ Pochi chặn lối! Tiêu diệt nó để tiến sâu hơn.",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5102,
+        "name": "Pochi tái sinh",
+        "title": "TURN,Hạ quỷ Pochi",
+        "desc": "Pochi hấp thụ dung nham và tái sinh mạnh hơn.",
+        "in_db": true,
+        "script_class": "DCR5102",
+        "script_exists": true,
+        "map_id": 5102,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5114,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveNormalSecondBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Pochi chưa chết — nó hấp thụ dung nham và tái sinh mạnh hơn!",
+          "Pochi chưa chết — nó hấp thụ dung nham và tái sinh mạnh hơn!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5103,
+        "name": "Quỷ Khăn Hồng",
+        "title": "TURN,Hạ quỷ khăn hồng",
+        "desc": "Cánh cửa rồng do Quỷ Khăn Hồng canh giữ.",
+        "in_db": true,
+        "script_class": "DCR5103",
+        "script_exists": true,
+        "map_id": 5103,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5121,
+            "name": "Quỷ khăn hồng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveNormalThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cánh cửa rồng do Quỷ Khăn Hồng canh giữ. Hạ hắn để mở đường đến Long Vương!",
+          "Cánh cửa rồng do Quỷ Khăn Hồng canh giữ. Hạ hắn để mở đường đến Long Vương!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5104,
+        "name": "Tà Diệm Long",
+        "title": "TURN,Hạ boss rồng",
+        "desc": "Đỉnh núi lửa — Tà Diệm Long thức tỉnh.",
+        "in_db": true,
+        "script_class": "DCR5104",
+        "script_exists": true,
+        "map_id": 5104,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5131,
+            "name": "Tà Diệm Long",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveNormalFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Đỉnh núi lửa — Tà Diệm Long thức tỉnh! Đây là trận quyết chiến!",
+          "Đỉnh núi lửa — Tà Diệm Long thức tỉnh! Đây là trận quyết chiến!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5201,
+        "name": "Hang núi lửa (Khó) — Pochi",
+        "title": "TURN,Hạ quỷ Pochi",
+        "desc": "Độ khó tăng. Pochi giận dữ ngay cửa hang.",
+        "in_db": true,
+        "script_class": "DCR5201",
+        "script_exists": true,
+        "map_id": 5201,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5201,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveHardFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Độ khó tăng! Pochi giận dữ chặn các ngươi ngay cửa hang.",
+          "Độ khó tăng! Pochi giận dữ chặn các ngươi ngay cửa hang.",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5202,
+        "name": "Pochi dung nham đỏ",
+        "title": "TURN,Hạ quỷ Pochi",
+        "desc": "Pochi hấp thụ dung nham đỏ.",
+        "in_db": true,
+        "script_class": "DCR5202",
+        "script_exists": true,
+        "map_id": 5202,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5214,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveHardSecondBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Pochi hấp thụ dung nham đỏ — sức mạnh gấp bội!",
+          "Pochi hấp thụ dung nham đỏ — sức mạnh gấp bội!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5203,
+        "name": "Khăn Hồng nhuốm máu",
+        "title": "TURN,Hạ quỷ khăn hồng",
+        "desc": "Khăn hồng nhuốm máu. Chỉ kẻ mạnh mới qua.",
+        "in_db": true,
+        "script_class": "DCR5203",
+        "script_exists": true,
+        "map_id": 5203,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5221,
+            "name": "Quỷ khăn hồng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveHardThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Khăn hồng nhuốm máu. Chỉ kẻ mạnh mới qua được!",
+          "Khăn hồng nhuốm máu. Chỉ kẻ mạnh mới qua được!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5204,
+        "name": "Tà Diệm Long (Khó)",
+        "title": "TURN,Hạ boss rồng",
+        "desc": "Long Vương khó tính thức tỉnh.",
+        "in_db": true,
+        "script_class": "DCR5204",
+        "script_exists": true,
+        "map_id": 5204,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5231,
+            "name": "Tà Diệm Long",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveHardFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Long Vương khó tính thức tỉnh! Chiến đấu đến cùng!",
+          "Long Vương khó tính thức tỉnh! Chiến đấu đến cùng!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5301,
+        "name": "Địa ngục mở cửa — Pochi",
+        "title": "TURN,Hạ quỷ Pochi",
+        "desc": "Pochi hình thái hủy diệt.",
+        "in_db": true,
+        "script_class": "DCR5301",
+        "script_exists": true,
+        "map_id": 5301,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5301,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveTerrorFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Địa ngục mở cửa — Pochi hình thái hủy diệt xuất hiện!",
+          "Địa ngục mở cửa — Pochi hình thái hủy diệt xuất hiện!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5302,
+        "name": "Pochi lửa đen",
+        "title": "TURN,Hạ quỷ Pochi",
+        "desc": "Pochi hấp thụ lửa đen.",
+        "in_db": true,
+        "script_class": "DCR5302",
+        "script_exists": true,
+        "map_id": 5302,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5314,
+            "name": "Quỷ Pochi",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveTerrorSecondBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Pochi hấp thụ lửa đen. Không còn đường lui!",
+          "Pochi hấp thụ lửa đen. Không còn đường lui!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5303,
+        "name": "Cửa ngõ địa ngục",
+        "title": "TURN,Hạ quỷ khăn hồng",
+        "desc": "Khăn hồng — cửa ngõ địa ngục.",
+        "in_db": true,
+        "script_class": "DCR5303",
+        "script_exists": true,
+        "map_id": 5303,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5321,
+            "name": "Quỷ khăn hồng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveTerrorThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Khăn hồng — cửa ngõ địa ngục. Hạ nó hoặc bị nuốt chửng!",
+          "Khăn hồng — cửa ngõ địa ngục. Hạ nó hoặc bị nuốt chửng!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      },
+      {
+        "mission_id": 5304,
+        "name": "Rồng Chúa núi lửa",
+        "title": "TURN,Hạ boss rồng",
+        "desc": "Tà Diệm Long hình thái tận thế.",
+        "in_db": true,
+        "script_class": "DCR5304",
+        "script_exists": true,
+        "map_id": 5304,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 5331,
+            "name": "Tà Diệm Long",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.FiveTerrorFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Rồng Chúa núi lửa thức giấc! Trận chiến tận thế bắt đầu!",
+          "Rồng Chúa núi lửa thức giấc! Trận chiến tận thế bắt đầu!",
+          "Grrr... các ngươi làm ta giận!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 6,
+    "name": "Đấu trường gà",
+    "level": "18",
+    "desc": "Đấu trường gà　 Số người: 3-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "GuluOlympicsNormalGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "GuluOlympicsNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "GuluOlympicsHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "GuluOlympicsTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 6101,
+        "name": "Đấu trường gà — Vòng điểm",
+        "title": "TURN,Điểm đạt được.",
+        "desc": "Quốc Vương tổ chức đại hội thể thao. Đạt 99 điểm để qua vòng loại.",
+        "in_db": true,
+        "script_class": "DTGT1165",
+        "script_exists": true,
+        "map_id": 1165,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đạt điểm bằng cách hạ địch!"
+        ]
+      },
+      {
+        "mission_id": 6102,
+        "name": "Đấu trường gà — Đua về đích",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Đội đỏ phải về đích trước — đừng để đội xanh thắng!",
+        "in_db": true,
+        "script_class": "DTGT1166",
+        "script_exists": true,
+        "map_id": 1166,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Mở đường cho đội đỏ!"
+        ]
+      },
+      {
+        "mission_id": 6103,
+        "name": "Đấu trường gà — Oai Tử",
+        "title": "TURN,Hạ Oai Tử",
+        "desc": "Oai Tử khiêu chiến trên đấu trường. Hạ hắn để vào chung kết.",
+        "in_db": true,
+        "script_class": "DTGT1167",
+        "script_exists": true,
+        "map_id": 1167,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6131,
+            "name": "Oai Tử",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixNormalThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Oai Tử khiêu chiến!"
+        ]
+      },
+      {
+        "mission_id": 6104,
+        "name": "Đấu trường gà — Trọng Tài Đen",
+        "title": "TURN,Hạ Trọng Tài Đen",
+        "desc": "Trọng Tài Đen thao túng luật lệ. Đánh bại hắn để trả lại công bằng cho đại hội.",
+        "in_db": true,
+        "script_class": "DTGT1168",
+        "script_exists": true,
+        "map_id": 1168,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6141,
+            "name": "Trọng tài còi đen",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixNormalFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Trọng Tài Đen!"
+        ]
+      },
+      {
+        "mission_id": 6201,
+        "name": "Đấu trường gà (Khó) — Vòng điểm",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ khó: đạt 99 điểm dưới áp lực lớn hơn.",
+        "in_db": true,
+        "script_class": "DTGK1165",
+        "script_exists": true,
+        "map_id": 1165,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Vòng điểm khó!"
+        ]
+      },
+      {
+        "mission_id": 6202,
+        "name": "Đấu trường gà (Khó) — Đua về đích",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Cuộc đua sinh tử.",
+        "in_db": true,
+        "script_class": "DTGK1166",
+        "script_exists": true,
+        "map_id": 1166,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Cuộc đua sinh tử!"
+        ]
+      },
+      {
+        "mission_id": 6203,
+        "name": "Đấu trường gà (Khó) — Oai Tử",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Oai Tử điên cuồng.",
+        "in_db": true,
+        "script_class": "DTGK1167",
+        "script_exists": true,
+        "map_id": 1167,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6231,
+            "name": "Oai Tử",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixHardThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Oai Tử điên cuồng!"
+        ]
+      },
+      {
+        "mission_id": 6204,
+        "name": "Đấu trường gà (Khó) — Trọng Tài Đen",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Trọng Tài Đen hình thái khó.",
+        "in_db": true,
+        "script_class": "DTGK1168",
+        "script_exists": true,
+        "map_id": 1168,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6241,
+            "name": "Trọng tài còi đen",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixHardFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Trọng Tài Đen khó!"
+        ]
+      },
+      {
+        "mission_id": 6301,
+        "name": "Đấu trường gà (AH) — Vòng điểm",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Anh hùng: vòng điểm khắc nghiệt.",
+        "in_db": true,
+        "script_class": "DTGAH1165",
+        "script_exists": true,
+        "map_id": 1165,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Vòng điểm anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 6302,
+        "name": "Đấu trường gà (AH) — Đua về đích",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Một sai sót là thua.",
+        "in_db": true,
+        "script_class": "DTGAH1166",
+        "script_exists": true,
+        "map_id": 1166,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đua anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 6303,
+        "name": "Đấu trường gà (AH) — Oai Tử",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Oai Tử tối thượng.",
+        "in_db": true,
+        "script_class": "DTGAH1167",
+        "script_exists": true,
+        "map_id": 1167,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6331,
+            "name": "Oai Tử",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixTerrorThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Oai Tử tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 6304,
+        "name": "Đấu trường gà (AH) — Trọng Tài Đen",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Trọng Tài Đen tối thượng — kết thúc đại hội.",
+        "in_db": true,
+        "script_class": "DTGAH1168",
+        "script_exists": true,
+        "map_id": 1168,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 6341,
+            "name": "Trọng tài còi đen",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SixTerrorFourBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Trọng Tài Đen tối thượng!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 7,
+    "name": "Giải cứu gà con",
+    "level": "9",
+    "desc": "Giải cứu gà con　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "RunRunChickenSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "RunRunChickenNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "RunRunChickenHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 7001,
+        "name": "Giải cứu gà con — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Nông trại yên bình bị gà mái xấu xí phá tan. Đàn gà con nhiễm độc — hạ chúng để cứu nông trại.",
+        "in_db": true,
+        "script_class": "GCGCD1161",
+        "script_exists": true,
+        "map_id": 1161,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7001,
+            "name": "Gà tí",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhSimpleNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Nông trại bị phá — hạ đàn gà con nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7002,
+        "name": "Giải cứu gà con — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Gà mái xuất hiện sau đàn con. Đánh bại nó để mở đường tới chuồng.",
+        "in_db": true,
+        "script_class": "GCGCD1162",
+        "script_exists": true,
+        "map_id": 1162,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7011,
+            "name": "Gà mái",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhSimpleFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Gà mái xuất hiện sau đàn con!"
+        ]
+      },
+      {
+        "mission_id": 7004,
+        "name": "Giải cứu gà con — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Gà lương thiện bị nhốt. Phá hủy lồng để giải cứu chúng.",
+        "in_db": true,
+        "script_class": "GCGCD1164",
+        "script_exists": true,
+        "map_id": 1164,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7032,
+            "name": "Lồng gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhSimpleCageNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Phá lồng — giải cứu gà lương thiện!"
+        ]
+      },
+      {
+        "mission_id": 7101,
+        "name": "Giải cứu gà con (Thường) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ thường: nhiều gà con nhiễm độc hơn.",
+        "in_db": true,
+        "script_class": "GCGCT1161",
+        "script_exists": true,
+        "map_id": 1161,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7101,
+            "name": "Gà tí",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhNormalNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Độ thường: nhiều gà con nhiễm độc hơn!"
+        ]
+      },
+      {
+        "mission_id": 7102,
+        "name": "Giải cứu gà con (Thường) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Gà mái mạnh hơn.",
+        "in_db": true,
+        "script_class": "GCGCT1162",
+        "script_exists": true,
+        "map_id": 1162,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7111,
+            "name": "Gà mái",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhNormalFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Gà mái mạnh hơn!"
+        ]
+      },
+      {
+        "mission_id": 7103,
+        "name": "Giải cứu gà con (Thường) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Chuồng gà biến dị chặn lối. Hạ chuồng để tới lồng.",
+        "in_db": true,
+        "script_class": "GCGCT1163",
+        "script_exists": true,
+        "map_id": 1163,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7123,
+            "name": "Chuồng gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhNormalHouseAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Chuồng gà biến dị chặn lối!"
+        ]
+      },
+      {
+        "mission_id": 7104,
+        "name": "Giải cứu gà con (Thường) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Phá lồng — giải cứu gà lương thiện.",
+        "in_db": true,
+        "script_class": "GCGCT1164",
+        "script_exists": true,
+        "map_id": 1164,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7132,
+            "name": "Lồng gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhNormalCageNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Phá lồng để cứu gà!"
+        ]
+      },
+      {
+        "mission_id": 7201,
+        "name": "Giải cứu gà con (Khó) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Độ khó: biển gà con nhiễm độc.",
+        "in_db": true,
+        "script_class": "GCGCK1161",
+        "script_exists": true,
+        "map_id": 1161,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7201,
+            "name": "Gà tí",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhHardNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Độ khó: biển gà con nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7202,
+        "name": "Giải cứu gà con (Khó) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Gà mái điên loạn.",
+        "in_db": true,
+        "script_class": "GCGCK1162",
+        "script_exists": true,
+        "map_id": 1162,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7211,
+            "name": "Gà mái",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhHardFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Gà mái điên loạn!"
+        ]
+      },
+      {
+        "mission_id": 7203,
+        "name": "Giải cứu gà con (Khó) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Chuồng gà kiên cố.",
+        "in_db": true,
+        "script_class": "GCGCK1163",
+        "script_exists": true,
+        "map_id": 1163,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7223,
+            "name": "Chuồng gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhHardHouseAi",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Chuồng gà kiên cố!"
+        ]
+      },
+      {
+        "mission_id": 7204,
+        "name": "Giải cứu gà con (Khó) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Phá lồng dưới áp lực cao.",
+        "in_db": true,
+        "script_class": "GCGCK1164",
+        "script_exists": true,
+        "map_id": 1164,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 7232,
+            "name": "Lồng gà",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.SeventhHardCageNpc",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Phá lồng dưới áp lực cao!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 8,
+    "name": "Rừng rậm Gamazon",
+    "level": "8",
+    "desc": "Rừng rậm Gamazon　 Sư đồ — Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "GamazonForestSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": false
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 800,
+        "name": "Rừng Gamazon — Đường mòn",
+        "title": "TURN,Người lựu đạn",
+        "desc": "Rừng rậm Gamazon. Người lựu đạn bộ lạc chặn đường mòn — mở đường cho sư phụ.",
+        "in_db": true,
+        "script_class": "GZS800",
+        "script_exists": true,
+        "map_id": 800,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Người lựu đạn / heo rừng chặn đường!"
+        ]
+      },
+      {
+        "mission_id": 801,
+        "name": "Rừng Gamazon — Chiến sĩ tà thần",
+        "title": "TURN,Chiến sĩ tà thần",
+        "desc": "Sâu rừng, Chiến sĩ tà thần xuất hiện. Hạ hắn để hoàn thành khóa Gamazon.",
+        "in_db": true,
+        "script_class": "GZS801",
+        "script_exists": true,
+        "map_id": 801,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [
+          {
+            "boss_id": 8102,
+            "name": "Chiến sĩ tà thần",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.EighthSimpleFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Chiến sĩ tà thần!"
+        ]
+      }
+    ],
+    "issues": [
+      "Thiếu script cho độ khó Normal",
+      "Ải 800: Map 800 thiếu trong Game_Map",
+      "Ải 800: Map 800 thiếu file collision fore.map/dead.map",
+      "Ải 801: Map 801 thiếu trong Game_Map",
+      "Ải 801: Map 801 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 9,
+    "name": "Hoang mạc Xatara",
+    "level": "12",
+    "desc": "Hoang mạc Xatara　 Sư đồ — Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "XataraDesertSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": false
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 900,
+        "name": "Hoang mạc Xatara — Cồn cát",
+        "title": "TURN,Người lựu đạn",
+        "desc": "Gió cát Xatara. Người lựu đạn mai phục trên cồn — quét sạch rồi mới gặp vua bò cạp.",
+        "in_db": true,
+        "script_class": "XDS900",
+        "script_exists": true,
+        "map_id": 900,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Mai phục trên cát!"
+        ]
+      },
+      {
+        "mission_id": 901,
+        "name": "Hoang mạc Xatara — Vua Bò Cạp",
+        "title": "TURN,Hạ Vua Bò Cạp",
+        "desc": "Dưới lớp cát, Vua Bò Cạp trồi lên. Trận cuối khóa huấn luyện Xatara.",
+        "in_db": true,
+        "script_class": "XDS901",
+        "script_exists": true,
+        "map_id": 901,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [
+          {
+            "boss_id": 9102,
+            "name": "Vua bò cạp",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.EighthBigScorpionBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Vua Bò Cạp trồi lên!"
+        ]
+      }
+    ],
+    "issues": [
+      "Thiếu script cho độ khó Normal",
+      "Ải 900: Map 900 thiếu trong Game_Map",
+      "Ải 900: Map 900 thiếu file collision fore.map/dead.map",
+      "Ải 901: Map 901 thiếu trong Game_Map",
+      "Ải 901: Map 901 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 10,
+    "name": "Lâu đài Daucula",
+    "level": "15",
+    "desc": "Lâu đài Daucula　 Sư đồ — Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "DraculaTowerSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": false
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 700,
+        "name": "Lâu đài Dracula — Hành lang",
+        "title": "TURN,Hạ quái vật",
+        "desc": "Lâu đài Daucula tối om. Đám tạo vật Franken canh hành lang — tiêu diệt chúng để tới phòng thí nghiệm.",
+        "in_db": true,
+        "script_class": "DTS700",
+        "script_exists": true,
+        "map_id": 700,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Quét tạo vật hành lang!"
+        ]
+      },
+      {
+        "mission_id": 701,
+        "name": "Lâu đài Dracula — Franken",
+        "title": "TURN,Hạ Franken",
+        "desc": "Phòng thí nghiệm mở ra. Franken thức tỉnh! Kết thúc khóa huấn luyện Dracula.",
+        "in_db": true,
+        "script_class": "DTS701",
+        "script_exists": true,
+        "map_id": 701,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [
+          {
+            "boss_id": 10101,
+            "name": "Franken",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.EighthDarkEarlBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Franken thức tỉnh!"
+        ]
+      }
+    ],
+    "issues": [
+      "Thiếu script cho độ khó Normal",
+      "Ải 700: Map 700 thiếu trong Game_Map",
+      "Ải 700: Map 700 thiếu file collision fore.map/dead.map",
+      "Ải 701: Map 701 thiếu trong Game_Map",
+      "Ải 701: Map 701 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 11,
+    "name": "Vịnh Cariga",
+    "level": "18",
+    "desc": "Vịnh Cariga　 Sư đồ — Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "CarigaBaySimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": false
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 600,
+        "name": "Vịnh Cariga — Bãi đáp",
+        "title": "TURN,Hạ quái vật",
+        "desc": "Bá tước đưa các ngươi tập huấn tại Vịnh Cariga. Quái biển tràn lên bãi — quét sạch để mở đường vào hang đá.",
+        "in_db": true,
+        "script_class": "CBS600",
+        "script_exists": true,
+        "map_id": 600,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Quét quái biển / heo rừng trên bãi!"
+        ]
+      },
+      {
+        "mission_id": 601,
+        "name": "Vịnh Cariga — Thủ lĩnh",
+        "title": "TURN,Hạ quái vật",
+        "desc": "Trong hang đá, thủ lĩnh vịnh xuất hiện. Hạ nó để hoàn thành khóa huấn luyện Cariga.",
+        "in_db": true,
+        "script_class": "CBS601",
+        "script_exists": true,
+        "map_id": 601,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [
+          {
+            "boss_id": 8102,
+            "name": "Chiến sĩ tà thần",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.EighthSimpleFirstBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Thủ lĩnh vịnh xuất hiện!"
+        ]
+      }
+    ],
+    "issues": [
+      "Thiếu script cho độ khó Normal",
+      "Ải 600: Map 600 thiếu trong Game_Map",
+      "Ải 600: Map 600 thiếu file collision fore.map/dead.map",
+      "Ải 601: Map 601 thiếu trong Game_Map",
+      "Ải 601: Map 601 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 12,
+    "name": "Vòng xoáy thời gian",
+    "level": "30",
+    "desc": "Vòng xoáy thời gian　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "TimeVortexSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "TimeVortexNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "TimeVortexHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "TimeVortexTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 12001,
+        "name": "Vòng xoáy thời gian (Dễ) — Bão thời không",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Dễ: bước vào vòng xoáy — hạ hết kẻ địch bị kéo theo dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVS12001",
+        "script_exists": true,
+        "map_id": 12001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Hạ hết sói thời không!"
+        ]
+      },
+      {
+        "mission_id": 12002,
+        "name": "Vòng xoáy thời gian (Dễ) — Thuyền trưởng Cá sấu",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Dễ: Thuyền trưởng Cá sấu chặn dòng chảy thời gian.",
+        "in_db": true,
+        "script_class": "TVS12002",
+        "script_exists": true,
+        "map_id": 12002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12008,
+            "name": "Thuyền trưởng Cá Sấu",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveSimpleCrocodileBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cá Sấu chặn dòng chảy!"
+        ]
+      },
+      {
+        "mission_id": 12003,
+        "name": "Vòng xoáy thời gian (Dễ) — Hồi phục Gà",
+        "title": "TURN, Chết,Cứu",
+        "desc": "Dễ: gà bị thương trong vòng xoáy — hồi phục chúng trước khi quá muộn.",
+        "in_db": true,
+        "script_class": "TVS12003",
+        "script_exists": true,
+        "map_id": 12003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Bảo vệ/hạ địch để hồi phục Gà!"
+        ]
+      },
+      {
+        "mission_id": 12004,
+        "name": "Vòng xoáy thời gian (Dễ) — Bác học Vẹt",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Dễ: Bác học Vẹt — kẻ gây biến dị gà con — xuất hiện ở cuối dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVS12004",
+        "script_exists": true,
+        "map_id": 12004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12016,
+            "name": "Bác học Vẹt",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveSimpleFlyThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Bác học Vẹt xuất hiện!"
+        ]
+      },
+      {
+        "mission_id": 12101,
+        "name": "Vòng xoáy thời gian (Thường) — Bão thời không",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Thường: bước vào vòng xoáy — hạ hết kẻ địch bị kéo theo dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVN12001",
+        "script_exists": true,
+        "map_id": 12001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Sói thường!"
+        ]
+      },
+      {
+        "mission_id": 12102,
+        "name": "Vòng xoáy thời gian (Thường) — Thuyền trưởng Cá sấu",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Thường: Thuyền trưởng Cá sấu chặn dòng chảy thời gian.",
+        "in_db": true,
+        "script_class": "TVN12002",
+        "script_exists": true,
+        "map_id": 12002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12108,
+            "name": "Thuyền trưởng Cá Sấu",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveNormalCrocodileBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cá Sấu mạnh hơn!"
+        ]
+      },
+      {
+        "mission_id": 12103,
+        "name": "Vòng xoáy thời gian (Thường) — Hồi phục Gà",
+        "title": "TURN, Chết,Cứu",
+        "desc": "Thường: gà bị thương trong vòng xoáy — hồi phục chúng trước khi quá muộn.",
+        "in_db": true,
+        "script_class": "TVN12003",
+        "script_exists": true,
+        "map_id": 12003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Hồi phục Gà!"
+        ]
+      },
+      {
+        "mission_id": 12104,
+        "name": "Vòng xoáy thời gian (Thường) — Bác học Vẹt",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Thường: Bác học Vẹt — kẻ gây biến dị gà con — xuất hiện ở cuối dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVN12004",
+        "script_exists": true,
+        "map_id": 12004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12116,
+            "name": "Bác học Vẹt",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveNormalFlyThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Vẹt độ thường!"
+        ]
+      },
+      {
+        "mission_id": 12201,
+        "name": "Vòng xoáy thời gian (Khó) — Bão thời không",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Khó: bước vào vòng xoáy — hạ hết kẻ địch bị kéo theo dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVH12001",
+        "script_exists": true,
+        "map_id": 12001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Sói khó!"
+        ]
+      },
+      {
+        "mission_id": 12202,
+        "name": "Vòng xoáy thời gian (Khó) — Thuyền trưởng Cá sấu",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Khó: Thuyền trưởng Cá sấu chặn dòng chảy thời gian.",
+        "in_db": true,
+        "script_class": "TVH12002",
+        "script_exists": true,
+        "map_id": 12002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12208,
+            "name": "Thuyền trưởng Cá Sấu",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveHardCrocodileBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cá Sấu khó!"
+        ]
+      },
+      {
+        "mission_id": 12203,
+        "name": "Vòng xoáy thời gian (Khó) — Hồi phục Gà",
+        "title": "TURN, Chết,Cứu",
+        "desc": "Khó: gà bị thương trong vòng xoáy — hồi phục chúng trước khi quá muộn.",
+        "in_db": true,
+        "script_class": "TVH12003",
+        "script_exists": true,
+        "map_id": 12003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Hồi phục dưới áp lực!"
+        ]
+      },
+      {
+        "mission_id": 12204,
+        "name": "Vòng xoáy thời gian (Khó) — Bác học Vẹt",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Khó: Bác học Vẹt — kẻ gây biến dị gà con — xuất hiện ở cuối dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVH12004",
+        "script_exists": true,
+        "map_id": 12004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12216,
+            "name": "Bác học Vẹt",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveHardFlyThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Vẹt hình thái khó!"
+        ]
+      },
+      {
+        "mission_id": 12301,
+        "name": "Vòng xoáy thời gian (Anh hùng) — Bão thời không",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Anh hùng: bước vào vòng xoáy — hạ hết kẻ địch bị kéo theo dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVT12001",
+        "script_exists": true,
+        "map_id": 12001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Sói anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 12302,
+        "name": "Vòng xoáy thời gian (Anh hùng) — Thuyền trưởng Cá sấu",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Anh hùng: Thuyền trưởng Cá sấu chặn dòng chảy thời gian.",
+        "in_db": true,
+        "script_class": "TVT12002",
+        "script_exists": true,
+        "map_id": 12002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12308,
+            "name": "Thuyền trưởng Cá Sấu",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveTerrorCrocodileBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Cá Sấu tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 12303,
+        "name": "Vòng xoáy thời gian (Anh hùng) — Hồi phục Gà",
+        "title": "TURN, Chết,Cứu",
+        "desc": "Anh hùng: gà bị thương trong vòng xoáy — hồi phục chúng trước khi quá muộn.",
+        "in_db": true,
+        "script_class": "TVT12003",
+        "script_exists": true,
+        "map_id": 12003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Hồi phục anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 12304,
+        "name": "Vòng xoáy thời gian (Anh hùng) — Bác học Vẹt",
+        "title": "TURN,Hạ kẻ địch",
+        "desc": "Anh hùng: Bác học Vẹt — kẻ gây biến dị gà con — xuất hiện ở cuối dòng thời gian.",
+        "in_db": true,
+        "script_class": "TVT12004",
+        "script_exists": true,
+        "map_id": 12004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 12316,
+            "name": "Bác học Vẹt",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.TwelveTerrorFlyThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Vẹt tối thượng!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 13,
+    "name": "Đấu Trường Dũng Sĩ",
+    "level": "30",
+    "desc": "Đấu Trường Dũng Sĩ　 Yêu cầu: 2-4 người",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "WarriorsArenaSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "WarriorsArenaNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "WarriorsArenaHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "WarriorsArenaTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 13001,
+        "name": "Đấu trường Dũng Sĩ (Dễ) — Mở màn",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Dễ: đấu trường cổ xưa thức tỉnh — hạ vệ binh mở màn.",
+        "in_db": true,
+        "script_class": "WAS13001",
+        "script_exists": true,
+        "map_id": 13001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Hạ vệ binh mở màn!"
+        ]
+      },
+      {
+        "mission_id": 13002,
+        "name": "Đấu trường Dũng Sĩ (Dễ) — Sulan",
+        "title": "TURN,Đánh bại Sulan",
+        "desc": "Dễ: Sulan bước vào đấu trường. Đánh bại cô ấy để tiếp tục.",
+        "in_db": true,
+        "script_class": "WAS13002",
+        "script_exists": true,
+        "map_id": 13002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13005,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenSimpleBrynBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan bước vào đấu trường!"
+        ]
+      },
+      {
+        "mission_id": 13003,
+        "name": "Đấu trường Dũng Sĩ (Dễ) — Minotaure",
+        "title": "TURN,Đánh bại Minotaure",
+        "desc": "Dễ: Minotaure gầm vang. Trận boss trước chung kết.",
+        "in_db": true,
+        "script_class": "WAS13003",
+        "script_exists": true,
+        "map_id": 13003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13007,
+            "name": "Minotaure",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenSimpleThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaure gầm vang!"
+        ]
+      },
+      {
+        "mission_id": 13004,
+        "name": "Đấu trường Dũng Sĩ (Dễ) — Chung kết",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Dễ: trận chung kết đấu trường — sống sót và hạ hết địch.",
+        "in_db": true,
+        "script_class": "WAS13004",
+        "script_exists": true,
+        "map_id": 13004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13008,
+            "name": "Mathias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenSimpleFourthBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Mathias — trận chung kết!"
+        ]
+      },
+      {
+        "mission_id": 13101,
+        "name": "Đấu trường Dũng Sĩ (Thường) — Mở màn",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Thường: đấu trường cổ xưa thức tỉnh — hạ vệ binh mở màn.",
+        "in_db": true,
+        "script_class": "WAN13101",
+        "script_exists": true,
+        "map_id": 13001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Vệ binh thường!"
+        ]
+      },
+      {
+        "mission_id": 13102,
+        "name": "Đấu trường Dũng Sĩ (Thường) — Sulan",
+        "title": "TURN,Đánh bại Sulan",
+        "desc": "Thường: Sulan bước vào đấu trường. Đánh bại cô ấy để tiếp tục.",
+        "in_db": true,
+        "script_class": "WAN13102",
+        "script_exists": true,
+        "map_id": 13002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13105,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenNormalBrynBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan mạnh hơn!"
+        ]
+      },
+      {
+        "mission_id": 13103,
+        "name": "Đấu trường Dũng Sĩ (Thường) — Minotaure",
+        "title": "TURN,Đánh bại Minotaure",
+        "desc": "Thường: Minotaure gầm vang. Trận boss trước chung kết.",
+        "in_db": true,
+        "script_class": "WAN13103",
+        "script_exists": true,
+        "map_id": 13003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13107,
+            "name": "Minotaure",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenNormalThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaure thường!"
+        ]
+      },
+      {
+        "mission_id": 13104,
+        "name": "Đấu trường Dũng Sĩ (Thường) — Chung kết",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Thường: trận chung kết đấu trường — sống sót và hạ hết địch.",
+        "in_db": true,
+        "script_class": "WAN13104",
+        "script_exists": true,
+        "map_id": 13004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13108,
+            "name": "Mathias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenNormalFourthBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Mathias thường!"
+        ]
+      },
+      {
+        "mission_id": 13201,
+        "name": "Đấu trường Dũng Sĩ (Khó) — Mở màn",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Khó: đấu trường cổ xưa thức tỉnh — hạ vệ binh mở màn.",
+        "in_db": true,
+        "script_class": "WAH13201",
+        "script_exists": true,
+        "map_id": 13001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Vệ binh khó!"
+        ]
+      },
+      {
+        "mission_id": 13202,
+        "name": "Đấu trường Dũng Sĩ (Khó) — Sulan",
+        "title": "TURN,Đánh bại Sulan",
+        "desc": "Khó: Sulan bước vào đấu trường. Đánh bại cô ấy để tiếp tục.",
+        "in_db": true,
+        "script_class": "WAH13202",
+        "script_exists": true,
+        "map_id": 13002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13205,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenHardBrynBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan điên cuồng!"
+        ]
+      },
+      {
+        "mission_id": 13203,
+        "name": "Đấu trường Dũng Sĩ (Khó) — Minotaure",
+        "title": "TURN,Đánh bại Minotaure",
+        "desc": "Khó: Minotaure gầm vang. Trận boss trước chung kết.",
+        "in_db": true,
+        "script_class": "WAH13203",
+        "script_exists": true,
+        "map_id": 13003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13207,
+            "name": "Minotaure",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenHardThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaure khó!"
+        ]
+      },
+      {
+        "mission_id": 13204,
+        "name": "Đấu trường Dũng Sĩ (Khó) — Chung kết",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Khó: trận chung kết đấu trường — sống sót và hạ hết địch.",
+        "in_db": true,
+        "script_class": "WAH13204",
+        "script_exists": true,
+        "map_id": 13004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13208,
+            "name": "Mathias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenHardFourthBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Mathias khó!"
+        ]
+      },
+      {
+        "mission_id": 13301,
+        "name": "Đấu trường Dũng Sĩ (Anh hùng) — Mở màn",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Anh hùng: đấu trường cổ xưa thức tỉnh — hạ vệ binh mở màn.",
+        "in_db": true,
+        "script_class": "WAT13301",
+        "script_exists": true,
+        "map_id": 13001,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Vệ binh anh hùng!"
+        ]
+      },
+      {
+        "mission_id": 13302,
+        "name": "Đấu trường Dũng Sĩ (Anh hùng) — Sulan",
+        "title": "TURN,Đánh bại Sulan",
+        "desc": "Anh hùng: Sulan bước vào đấu trường. Đánh bại cô ấy để tiếp tục.",
+        "in_db": true,
+        "script_class": "WAT13302",
+        "script_exists": true,
+        "map_id": 13002,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13305,
+            "name": "Sulan",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenTerrorBrynBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Sulan tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 13303,
+        "name": "Đấu trường Dũng Sĩ (Anh hùng) — Minotaure",
+        "title": "TURN,Đánh bại Minotaure",
+        "desc": "Anh hùng: Minotaure gầm vang. Trận boss trước chung kết.",
+        "in_db": true,
+        "script_class": "WAT13303",
+        "script_exists": true,
+        "map_id": 13003,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13307,
+            "name": "Minotaure",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenTerrorThirdBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Minotaure tối thượng!"
+        ]
+      },
+      {
+        "mission_id": 13304,
+        "name": "Đấu trường Dũng Sĩ (Anh hùng) — Chung kết",
+        "title": "TURN,Phe địch bị hạ",
+        "desc": "Anh hùng: trận chung kết đấu trường — sống sót và hạ hết địch.",
+        "in_db": true,
+        "script_class": "WAT13304",
+        "script_exists": true,
+        "map_id": 13004,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 13308,
+            "name": "Mathias",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.ThirteenTerrorFourthBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Mathias tối thượng!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 14,
+    "name": "Tàu Hải Tặc",
+    "level": "8",
+    "desc": "Tàu Hải Tặc",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "CrosairBoss",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "CrosairBoss",
+        "exists": true
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 12016,
+        "name": "Tàu Hải Tặc — Hải Tặc Trưởng",
+        "title": "TURN, Hạ Hải Tặc Trưởng",
+        "desc": "Tàu hải tặc tàng trữ kho báu. Hải Tặc Trưởng không dễ buông tha — hạ hắn để lấy kho báu.",
+        "in_db": true,
+        "script_class": "CrosairBoss",
+        "script_exists": true,
+        "map_id": 12016,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 72000,
+            "name": "Hải Tặc Trưởng",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.CrosairBoss",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Hạ Hải Tặc Trưởng để lấy kho báu!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 38,
+    "name": "Huyệt Ma Kiến Ác Mộng",
+    "level": "45",
+    "desc": "Huyệt Ma Kiến Ác Mộng　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "AntCaveNightmareSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "AntCaveNightmareNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "AntCaveNightmareHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "AntCaveNightmareTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 2401,
+        "name": "Ác mộng — Cửa hang kiến",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng: bóng tối nuốt hang, kiến hung hãn gấp bội.",
+        "in_db": true,
+        "script_class": "DCNM2401",
+        "script_exists": true,
+        "map_id": 2401,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng: cửa hang kiến tối om — quét sạch!"
+        ]
+      },
+      {
+        "mission_id": 2402,
+        "name": "Ác mộng — Nữ Vương Daniliz",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Trong ác mộng Daniliz không còn hình dạng quen thuộc.",
+        "in_db": true,
+        "script_class": "DCNM2402",
+        "script_exists": true,
+        "map_id": 2402,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng: Daniliz biến dị!"
+        ]
+      },
+      {
+        "mission_id": 2501,
+        "name": "Ác mộng Thường — Cửa hang",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng thường: cửa hang dày đặc kiến trinh sát.",
+        "in_db": true,
+        "script_class": "DCNM2501",
+        "script_exists": true,
+        "map_id": 2501,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng thường — cửa hang dày đặc!"
+        ]
+      },
+      {
+        "mission_id": 2502,
+        "name": "Ác mộng Thường — Nữ Vương",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Phòng trứng biến thành bẫy.",
+        "in_db": true,
+        "script_class": "DCNM2502",
+        "script_exists": true,
+        "map_id": 2502,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng thường — Nữ Vương!"
+        ]
+      },
+      {
+        "mission_id": 2601,
+        "name": "Ác mộng Khó — Cửa hang",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng khó: từng bước đều là máu.",
+        "in_db": true,
+        "script_class": "DCNM2601",
+        "script_exists": true,
+        "map_id": 2601,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng khó — cửa hang máu!"
+        ]
+      },
+      {
+        "mission_id": 2602,
+        "name": "Ác mộng Khó — Nữ Vương",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Daniliz hình thái ác mộng khó.",
+        "in_db": true,
+        "script_class": "DCNM2602",
+        "script_exists": true,
+        "map_id": 2602,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng khó — Daniliz!"
+        ]
+      },
+      {
+        "mission_id": 2701,
+        "name": "Ác mộng Anh hùng — Cửa hang",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Chỉ đội anh hùng mới qua nổi cửa hang ác mộng.",
+        "in_db": true,
+        "script_class": "DCNM2701",
+        "script_exists": true,
+        "map_id": 2701,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng anh hùng — cửa hang!"
+        ]
+      },
+      {
+        "mission_id": 2702,
+        "name": "Ác mộng Anh hùng — Nữ Vương",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Trận quyết chiến với Daniliz tối thượng.",
+        "in_db": true,
+        "script_class": "DCNM2702",
+        "script_exists": true,
+        "map_id": 2702,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Ác mộng anh hùng — Daniliz tối thượng!"
+        ]
+      }
+    ],
+    "issues": [
+      "Ải 2401: Map 2401 thiếu trong Game_Map",
+      "Ải 2401: Map 2401 thiếu file collision fore.map/dead.map",
+      "Ải 2402: Map 2402 thiếu trong Game_Map",
+      "Ải 2402: Map 2402 thiếu file collision fore.map/dead.map",
+      "Ải 2501: Map 2501 thiếu trong Game_Map",
+      "Ải 2501: Map 2501 thiếu file collision fore.map/dead.map",
+      "Ải 2502: Map 2502 thiếu trong Game_Map",
+      "Ải 2502: Map 2502 thiếu file collision fore.map/dead.map",
+      "Ải 2601: Map 2601 thiếu trong Game_Map",
+      "Ải 2601: Map 2601 thiếu file collision fore.map/dead.map",
+      "Ải 2602: Map 2602 thiếu trong Game_Map",
+      "Ải 2602: Map 2602 thiếu file collision fore.map/dead.map",
+      "Ải 2701: Map 2701 thiếu trong Game_Map",
+      "Ải 2701: Map 2701 thiếu file collision fore.map/dead.map",
+      "Ải 2702: Map 2702 thiếu trong Game_Map",
+      "Ải 2702: Map 2702 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 39,
+    "name": "Giải Cứu Gà Con Ác Mộng",
+    "level": "45",
+    "desc": "Giải Cứu Gà Con Ác Mộng　 Số người: 2-4",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "RunRunChickenNightmareSimpleGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "RunRunChickenNightmareNormalGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "RunRunChickenNightmareHardGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "RunRunChickenNightmareTerrorGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 7401,
+        "name": "Giải cứu gà con (Ác mộng Dễ) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Dễ: bóng tối nuốt nông trại — đàn nhiễm độc hung hãn.",
+        "in_db": true,
+        "script_class": "RRCNM7401",
+        "script_exists": true,
+        "map_id": 7401,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng dễ) — đàn nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7402,
+        "name": "Giải cứu gà con (Ác mộng Dễ) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Dễ: gà mái trong ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7402",
+        "script_exists": true,
+        "map_id": 7402,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng dễ) — gà mái!"
+        ]
+      },
+      {
+        "mission_id": 7403,
+        "name": "Giải cứu gà con (Ác mộng Dễ) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Dễ: chuồng gà biến dị.",
+        "in_db": true,
+        "script_class": "RRCNM7403",
+        "script_exists": true,
+        "map_id": 7403,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng dễ) — chuồng gà!"
+        ]
+      },
+      {
+        "mission_id": 7404,
+        "name": "Giải cứu gà con (Ác mộng Dễ) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Dễ: phá lồng để kết thúc ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7404",
+        "script_exists": true,
+        "map_id": 7404,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng dễ) — phá lồng!"
+        ]
+      },
+      {
+        "mission_id": 7501,
+        "name": "Giải cứu gà con (Ác mộng Thường) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Thường: bóng tối nuốt nông trại — đàn nhiễm độc hung hãn.",
+        "in_db": true,
+        "script_class": "RRCNM7501",
+        "script_exists": true,
+        "map_id": 7501,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng thường) — đàn nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7502,
+        "name": "Giải cứu gà con (Ác mộng Thường) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Thường: gà mái trong ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7502",
+        "script_exists": true,
+        "map_id": 7502,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng thường) — gà mái!"
+        ]
+      },
+      {
+        "mission_id": 7503,
+        "name": "Giải cứu gà con (Ác mộng Thường) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Thường: chuồng gà biến dị.",
+        "in_db": true,
+        "script_class": "RRCNM7503",
+        "script_exists": true,
+        "map_id": 7503,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng thường) — chuồng gà!"
+        ]
+      },
+      {
+        "mission_id": 7504,
+        "name": "Giải cứu gà con (Ác mộng Thường) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Thường: phá lồng để kết thúc ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7504",
+        "script_exists": true,
+        "map_id": 7504,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng thường) — phá lồng!"
+        ]
+      },
+      {
+        "mission_id": 7601,
+        "name": "Giải cứu gà con (Ác mộng Khó) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Khó: bóng tối nuốt nông trại — đàn nhiễm độc hung hãn.",
+        "in_db": true,
+        "script_class": "RRCNM7601",
+        "script_exists": true,
+        "map_id": 7601,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng khó) — đàn nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7602,
+        "name": "Giải cứu gà con (Ác mộng Khó) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Khó: gà mái trong ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7602",
+        "script_exists": true,
+        "map_id": 7602,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng khó) — gà mái!"
+        ]
+      },
+      {
+        "mission_id": 7603,
+        "name": "Giải cứu gà con (Ác mộng Khó) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Khó: chuồng gà biến dị.",
+        "in_db": true,
+        "script_class": "RRCNM7603",
+        "script_exists": true,
+        "map_id": 7603,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng khó) — chuồng gà!"
+        ]
+      },
+      {
+        "mission_id": 7604,
+        "name": "Giải cứu gà con (Ác mộng Khó) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Khó: phá lồng để kết thúc ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7604",
+        "script_exists": true,
+        "map_id": 7604,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng khó) — phá lồng!"
+        ]
+      },
+      {
+        "mission_id": 7701,
+        "name": "Giải cứu gà con (Ác mộng Anh hùng) — Đàn nhiễm độc",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Anh hùng: bóng tối nuốt nông trại — đàn nhiễm độc hung hãn.",
+        "in_db": true,
+        "script_class": "RRCNM7701",
+        "script_exists": true,
+        "map_id": 7701,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng anh hùng) — đàn nhiễm độc!"
+        ]
+      },
+      {
+        "mission_id": 7702,
+        "name": "Giải cứu gà con (Ác mộng Anh hùng) — Gà mái",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Anh hùng: gà mái trong ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7702",
+        "script_exists": true,
+        "map_id": 7702,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng anh hùng) — gà mái!"
+        ]
+      },
+      {
+        "mission_id": 7703,
+        "name": "Giải cứu gà con (Ác mộng Anh hùng) — Chuồng gà",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Anh hùng: chuồng gà biến dị.",
+        "in_db": true,
+        "script_class": "RRCNM7703",
+        "script_exists": true,
+        "map_id": 7703,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng anh hùng) — chuồng gà!"
+        ]
+      },
+      {
+        "mission_id": 7704,
+        "name": "Giải cứu gà con (Ác mộng Anh hùng) — Phá lồng",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Ác mộng Anh hùng: phá lồng để kết thúc ác mộng.",
+        "in_db": true,
+        "script_class": "RRCNM7704",
+        "script_exists": true,
+        "map_id": 7704,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": [
+          "Giải cứu gà con (Ác mộng anh hùng) — phá lồng!"
+        ]
+      }
+    ],
+    "issues": [
+      "Ải 7401: Map 7401 thiếu trong Game_Map",
+      "Ải 7401: Map 7401 thiếu file collision fore.map/dead.map",
+      "Ải 7402: Map 7402 thiếu trong Game_Map",
+      "Ải 7402: Map 7402 thiếu file collision fore.map/dead.map",
+      "Ải 7403: Map 7403 thiếu trong Game_Map",
+      "Ải 7403: Map 7403 thiếu file collision fore.map/dead.map",
+      "Ải 7404: Map 7404 thiếu trong Game_Map",
+      "Ải 7404: Map 7404 thiếu file collision fore.map/dead.map",
+      "Ải 7501: Map 7501 thiếu trong Game_Map",
+      "Ải 7501: Map 7501 thiếu file collision fore.map/dead.map",
+      "Ải 7502: Map 7502 thiếu trong Game_Map",
+      "Ải 7502: Map 7502 thiếu file collision fore.map/dead.map",
+      "Ải 7503: Map 7503 thiếu trong Game_Map",
+      "Ải 7503: Map 7503 thiếu file collision fore.map/dead.map",
+      "Ải 7504: Map 7504 thiếu trong Game_Map",
+      "Ải 7504: Map 7504 thiếu file collision fore.map/dead.map",
+      "Ải 7601: Map 7601 thiếu trong Game_Map",
+      "Ải 7601: Map 7601 thiếu file collision fore.map/dead.map",
+      "Ải 7602: Map 7602 thiếu trong Game_Map",
+      "Ải 7602: Map 7602 thiếu file collision fore.map/dead.map",
+      "Ải 7603: Map 7603 thiếu trong Game_Map",
+      "Ải 7603: Map 7603 thiếu file collision fore.map/dead.map",
+      "Ải 7604: Map 7604 thiếu trong Game_Map",
+      "Ải 7604: Map 7604 thiếu file collision fore.map/dead.map",
+      "Ải 7701: Map 7701 thiếu trong Game_Map",
+      "Ải 7701: Map 7701 thiếu file collision fore.map/dead.map",
+      "Ải 7702: Map 7702 thiếu trong Game_Map",
+      "Ải 7702: Map 7702 thiếu file collision fore.map/dead.map",
+      "Ải 7703: Map 7703 thiếu trong Game_Map",
+      "Ải 7703: Map 7703 thiếu file collision fore.map/dead.map",
+      "Ải 7704: Map 7704 thiếu trong Game_Map",
+      "Ải 7704: Map 7704 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 101,
+    "name": "Hướng dẫn tân thủ",
+    "level": "0",
+    "desc": "Trận tập luyện 2",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1083,
+        "name": "",
+        "title": "",
+        "desc": "",
+        "in_db": false,
+        "script_class": "",
+        "script_exists": false,
+        "map_id": null,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 1083: Thiếu cấu hình script trong Mission_Info"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 105,
+    "name": "NPC trung gian",
+    "level": "0",
+    "desc": "NPC trung gian",
+    "scripts": {
+      "Simple": {
+        "configured": false
+      },
+      "Normal": {
+        "configured": false
+      },
+      "Hard": {
+        "configured": false
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [],
+    "issues": [
+      "Thiếu script cho độ khó Simple",
+      "Thiếu script cho độ khó Normal",
+      "Chưa cấu hình bất kỳ GameScript nào trong Pve_Info"
+    ],
+    "status": "NO_SCRIPTS"
+  },
+  {
+    "id": 111,
+    "name": "Tân thủ đoạt rương ải 6-1",
+    "level": "0",
+    "desc": "Bá tước Richard hụ trách quản lý ải rất thích đồ cổ,   món đồ ông quý nhất là 1 cái  bình gốm có lịch sử lâu đời với kiểu dáng và hoa văn rất lạ. vào 1 ngày động đất, cái bình  rơi từ trên cao xuống vỡ ra. Bá tước b",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame1",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame1",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame1",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame1",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1085,
+        "name": "Huấn luyện mới 1",
+        "title": "TURN,Hạ Gà xấu xí",
+        "desc": "Bài huấn luyện cơ bản 1.",
+        "in_db": true,
+        "script_class": "NTM1085",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 112,
+    "name": "Tân thủ đoạt rương ải 6-2",
+    "level": "0",
+    "desc": "",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame2",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame2",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame2",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame2",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1086,
+        "name": "Huấn luyện mới 2",
+        "title": "TURN,Gà mê hoặc",
+        "desc": "Bài huấn luyện cơ bản 2.",
+        "in_db": true,
+        "script_class": "NTM1086",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 113,
+    "name": "Tân thủ đoạt rương ải 6-3",
+    "level": "0",
+    "desc": "Mấy ngày sau, tàu của Bá tước cập bến của hòn đảo lạ đấy. Khắp nơi trên đảo đều là rừng rậm dày đặc, Bá tước cùng thuộc hạ dựng lều, dũng sĩ đến từ các nơi đều không kiềm nổi tò mò, phân thành các tiểu đội bắt đầ",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame3",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame3",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame3",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame3",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1087,
+        "name": "Huấn luyện mới 3",
+        "title": "TURN,Hạ Gà xấu xí",
+        "desc": "Bài huấn luyện cơ bản 3.",
+        "in_db": true,
+        "script_class": "NTM1087",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 114,
+    "name": "Tân thủ đoạt rương ải 6-4",
+    "level": "0",
+    "desc": "",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame4",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame4",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame4",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame4",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1088,
+        "name": "Huấn luyện mới 4",
+        "title": "TURN,Hạ Đội trường",
+        "desc": "Bài huấn luyện cơ bản 4.",
+        "in_db": true,
+        "script_class": "NTM1088",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 115,
+    "name": "Tân thủ đoạt rương ải 6-5",
+    "level": "0",
+    "desc": "",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame5",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame5",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame5",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame5",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1089,
+        "name": "Huấn luyện mới 5",
+        "title": "TURN,Hạ Robot mất trí",
+        "desc": "Bài huấn luyện cơ bản 5.",
+        "in_db": true,
+        "script_class": "NTM1089",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 116,
+    "name": "Tân thủ đoạt rương ải 6-6",
+    "level": "0",
+    "desc": "",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "NewTrainingGame6",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "NewTrainingGame6",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "NewTrainingGame6",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "NewTrainingGame6",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1089,
+        "name": "Huấn luyện mới 5",
+        "title": "TURN,Hạ Robot mất trí",
+        "desc": "Bài huấn luyện cơ bản 5.",
+        "in_db": true,
+        "script_class": "NTM1089",
+        "script_exists": true,
+        "map_id": 1084,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 1000,
+    "name": "Đo màn hình",
+    "level": "0",
+    "desc": "Giới thiệu đo màn hình",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "FightLabMeasureSpaceSimple",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "FightLabMeasureSpaceNormal",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "FightLabMeasureSpaceHard",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 101,
+        "name": "Đo khoảng cách (Dễ)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Bài tập đo khoảng cách — hạ bia để nắm thước ngắm.",
+        "in_db": true,
+        "script_class": "FLSS101",
+        "script_exists": true,
+        "map_id": 101,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 111,
+        "name": "Đo khoảng cách (Thường)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Đo khoảng cách độ thường — nhiều bia hơn.",
+        "in_db": true,
+        "script_class": "FLNS111",
+        "script_exists": true,
+        "map_id": 111,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 121,
+        "name": "Đo khoảng cách (Khó)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Đo khoảng cách độ khó — không được lệch.",
+        "in_db": true,
+        "script_class": "FLHS121",
+        "script_exists": true,
+        "map_id": 121,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 101: Map 101 thiếu trong Game_Map",
+      "Ải 101: Map 101 thiếu file collision fore.map/dead.map",
+      "Ải 111: Map 111 thiếu trong Game_Map",
+      "Ải 111: Map 111 thiếu file collision fore.map/dead.map",
+      "Ải 121: Map 121 thiếu trong Game_Map",
+      "Ải 121: Map 121 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 1001,
+    "name": "Cách đánh góc 20",
+    "level": "0",
+    "desc": "Giới thiệu cách đánh góc 20",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "FightLabTwentySimple",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "FightLabTwentyNormal",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "FightLabTwentyHard",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 102,
+        "name": "Góc 20° (Dễ)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Luyện góc thấp 20° — đạn bay sát đất.",
+        "in_db": true,
+        "script_class": "FLSS102",
+        "script_exists": true,
+        "map_id": 102,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 112,
+        "name": "Góc 20° (Thường)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Góc 20° độ thường.",
+        "in_db": true,
+        "script_class": "FLNS112",
+        "script_exists": true,
+        "map_id": 112,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 122,
+        "name": "Góc 20° (Khó)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Góc 20° độ khó.",
+        "in_db": true,
+        "script_class": "FLHS122",
+        "script_exists": true,
+        "map_id": 122,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 102: Map 102 thiếu trong Game_Map",
+      "Ải 102: Map 102 thiếu file collision fore.map/dead.map",
+      "Ải 112: Map 112 thiếu trong Game_Map",
+      "Ải 112: Map 112 thiếu file collision fore.map/dead.map",
+      "Ải 122: Map 122 thiếu trong Game_Map",
+      "Ải 122: Map 122 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 1002,
+    "name": "Cách đánh góc 65",
+    "level": "0",
+    "desc": "Giới thiệu cách đánh góc 65",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "FightLabSixtyFiveSimple",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "FightLabSixtyFiveNormal",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "FightLabSixtyFiveHard",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 103,
+        "name": "Góc 65° (Dễ)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Luyện góc cao 65° — đạn vòng cung.",
+        "in_db": true,
+        "script_class": "FLSS103",
+        "script_exists": true,
+        "map_id": 103,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 113,
+        "name": "Góc 65° (Thường)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Góc 65° độ thường.",
+        "in_db": true,
+        "script_class": "FLNS113",
+        "script_exists": true,
+        "map_id": 113,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 123,
+        "name": "Góc 65° (Khó)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Góc 65° độ khó.",
+        "in_db": true,
+        "script_class": "FLHS123",
+        "script_exists": true,
+        "map_id": 123,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 103: Map 103 thiếu trong Game_Map",
+      "Ải 103: Map 103 thiếu file collision fore.map/dead.map",
+      "Ải 113: Map 113 thiếu trong Game_Map",
+      "Ải 113: Map 113 thiếu file collision fore.map/dead.map",
+      "Ải 123: Map 123 thiếu trong Game_Map",
+      "Ải 123: Map 123 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 1003,
+    "name": "Cách đánh siêu cao",
+    "level": "0",
+    "desc": "Giới thiệu siêu cao",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "FightLabHeightThrowSimple",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "FightLabHeightThrowNormal",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "FightLabHeightThrowHard",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 104,
+        "name": "Siêu cao (Dễ)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Bắn từ vị trí siêu cao — canh lực theo độ cao.",
+        "in_db": true,
+        "script_class": "FLSS104",
+        "script_exists": true,
+        "map_id": 104,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 114,
+        "name": "Siêu cao (Thường)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Siêu cao độ thường.",
+        "in_db": true,
+        "script_class": "FLNS114",
+        "script_exists": true,
+        "map_id": 114,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 124,
+        "name": "Siêu cao (Khó)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Siêu cao độ khó.",
+        "in_db": true,
+        "script_class": "FLHS124",
+        "script_exists": true,
+        "map_id": 124,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 104: Map 104 thiếu trong Game_Map",
+      "Ải 104: Map 104 thiếu file collision fore.map/dead.map",
+      "Ải 114: Map 114 thiếu trong Game_Map",
+      "Ải 114: Map 114 thiếu file collision fore.map/dead.map",
+      "Ải 124: Map 124 thiếu trong Game_Map",
+      "Ải 124: Map 124 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 1004,
+    "name": "Cách đánh vị trí cao thấp",
+    "level": "0",
+    "desc": "Giới thiệu vị trí cao thấp",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "FightLabHeightSimple",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "FightLabHeightNormal",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "FightLabHeightHard",
+        "exists": true
+      },
+      "Terror": {
+        "configured": false
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 105,
+        "name": "Cao–thấp (Dễ)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Địch ở cao và thấp xen kẽ — đổi góc liên tục.",
+        "in_db": true,
+        "script_class": "FLSS105",
+        "script_exists": true,
+        "map_id": 105,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 115,
+        "name": "Cao–thấp (Thường)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Cao–thấp độ thường.",
+        "in_db": true,
+        "script_class": "FLNS115",
+        "script_exists": true,
+        "map_id": 115,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      },
+      {
+        "mission_id": 125,
+        "name": "Cao–thấp (Khó)",
+        "title": "TURN,Hạ Bia",
+        "desc": "Cao–thấp độ khó.",
+        "in_db": true,
+        "script_class": "FLHS125",
+        "script_exists": true,
+        "map_id": 125,
+        "map_in_db": false,
+        "map_has_posx": false,
+        "map_on_disk": false,
+        "bosses": [],
+        "dialogues": []
+      }
+    ],
+    "issues": [
+      "Ải 105: Map 105 thiếu trong Game_Map",
+      "Ải 105: Map 105 thiếu file collision fore.map/dead.map",
+      "Ải 115: Map 115 thiếu trong Game_Map",
+      "Ải 115: Map 115 thiếu file collision fore.map/dead.map",
+      "Ải 125: Map 125 thiếu trong Game_Map",
+      "Ải 125: Map 125 thiếu file collision fore.map/dead.map"
+    ],
+    "status": "HAS_ISSUES"
+  },
+  {
+    "id": 1243,
+    "name": "Rồng Cổ",
+    "level": "0",
+    "desc": "Rồng Cổ",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "ACDragon",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "ACDragon",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "ACDragon",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "ACDragon",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 1243,
+        "name": "Rồng Cổ",
+        "title": "TURN,Phe địch bị hạ.",
+        "desc": "Đảo Rồng Cổ — sinh vật ngàn năm thức tỉnh.",
+        "in_db": true,
+        "script_class": "AC1243",
+        "script_exists": true,
+        "map_id": 1243,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [
+          {
+            "boss_id": 1243,
+            "name": "Rồng Cổ",
+            "in_db": true,
+            "script": "GameServerScript.AI.NPC.WorldAcientDragon",
+            "script_exists": true
+          }
+        ],
+        "dialogues": [
+          "Đảo Rồng Cổ — sinh vật ngàn năm thức tỉnh! Chỉ đội mạnh nhất mới sống sót.",
+          "Đảo Rồng Cổ — sinh vật ngàn năm thức tỉnh! Chỉ đội mạnh nhất mới sống sót.",
+          "Gầm... máu cổ đại sôi lên!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 30001,
+    "name": "Bá tước hút máu",
+    "level": "0",
+    "desc": "Bá tước hút máu thức tỉnh — tiêu diệt dạng đầu.",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "VampireEarl1",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "VampireEarl1",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "VampireEarl1",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "VampireEarl1",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 30001,
+        "name": "Bá tước hút máu — Dạng 1",
+        "title": "TURN,Hạ Bá tước hút máu.",
+        "desc": "Bá tước hút máu thức tỉnh trong lâu đài. Tiêu diệt dạng đầu tiên.",
+        "in_db": true,
+        "script_class": "AC30001",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Bá tước hút máu thức tỉnh — dạng đầu!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 30002,
+    "name": "Bá tước hút máu",
+    "level": "0",
+    "desc": "Bá tước dạng mạnh hơn — kết thúc hắn.",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "VampireEarl2",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "VampireEarl2",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "VampireEarl2",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "VampireEarl2",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 30002,
+        "name": "Bá tước hút máu — Dạng 2",
+        "title": "TURN,Hạ Bá tước hút máu.",
+        "desc": "Bá tước chưa chết — dạng mạnh hơn xuất hiện.",
+        "in_db": true,
+        "script_class": "AC30002",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Bá tước dạng mạnh hơn xuất hiện!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  },
+  {
+    "id": 30004,
+    "name": "Đội trưởng",
+    "level": "0",
+    "desc": "Trận đấu đặc biệt với Đội trưởng.",
+    "scripts": {
+      "Simple": {
+        "configured": true,
+        "class": "WorldSoccer",
+        "exists": true
+      },
+      "Normal": {
+        "configured": true,
+        "class": "WorldSoccer",
+        "exists": true
+      },
+      "Hard": {
+        "configured": true,
+        "class": "WorldSoccer",
+        "exists": true
+      },
+      "Terror": {
+        "configured": true,
+        "class": "WorldSoccer",
+        "exists": true
+      }
+    },
+    "missions": [
+      {
+        "mission_id": 30004,
+        "name": "Đội trưởng (World Soccer)",
+        "title": "TURN,Hạ Đội trưởng.",
+        "desc": "Đội trưởng bước ra sân — hạ hắn trong trận đấu đặc biệt.",
+        "in_db": true,
+        "script_class": "AC30004",
+        "script_exists": true,
+        "map_id": 1072,
+        "map_in_db": true,
+        "map_has_posx": true,
+        "map_on_disk": true,
+        "bosses": [],
+        "dialogues": [
+          "Đội trưởng bước ra sân!"
+        ]
+      }
+    ],
+    "issues": [],
+    "status": "READY"
+  }
+]

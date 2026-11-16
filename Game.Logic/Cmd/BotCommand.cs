@@ -95,19 +95,25 @@ namespace Game.Logic.Cmd
                 float time_s = 1.0f;
                 int boomcount = 1;
                 int delayy = 1000;
-                // Aim scatter: bot không được ballistics “tự trúng” quanh chân đối thủ
-                void ScatterAim(int missScale = 1)
+                // Quyết định phát bắn lượt này:
+                // ~65% lượt là TRÚNG (bắn dính thẳng vào người mục tiêu)
+                // ~35% lượt là HỤT (lệch hẳn ra ngoài)
+                bool isHitTurn = rd.Next(0, 100) < 65;
+                void DetermineAim()
                 {
-                    int dx = rd.Next(-140, 141) * missScale;
-                    int dy = rd.Next(-90, 91) * missScale;
-                    // ~35% lệch mạnh hơn (hụt rõ)
-                    if (rd.Next(0, 100) < 35)
+                    if (isHitTurn)
                     {
-                        dx += rd.Next(-220, 221);
-                        dy += rd.Next(-140, 141);
+                        // Trúng đích: nhắm chuẩn vào người đối thủ (dung sai rất nhỏ +-8px quanh tâm)
+                        d = target.X + rd.Next(-8, 9);
+                        e = target.Y + rd.Next(-10, 5);
                     }
-                    d = target.X + dx;
-                    e = target.Y + dy;
+                    else
+                    {
+                        // Hụt: bắn lệch rõ ràng ra trước hoặc sau đối thủ
+                        int missOffset = (rd.Next(0, 2) == 0 ? 1 : -1) * rd.Next(130, 260);
+                        d = target.X + missOffset;
+                        e = target.Y + rd.Next(-40, 41);
+                    }
                 }
                 if (Math.Abs(player.X - target.X) > 60)
                 {
@@ -117,7 +123,7 @@ namespace Game.Logic.Cmd
                         a = 0;
                         b = 0;
                         c = 0;
-                        ScatterAim(1);
+                        DetermineAim();
                         k = 1;
                     }
                     else
@@ -131,7 +137,7 @@ namespace Game.Logic.Cmd
                                 a = 0;
                                 b = 0;
                                 c = 0;
-                                ScatterAim(1);
+                                DetermineAim();
                                 k = 1;
                             }
                             else
@@ -140,7 +146,7 @@ namespace Game.Logic.Cmd
                                 a = 10001;
                                 b = 10003;
                                 c = 10004;
-                                ScatterAim(1);
+                                DetermineAim();
                                 k = 3;
                             }
                         }
@@ -164,7 +170,7 @@ namespace Game.Logic.Cmd
                             a = 10001;
                             b = 10004;
                             c = 10004;
-                            ScatterAim(1);
+                            DetermineAim();
                             k = 3;
                         }
                     }
@@ -244,7 +250,7 @@ namespace Game.Logic.Cmd
                             a = 0;
                             b = 0;
                             c = 0;
-                            ScatterAim(1);
+                            DetermineAim();
                             k = 1;
                         }
                     }

@@ -772,8 +772,16 @@ namespace Game.Server
 
         private bool InitOtherLoginServer()
         {
+            if (string.IsNullOrWhiteSpace(m_config.OtherLoginServer))
+            {
+                return true;
+            }
             foreach (var item in m_config.OtherLoginServer.Split('|'))
             {
+                if (string.IsNullOrWhiteSpace(item))
+                {
+                    continue;
+                }
                 try
                 {
                     var svId = int.Parse(item.Split(':')[0]);

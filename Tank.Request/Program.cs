@@ -526,12 +526,15 @@ namespace Tank.Request
                 await reader.CloseAsync();
 
                 bool toMax = !isMax;
+                // Client derives the displayed level from GP (LevelInfo), so GP must match the grade threshold.
                 cmd.CommandText = toMax ?
                     @"UPDATE Sys_Users_Detail 
-                      SET Grade = 60, GP = 1280550, Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
+                      SET Grade = 60, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 60), 211140995),
+                          Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
                       WHERE UserID = 1;" :
                     @"UPDATE Sys_Users_Detail 
-                      SET Grade = 30, GP = 2500000, Money = 50000, Gold = 100000, GiftToken = 20000, Medal = 500 
+                      SET Grade = 30, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 30), 3490849),
+                          Money = 50000, Gold = 100000, GiftToken = 20000, Medal = 500 
                       WHERE UserID = 1;";
                 await cmd.ExecuteNonQueryAsync();
 

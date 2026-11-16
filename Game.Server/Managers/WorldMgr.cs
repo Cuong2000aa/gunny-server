@@ -241,7 +241,18 @@ namespace Game.Server.Managers
 
         public static string getAddress(GamePlayer p)
         {
-            return (p.Client.Socket.RemoteEndPoint as IPEndPoint)?.Address.ToString();
+            try
+            {
+                if (p?.Client?.Socket != null && p.Client.Socket.Connected)
+                {
+                    return (p.Client.Socket.RemoteEndPoint as IPEndPoint)?.Address.ToString();
+                }
+            }
+            catch
+            {
+                // Socket may have been disposed or disconnected
+            }
+            return null;
         }
 
         public static bool IsAccountLimit(GamePlayer p)

@@ -23,6 +23,19 @@ Flash focus ô chat `EditText` ~6ms sau khi chạm vào phòng → Android bật
 - `focusin` capture dùng `composedPath()[0]` (target thật trong shadow DOM); nếu chưa mở khóa → `inputmode=none` + blur/focus lại, log `[Keyboard] blocked auto keyboard`.
 - Nút **⌨** cố định góc dưới trái (`#btn-keyboard`, `pointerdown` + `preventDefault`): bấm để mở bàn phím khi cần gõ chat, bấm lần nữa để khóa lại. Thứ tự đúng: blur → unlock → focus (blur trước, nếu không listener blur sẽ khóa lại ngay).
 
+### Cử chỉ chạm (`setupTouchGestures`)
+UI DDT chỉ hỗ trợ chuột: tooltip cần hover; ô đồ được nhặt 350ms sau MOUSE_DOWN (`DoubleClickManager`) và chỉ thả bằng một CLICK tại ô đích (`DragManager`, không thả khi MOUSE_UP).
+Trên mobile, touch thật vào Ruffle bị chặn ở capture phase và phát lại thành pointer event kiểu mouse:
+
+| Cử chỉ | Gửi vào Ruffle | Kết quả |
+|---|---|---|
+| Chạm vào | hover | Hiện chi tiết đồ |
+| Chạm nhanh | down + up | Click; chạm 2 lần nhanh = double click (mặc đồ) |
+| Giữ yên ≥ 450ms | chỉ hover | Xem chi tiết, không nhặt đồ, không bật menu Ruffle |
+| Kéo (> 10px) | down, move…, up, rồi 1 click tại điểm thả (sau ≥ 420ms từ lúc down) | Nhặt và thả đồ vào ô đích |
+
+Menu chuột phải của Ruffle (long-press `contextmenu`) bị chặn trên mobile.
+
 ### Phím ảo
 - Android: ẩn hoàn toàn `#virtual-gamepad` và nút `#btn-toggle-gamepad` (CSS `html.is-android …{display:none!important}` + `toggleGamepad()` return sớm). Tay cầm vật lý (Gamepad API polling) vẫn hoạt động.
 - iOS / khác: nút "🎮 Phím Ảo" vẫn bật/tắt được.

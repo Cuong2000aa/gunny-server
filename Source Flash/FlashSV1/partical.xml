@@ -8036,4 +8036,36 @@
       <easing name="alphaLine" value="0:0.8,1:0.2,"/>
     </particle>
   </emitter>
+
+  <emitter beginAngle="0" endAngle="6.28" life="0" id="898" name="898Gậy Như Ý thường" interval="0.03">
+    <particle sizeSize="0" vOrient="0" lifeSize="0" weightOrient="0" sizeOrient="1" keepColor="true" spinOrient="6" name="898" motionVSize="0" countSize="0" spinSize="0" colorOrient="0" countOrient="1" keepOldFirst="false" displayCreator="588" alphaOrient="1" motionVOrient="0" blendMode="add" lifeEasing="[object AbstractLifeEasing]" lifeOrient="0.3" weightSize="0" vSize="0" beginTime="0" endTime="1000" rotation="0">
+      <easing name="vLine" value=""/>
+      <easing name="rvLine" value=""/>
+      <easing name="spLine" value=""/>
+      <easing name="sizeLine" value="0:0.7,1:0.3,"/>
+      <easing name="weightLine" value=""/>
+      <easing name="alphaLine" value="0:0.6,1:0.1,"/>
+    </particle>
+  </emitter>
+  <emitter beginAngle="0" endAngle="6.28" life="0" id="899" name="899Gậy Như Ý +12" interval="0.03">
+    <particle sizeSize="0" vOrient="0" lifeSize="0" weightOrient="0" sizeOrient="1" keepColor="true" spinOrient="6" name="899" motionVSize="0" countSize="0" spinSize="0" colorOrient="0" countOrient="1" keepOldFirst="false" displayCreator="588" alphaOrient="1" motionVOrient="0" blendMode="add" lifeEasing="[object AbstractLifeEasing]" lifeOrient="0.3" weightSize="0" vSize="0" beginTime="0" endTime="1000" rotation="0">
+      <easing name="vLine" value=""/>
+      <easing name="rvLine" value=""/>
+      <easing name="spLine" value=""/>
+      <easing name="sizeLine" value="0:0.9,1:0.5,"/>
+      <easing name="weightLine" value=""/>
+      <easing name="alphaLine" value="0:0.8,1:0.2,"/>
+    </particle>
+  </emitter>
+  <emitter beginAngle="0" endAngle="6.28" life="0" id="900" name="900Gậy Như Ý +15" interval="0.03">
+    <particle sizeSize="0" vOrient="0" lifeSize="0" weightOrient="0" sizeOrient="1" keepColor="true" spinOrient="6" name="900" motionVSize="0" countSize="0" spinSize="0" colorOrient="0" countOrient="1" keepOldFirst="false" displayCreator="593" alphaOrient="1" motionVOrient="0" blendMode="add" lifeEasing="[object AbstractLifeEasing]" lifeOrient="0.3" weightSize="0" vSize="0" beginTime="0" endTime="1000" rotation="0">
+      <easing name="vLine" value=""/>
+      <easing name="rvLine" value=""/>
+      <easing name="spLine" value=""/>
+      <easing name="sizeLine" value="0:1.2,1:0.6,"/>
+      <easing name="weightLine" value=""/>
+      <easing name="alphaLine" value="0:1.0,1:0.3,"/>
+    </particle>
+  </emitter>
+
 </list>

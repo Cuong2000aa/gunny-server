@@ -2270,7 +2270,7 @@ namespace Bussiness
 				flag = (int)sqlParameters[1].Value == 0;
 				if (flag)
 				{
-					noticeID = sqlParameters[0].Value.ToString();
+					noticeID = sqlParameters[0].Value != null && sqlParameters[0].Value != DBNull.Value ? sqlParameters[0].Value.ToString() : "";
 					return flag;
 				}
 				return flag;

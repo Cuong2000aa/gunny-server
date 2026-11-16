@@ -234,6 +234,36 @@
             border-color: #ff7675 !important;
         }
 
+        .quality-selector {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            background: #0f3460;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid #16213e;
+        }
+        .btn-quality {
+            background: #16213e;
+            color: #bdc3c7;
+            border: 1px solid #2c3e50;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+        .btn-quality:hover {
+            color: #fff;
+            background: #00cec9;
+        }
+        .btn-quality.active {
+            background: #00b894 !important;
+            color: #fff !important;
+            border-color: #55efc4 !important;
+            font-weight: bold;
+        }
+
         @media (max-width: 1024px) {
             #game-container {
                 width: 100vw;
@@ -241,6 +271,12 @@
                 min-height: 360px;
                 border-radius: 0;
             }
+        }
+
+        /* Android (RG557 có nút thật): không dùng phím ảo trên màn hình */
+        html.is-android #virtual-gamepad,
+        html.is-android #btn-toggle-gamepad {
+            display: none !important;
         }
 
         /* Virtual Gamepad for Mobile */
@@ -359,6 +395,66 @@
             user-select: all;
         }
     </style>
+    <!-- Remote console: chỉ đẩy log khi có ?debug=1 hoặc có lỗi JavaScript nghiêm trọng, tránh nghẽn CPU và mạng -->
+    <script>
+        (function () {
+            var isDebug = window.location.search.indexOf("debug=1") >= 0;
+            var queue = [];
+            var sid = Math.random().toString(36).slice(2, 8);
+            var ua = navigator.userAgent || "";
+            var dev = /Android/i.test(ua) ? "android" : (/iPhone|iPad/i.test(ua) ? "ios" : "pc");
+            function fmt(a) {
+                var out = [];
+                for (var i = 0; i < a.length; i++) {
+                    var v = a[i];
+                    try {
+                        if (v instanceof Error) out.push(v.name + ": " + v.message + " " + (v.stack || ""));
+                        else if (typeof v === "object") out.push(JSON.stringify(v));
+                        else out.push(String(v));
+                    } catch (e) { out.push(String(v)); }
+                }
+                return out.join(" ").slice(0, 4000);
+            }
+            function push(level, msg) {
+                if (queue.length > 500) return;
+                queue.push(new Date().toISOString().slice(11, 23) + " " + level + " " + msg);
+            }
+            if (isDebug) {
+                ["log", "info", "warn", "error", "debug"].forEach(function (lv) {
+                    var orig = console[lv];
+                    console[lv] = function () {
+                        try { push(lv.toUpperCase(), fmt(arguments)); } catch (e) {}
+                        if (orig) return orig.apply(console, arguments);
+                    };
+                });
+            } else {
+                var origErr = console.error;
+                console.error = function () {
+                    try { push("ERROR", fmt(arguments)); } catch (e) {}
+                    if (origErr) return origErr.apply(console, arguments);
+                };
+            }
+            window.addEventListener("error", function (e) {
+                push("ONERROR", (e.message || "") + " @" + (e.filename || "") + ":" + (e.lineno || "") + " " + (e.error && e.error.stack || ""));
+            });
+            window.addEventListener("unhandledrejection", function (e) {
+                push("REJECT", fmt([e.reason]));
+            });
+            function flush(beacon) {
+                if (!queue.length) return;
+                var body = JSON.stringify({ sid: sid, dev: dev, lines: queue.splice(0, queue.length) });
+                try {
+                    if (beacon && navigator.sendBeacon) { navigator.sendBeacon("/clientlog", body); return; }
+                    fetch("/clientlog", { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true }).catch(function () {});
+                } catch (e) {}
+            }
+            setInterval(function () {
+                if (queue.length > 0) flush(false);
+            }, isDebug ? 2000 : 5000);
+            window.addEventListener("pagehide", function () { flush(true); });
+            if (isDebug) push("PAGE", "start ua=" + ua);
+        })();
+    </script>
     <!-- Configure Ruffle BEFORE loading script -->
     <script>
         // Cloudflare / reverse-proxy: bỏ :443/:80 (và port rỗng). LAN vẫn dùng :828.
@@ -406,8 +502,14 @@
         // Cố định 30 FPS (không cho đổi). Hơi nhanh hơn SWF gốc ~25.
         var ruffleFrameRate = 30;
         window.__gunnyFps = 30;
-        // Chất lượng ảnh cao nhất (Flash quality=best / MSAA cao). Không cắt DPR.
-        var ruffleQuality = "best";
+        // Chất lượng hiển thị: Mặc định "medium" cho Mobile để tắt 4x MSAA nặng GPU, "best" cho PC
+        var ruffleQuality = isMobile ? "medium" : "best";
+        try {
+            var storedQ = localStorage.getItem("gunny_quality");
+            if (storedQ && (storedQ === "low" || storedQ === "medium" || storedQ === "best")) {
+                ruffleQuality = storedQ;
+            }
+        } catch (e) {}
         var ruffleLetterbox = isMobile ? "off" : "on";
 
         // publicPath bắt buộc: không thì WASM/chunk bị request nhầm /web/*.wasm (404 → đen)
@@ -422,6 +524,9 @@
             // Không dùng "canvas": backend canvas không hỗ trợ BitmapData.draw → lỗi trong
             // handler LOGIN, không setState(MAIN) → treo 13/13. WebGL trước, canvas chỉ fallback.
             preferredRenderer: "wgpu-webgl",
+            wgpuPreferences: {
+                powerPreference: "high-performance"
+            },
             deviceFontRenderer: "canvas",
             defaultFonts: {
                 sans: ["Arial", "Tahoma", "sans-serif"],
@@ -452,6 +557,8 @@
             forceScale: true,
             forceAlign: true,
             warnOnUnsupportedContent: false,
+            // Long-press on touch must not open Ruffle's menu (it is the item-details gesture in DDT).
+            contextMenu: "rightClickOnly",
             // Giảm log / polyfill nặng trên mobile
             logLevel: isMobile ? "warn" : "info",
             maxExecutionDuration: isIOS ? 60 : 90
@@ -511,7 +618,14 @@
             <button class="btn-scale" data-scale="full" onclick="toggleFullscreen()">⛶ Toàn Màn</button>
         </div>
 
-        <button class="btn-alt" onclick="toggleGamepad()">🎮 Phím Ảo</button>
+        <div class="quality-selector">
+            <span style="font-size: 11px; font-weight: bold; color: #00cec9; margin-right: 2px;">⚡ Đồ Họa:</span>
+            <button class="btn-quality" data-quality="low" onclick="setQualityPreset('low')" title="Tắt khử răng cưa MSAA, giảm tải GPU tối đa cho điện thoại mát & mượt 30 FPS">Mượt (Low)</button>
+            <button class="btn-quality" data-quality="medium" onclick="setQualityPreset('medium')" title="Khuyên dùng cho Mobile: Hình ảnh sắc nét, mượt mà không lag">Cân Bằng</button>
+            <button class="btn-quality" data-quality="best" onclick="setQualityPreset('best')" title="Tối đa 4x MSAA khử răng cưa, đẹp nhất cho PC">Sắc Nét</button>
+        </div>
+
+        <button class="btn-alt" id="btn-toggle-gamepad" onclick="toggleGamepad()">🎮 Phím Ảo</button>
         <span id="pad-status" title="Trạng thái tay cầm / RG557" style="margin-left:8px;padding:4px 10px;border-radius:6px;font-size:12px;background:#6c757d;color:#fff;">Tay cầm: chờ…</span>
         <button id="btnToggleMax" style="background:#28a745; margin-left:8px;" onclick="toggleMaxResources()">⚡ Max Tài Nguyên: [BẬT]</button>
     </div>
@@ -683,19 +797,30 @@
             // socketProxy phải có trên player.load — nếu chỉ set global config mà load()
             // không merge, Ruffle TCP thẳng :9569 → fail/treo 13/13 (Road bytes=0).
             var sockProxy = (window.RufflePlayer && window.RufflePlayer.config && window.RufflePlayer.config.socketProxy) || [];
+            var q = ruffleQuality;
+            try {
+                var storedQ = localStorage.getItem("gunny_quality");
+                if (storedQ) q = storedQ;
+            } catch (e) {}
+
             return player.load({
                 url: swfUrl,
                 allowScriptAccess: true,
                 backgroundColor: "#000000",
                 preferredRenderer: "wgpu-webgl",
+                wgpuPreferences: {
+                    powerPreference: "high-performance"
+                },
                 deviceFontRenderer: "canvas",
-                quality: "best",
+                quality: q,
                 frameRate: 30,
                 letterbox: mobileNow ? "off" : "on",
                 scale: "showAll",
                 forceScale: true,
                 autoplay: "on",
                 socketProxy: sockProxy,
+                logLevel: mobileNow ? "warn" : "info",
+                contextMenu: "rightClickOnly",
                 parameters: {
                     user: document.getElementById("username").value.trim() || "admin",
                     key: "Gunny2026",
@@ -763,25 +888,172 @@
                 });
             }
 
-            // Chỉ chặn khi Ruffle/Flash tạo ô input và focus nó
+            if (!isMobile) return;
+
+            // Ruffle giữ 1 ô input ẩn trong shadow DOM của <ruffle-player>. Flash tự focus TextField chat
+            // ngay trong cùng cú chạm nút vào/tạo phòng, nên không phân biệt được bằng thời gian chạm.
+            // Luôn giữ inputmode="none" (không bật bàn phím, phím vật lý/tay cầm vẫn vào Ruffle);
+            // chỉ mở bàn phím khi bấm nút ⌨.
+            var keyboardUnlocked = false;
+
+            function ruffleInputs() {
+                var out = [];
+                document.querySelectorAll("ruffle-player, ruffle-object, ruffle-embed").forEach(function (p) {
+                    if (!p.shadowRoot) return;
+                    p.shadowRoot.querySelectorAll("input, textarea").forEach(function (i) { out.push(i); });
+                });
+                return out;
+            }
+
+            function applyInputMode() {
+                var want = keyboardUnlocked ? "text" : "none";
+                ruffleInputs().forEach(function (i) {
+                    if (i.getAttribute("inputmode") !== want) i.setAttribute("inputmode", want);
+                    if (!i.__gunnyKb) {
+                        i.__gunnyKb = true;
+                        i.addEventListener("blur", function () {
+                            if (keyboardUnlocked) {
+                                keyboardUnlocked = false;
+                                applyInputMode();
+                            }
+                        });
+                    }
+                });
+            }
+            setInterval(applyInputMode, 300);
+
             document.addEventListener("focusin", function (ev) {
-                var t = ev.target;
-                if (!t) return;
-                if (allowAccountEdit && t.id === "username") return;
+                if (keyboardUnlocked) return;
+                var t = (ev.composedPath && ev.composedPath()[0]) || ev.target;
+                if (!t || t.id === "username") return;
                 var tag = (t.tagName || "").toUpperCase();
-                if (tag === "INPUT" || tag === "TEXTAREA") {
-                    if (t.id === "username") return;
-                    try {
-                        t.setAttribute("readonly", "readonly");
-                        t.setAttribute("inputmode", "none");
-                        t.blur();
-                    } catch (e) {}
-                }
+                if (tag !== "INPUT" && tag !== "TEXTAREA") return;
+                if (t.getAttribute("inputmode") === "none") return;
+                t.setAttribute("inputmode", "none");
+                try { t.blur(); t.focus({ preventScroll: true }); } catch (e) {}
+                console.log("[Keyboard] blocked auto keyboard");
             }, true);
 
-            var st = document.createElement("style");
-            st.textContent = "ruffle-player input,ruffle-player textarea{inputmode:none!important;}";
-            document.head.appendChild(st);
+            var kb = document.createElement("div");
+            kb.id = "btn-keyboard";
+            kb.textContent = "⌨";
+            kb.title = "Mở bàn phím để chat (bấm vào ô chat trước)";
+            kb.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:9999;width:40px;height:40px;border-radius:50%;"
+                + "background:rgba(0,0,0,.55);color:#fff;font-size:22px;line-height:40px;text-align:center;user-select:none;-webkit-user-select:none;";
+            kb.addEventListener("pointerdown", function (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                var inputs = ruffleInputs();
+                if (!inputs.length) return;
+                if (keyboardUnlocked) {
+                    keyboardUnlocked = false;
+                    applyInputMode();
+                    try { inputs[0].blur(); inputs[0].focus({ preventScroll: true }); } catch (e) {}
+                    return;
+                }
+                try { inputs[0].blur(); } catch (e) {}
+                keyboardUnlocked = true;
+                applyInputMode();
+                try { inputs[0].focus({ preventScroll: true }); } catch (e) {}
+                console.log("[Keyboard] opened by user");
+            });
+            document.body.appendChild(kb);
+        }
+
+        // DDT UI is mouse-only: tooltips need hover, an item is picked up 350ms after MOUSE_DOWN
+        // (DoubleClickManager) and dropped only by a CLICK at the target (DragManager, not on MOUSE_UP).
+        // Real touch pointers never reach Ruffle; they are replayed as mouse pointer events:
+        //   touch start  -> hover (tooltip)        tap         -> down+up (double tap = double click)
+        //   hold         -> hover only (details)   drag        -> down, moves, up, then a drop click
+        function setupTouchGestures() {
+            if (!isMobile) return;
+            var MOVE_SLOP = 10, HOLD_MS = 450, PICKUP_MS = 420;
+            var g = null;
+
+            function isRuffle(ev) {
+                var path = ev.composedPath ? ev.composedPath() : [];
+                for (var i = 0; i < path.length; i++) {
+                    var tag = path[i] && path[i].tagName;
+                    if (tag === "RUFFLE-PLAYER" || tag === "RUFFLE-OBJECT" || tag === "RUFFLE-EMBED") return path[0];
+                }
+                return null;
+            }
+
+            function send(target, type, x, y, pointerId, pressed) {
+                var e = new PointerEvent(type, {
+                    bubbles: true, cancelable: true, composed: true,
+                    clientX: x, clientY: y,
+                    pointerId: pointerId, pointerType: "mouse", isPrimary: true,
+                    button: type === "pointermove" ? -1 : 0,
+                    buttons: pressed ? 1 : 0
+                });
+                // Ruffle reads offsetX/offsetY; Chrome computes them wrongly (zoom-scaled) for script-created events.
+                var r = target.getBoundingClientRect();
+                Object.defineProperty(e, "offsetX", { value: x - r.left });
+                Object.defineProperty(e, "offsetY", { value: y - r.top });
+                e.__gunnySynth = true;
+                target.dispatchEvent(e);
+            }
+
+            function click(target, x, y, pointerId) {
+                send(target, "pointermove", x, y, pointerId, false);
+                send(target, "pointerdown", x, y, pointerId, true);
+                send(target, "pointerup", x, y, pointerId, false);
+            }
+
+            function swallow(ev) {
+                if (ev.__gunnySynth) return null;
+                if (ev.pointerType !== "touch" && ev.pointerType !== "pen") return null;
+                var target = isRuffle(ev);
+                if (!target) return null;
+                ev.stopImmediatePropagation();
+                if (ev.cancelable) ev.preventDefault();
+                return target;
+            }
+
+            window.addEventListener("pointerdown", function (ev) {
+                var target = swallow(ev);
+                if (!target) return;
+                if (g) return;
+                g = { id: ev.pointerId, target: target, x0: ev.clientX, y0: ev.clientY, x: ev.clientX, y: ev.clientY,
+                      t0: Date.now(), dragging: false, held: false, downAt: 0 };
+                send(target, "pointermove", ev.clientX, ev.clientY, ev.pointerId, false);
+                var cur = g;
+                cur.holdTimer = setTimeout(function () { if (g === cur && !cur.dragging) cur.held = true; }, HOLD_MS);
+            }, true);
+
+            window.addEventListener("pointermove", function (ev) {
+                if (!swallow(ev) || !g || ev.pointerId !== g.id) return;
+                g.x = ev.clientX; g.y = ev.clientY;
+                if (!g.dragging) {
+                    if (Math.hypot(g.x - g.x0, g.y - g.y0) < MOVE_SLOP) return;
+                    g.dragging = true;
+                    g.downAt = Date.now();
+                    send(g.target, "pointerdown", g.x0, g.y0, g.id, true);
+                }
+                send(g.target, "pointermove", g.x, g.y, g.id, true);
+            }, true);
+
+            function finish(ev, cancelled) {
+                if (!swallow(ev) || !g || ev.pointerId !== g.id) return;
+                var cur = g;
+                g = null;
+                clearTimeout(cur.holdTimer);
+                if (cur.dragging) {
+                    send(cur.target, "pointerup", cur.x, cur.y, cur.id, false);
+                    if (cancelled) return;
+                    var wait = Math.max(0, cur.downAt + PICKUP_MS - Date.now());
+                    setTimeout(function () { click(cur.target, cur.x, cur.y, cur.id); }, wait);
+                } else if (!cur.held && !cancelled) {
+                    click(cur.target, cur.x0, cur.y0, cur.id);
+                }
+            }
+            window.addEventListener("pointerup", function (ev) { finish(ev, false); }, true);
+            window.addEventListener("pointercancel", function (ev) { finish(ev, true); }, true);
+
+            window.addEventListener("contextmenu", function (ev) {
+                if (isRuffle(ev)) { ev.preventDefault(); ev.stopImmediatePropagation(); }
+            }, true);
         }
 
         function launchWithRuffle() {
@@ -823,6 +1095,29 @@
             });
         }
 
+        function updateQualityUi(quality) {
+            document.querySelectorAll(".btn-quality").forEach(function(b) {
+                if (b.getAttribute("data-quality") === quality) {
+                    b.classList.add("active");
+                } else {
+                    b.classList.remove("active");
+                }
+            });
+        }
+
+        function setQualityPreset(mode) {
+            if (!mode) mode = "medium";
+            try {
+                localStorage.setItem("gunny_quality", mode);
+            } catch(e) {}
+            ruffleQuality = mode;
+            if (window.RufflePlayer && window.RufflePlayer.config) {
+                window.RufflePlayer.config.quality = mode;
+            }
+            updateQualityUi(mode);
+            launchWithRuffle();
+        }
+
         function toggleFullscreen() {
             var elem = document.getElementById("game-wrapper");
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -852,6 +1147,7 @@
         document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 
         function toggleGamepad() {
+            if (isAndroid) return;
             var pad = document.getElementById("virtual-gamepad");
             pad.style.display = (pad.style.display === "none") ? "flex" : "none";
         }
@@ -1109,7 +1405,16 @@
                 savedPreset = localStorage.getItem("gunny_scale_preset") || "100";
             } catch(e) {}
             setScalePreset(savedPreset);
+
+            var currentQuality = ruffleQuality;
+            try {
+                var storedQ = localStorage.getItem("gunny_quality");
+                if (storedQ) currentQuality = storedQ;
+            } catch(e) {}
+            updateQualityUi(currentQuality);
+
             setupMobileKeyboardGuard();
+            if (!/[?&]touchfx=0/.test(location.search)) setupTouchGestures();
             launchWithRuffle();
             updateResourceStatus();
         });

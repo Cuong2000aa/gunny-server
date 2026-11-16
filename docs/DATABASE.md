@@ -23,7 +23,7 @@ docker exec gunny-sql /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Gunny@2
 | `Project_Game34.dbo.Shop_Goods` | `TemplateID`, `CategoryID`, `Name`, `Quality`, `NeedSex`, `NeedLevel`, `Attack/Defence/Agility/Luck`, `Property1..8`, `Hole` | Template item. `NeedSex`: 0 = chung, 1 = nam, 2 = nữ |
 | `Project_Game34.dbo.Ball` | `ID`, `BombPartical`, `Crater`, physics… | Định nghĩa đạn |
 | `Project_Game34.dbo.BallConfig` | `TemplateID`, `Common`, `CommonAddWound`, `CommonMultiBall`, `Special` | Vũ khí → 4 loại đạn |
-| `Project_Player34.dbo.Sys_Users_Detail` | `UserID`, `NickName`, `Sex` (1 = nam), `Grade`, `Money`, `Gold`… | Admin = UserID 1 |
+| `Project_Player34.dbo.Sys_Users_Detail` | `UserID`, `NickName`, `Sex` (1 = nam), `Grade`, `GP`, `Money`, `Gold`… | Admin = UserID 1. Client tính cấp hiển thị từ **`GP`**, nên đổi `Grade` phải đặt `GP` = `Project_Game34.dbo.LevelInfo.GP` của cấp đó (Lv60 = 211140995, Lv30 = 3490849) |
 | `Project_Player34.dbo.Sys_Users_Goods` | `ItemID` (identity), `UserID`, `BagType`, `Place`, `TemplateID`… | Túi đồ |
 
 ## 3. Item category (`Shop_Goods.CategoryID`)

@@ -101,6 +101,7 @@
     <CROSSBUGGLE enable="true" />
     <!--10分钟后检查到用登录器登录，对玩家进行踢出游戏操作-->
     <CHECKDESK_KILL enable="false" />
+    <STHRENTH_MAX value="15" />
   </config>
   <update>
     <version from="372" to="373">
@@ -120,6 +121,20 @@
       <file value="ui/vietnam/xml/xml.png" />
       <file value="ui/vietnam/swf/consortiabattle.swf" />
       <file value="ui/vietnam/swf/gameover.swf" />
+    </version>
+    <version from="375" to="376">
+      <file value="flash/ui/vietnam/swf/corei.swf" />
+      <file value="ui/vietnam/swf/corei.swf" />
+      <file value="flash/2.png" />
+      <file value="2.png" />
+    </version>
+    <version from="376" to="377">
+      <file value="flash/2.png" />
+      <file value="2.png" />
+    </version>
+    <version from="377" to="378">
+      <file value="flash/2.png" />
+      <file value="2.png" />
     </version>
   </update>
 </root>

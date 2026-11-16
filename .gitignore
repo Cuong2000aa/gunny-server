@@ -38,6 +38,7 @@ tools/ffdec/
 tools/ffdec.zip
 tools/export_*/
 tools/verify_*/
+tools/test_*/
 tools/as3dump/
 
 # OS Generated Files

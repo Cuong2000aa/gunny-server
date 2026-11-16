@@ -623,7 +623,7 @@ namespace Game.Logic
                 SendGameNextTurn(m_currentLiving, this, newBoxes);
                 if (m_currentLiving.IsAttacking)
                 {
-                    AddAction(new WaitLivingAttackingAction(m_currentLiving, base.m_turnIndex, (m_timeType + 20) * 1000));
+                    AddAction(new WaitLivingAttackingAction(m_currentLiving, base.m_turnIndex, (getTurnTime() + 20) * 1000));
                 }
             }
             //if (m_currentLiving is Player && FindNextTurnedLiving(true) is Player)

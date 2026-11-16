@@ -71,16 +71,6 @@ namespace Game.Logic.Actions
 			if (m_living is Player && m_minTime == 1001 && m_maxTime == 10001)
 			{
 				m_living.GetShootForceAndAngle(ref m_tx, ref m_ty, m_bombId, m_minTime, m_maxTime, m_bombCount, m_Time, ref m_force, ref m_angle);
-				// AutoBot: jitter lực/góc sau ballistics hoàn hảo → bớt “auto trúng”
-				Player botPlayer = m_living as Player;
-				if (botPlayer?.PlayerDetail?.PlayerCharacter != null && botPlayer.PlayerDetail.PlayerCharacter.IsAutoBot)
-				{
-					lock (s_rng)
-					{
-						m_force = Math.Max(200, m_force + s_rng.Next(-180, 181));
-						m_angle += s_rng.Next(-8, 9);
-					}
-				}
 			}
 			if (m_living.ShootImp(m_bombId, m_tx, m_ty, m_force, m_angle, m_bombCount, 0) && m_callBack != null)
 			{

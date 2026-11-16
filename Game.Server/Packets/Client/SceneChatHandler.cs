@@ -73,7 +73,7 @@ namespace Game.Server.Packets.Client
 
 					client.Player.BeginChanges();
 					client.Player.PlayerCharacter.Grade = 30;
-					client.Player.PlayerCharacter.GP = 2500000;
+					client.Player.PlayerCharacter.GP = LevelMgr.FindLevel(30)?.GP ?? 3490849;
 					client.Player.PlayerCharacter.Money = 50000;
 					client.Player.PlayerCharacter.Gold = 100000;
 					client.Player.PlayerCharacter.GiftToken = 20000;

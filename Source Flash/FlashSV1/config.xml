@@ -93,11 +93,26 @@
 <FRAME_OVER_COUNT_TAG value="25"/>
 </GAME_FRAME_CONFIG>
 <PETS_EAT enable="true"/>
+<STHRENTH_MAX value="15"/>
 </config>
 <update>
-<version from="1" to="31">
+<version from="1" to="35">
 <file value="flash/*"/>
 <file value="*"/>
+</version>
+<version from="33" to="34">
+<file value="ui/vietnam/swf/corei.swf"/>
+<file value="flash/ui/vietnam/swf/corei.swf"/>
+<file value="2.png"/>
+<file value="flash/2.png"/>
+</version>
+<version from="34" to="35">
+<file value="2.png"/>
+<file value="flash/2.png"/>
+</version>
+<version from="35" to="36">
+<file value="2.png"/>
+<file value="flash/2.png"/>
 </version>
 </update>
 </root>

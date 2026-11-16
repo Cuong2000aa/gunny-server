@@ -57,8 +57,8 @@
   <Item Name="FastGrowSubTime" Value="30" />
   <Item Name="LittleGameBoguConfig" Value="200,1,1|100,4,1|3000,80,3|6000,125,5" />
   <Item Name="LittleGameMaxBoguCount" Value="40" />
-  <Item Name="LittleGameStartHourse" Value="0" />
-  <Item Name="LittleGameTimeSpendingHours" Value="24" />
+  <Item Name="LittleGameStartHourse" Value="13" />
+  <Item Name="LittleGameTimeSpendingHours" Value="1" />
   <Item Name="DebugMode" Value="False" />
   <Item Name="VIPStrengthenEx" Value="25|25|25|35|35|50|50|50|50|50|50|50" />
   <Item Name="PICKUP_SNENIOR_ROBOT" Value="True" />
@@ -431,7 +431,7 @@
   <Item Name="DispatchesMoney" Value="200" />
   <Item Name="DismountGemMoney" Value="200" />
   <Item Name="CanExperience" Value="FALSE" />
-  <Item Name="MaxStrengthLevel" Value="12" />
+  <Item Name="MaxStrengthLevel" Value="15" />
   <Item Name="AASInterfaceSwitch" Value="0" />
   <Item Name="OpenHolesGold" Value="200" />
   <Item Name="DefaultGP" Value="1" />
@@ -507,4 +507,10 @@
   <Item Name="TimeX2" Value="2" />
   <Item Name="WorldBossID1" Value="4" />
   <Item Name="WorldBossID2" Value="1" />
+  <Item Name="ItemDevelopPrice" Value="35" />
+  <Item Name="WorldBossID" Value="1" />
+  <Item Name="GuildBattleStartTime" Value="2016/1/1 20:30:00" />
+  <Item Name="GuildBattleStartDay" Value="Saturday" />
+  <Item Name="StartEventOldPlayer" Value="2021-01-01 20:55:27.270" />
+  <Item Name="EndEventOldPlayer" Value="2021-02-01 20:55:27.270" />
 </Result>
