@@ -60,11 +60,12 @@ namespace Tank.Request
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            // Root /play.html (wwwroot cũ) → /web/play.html (canonical, socketProxy đúng)
+            // Root / (trang chủ), /play.html → tự động vào thẳng /web/play.html
             app.Use(async (context, next) =>
             {
                 string p = context.Request.Path.Value ?? "";
-                if (p.Equals("/play.html", StringComparison.OrdinalIgnoreCase)
+                if (string.IsNullOrEmpty(p) || p == "/" || p.Equals("/index.html", StringComparison.OrdinalIgnoreCase)
+                    || p.Equals("/play.html", StringComparison.OrdinalIgnoreCase)
                     || p.Equals("/server_list.html", StringComparison.OrdinalIgnoreCase)
                     || p.Equals("/Tank.Flash/play.html", StringComparison.OrdinalIgnoreCase))
                 {
