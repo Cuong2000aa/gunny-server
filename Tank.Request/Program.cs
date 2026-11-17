@@ -509,47 +509,57 @@ namespace Tank.Request
                     return;
                 }
 
-                string connStr = "Server=127.0.0.1,1433;Database=Project_Player34;User Id=sa;Password=Gunny@2026Mac;TrustServerCertificate=True;";
-                using var conn = new SqlConnection(connStr);
-                await conn.OpenAsync();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT Money, Grade FROM Sys_Users_Detail WHERE UserID = 1;";
-                using var reader = await cmd.ExecuteReaderAsync();
-                bool isMax = false;
-                if (await reader.ReadAsync())
+                try
                 {
-                    int money = Convert.ToInt32(reader["Money"]);
-                    int grade = Convert.ToInt32(reader["Grade"]);
-                    // MaxLevel in this build is 60 — never use Grade 65 (breaks LevelInfo / hall).
-                    if (money > 50000000 || grade >= 60)
+                    string connStr = "Server=127.0.0.1,1433;Database=Project_Player34;User Id=sa;Password=Gunny@2026Mac;TrustServerCertificate=True;Connection Timeout=3;";
+                    using var conn = new SqlConnection(connStr);
+                    await conn.OpenAsync();
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = "SELECT Money, Grade FROM Sys_Users_Detail WHERE UserID = 1;";
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    bool isMax = false;
+                    if (await reader.ReadAsync())
                     {
-                        isMax = true;
+                        int money = Convert.ToInt32(reader["Money"]);
+                        int grade = Convert.ToInt32(reader["Grade"]);
+                        if (money > 50000000 || grade >= 60)
+                        {
+                            isMax = true;
+                        }
                     }
+                    await reader.CloseAsync();
+
+                    bool toMax = !isMax;
+                    cmd.CommandText = toMax ?
+                        @"UPDATE Sys_Users_Detail 
+                          SET Grade = 60, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 60), 211140995),
+                              Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
+                          WHERE UserID = 1;" :
+                        @"UPDATE Sys_Users_Detail 
+                          SET Grade = 30, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 30), 3490849),
+                              Money = 50000, Gold = 100000, GiftToken = 20000, Medal = 500 
+                          WHERE UserID = 1;";
+                    await cmd.ExecuteNonQueryAsync();
+
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        success = true,
+                        isMax = toMax,
+                        message = toMax ?
+                            "⚡ Đã BẬT Max Tài Nguyên (Level 60, 99.999.999 Xu/Vàng/Lễ Kim)! Nếu đang trong game, gõ /max để cập nhật ngay." :
+                            "🛡️ Đã TẮT Max Tài Nguyên (Level 30, tài nguyên chuẩn cân bằng)! Nếu đang trong game, gõ /normal để cập nhật ngay."
+                    });
                 }
-                await reader.CloseAsync();
-
-                bool toMax = !isMax;
-                // Client derives the displayed level from GP (LevelInfo), so GP must match the grade threshold.
-                cmd.CommandText = toMax ?
-                    @"UPDATE Sys_Users_Detail 
-                      SET Grade = 60, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 60), 211140995),
-                          Money = 99999999, Gold = 99999999, GiftToken = 99999999, Medal = 999999 
-                      WHERE UserID = 1;" :
-                    @"UPDATE Sys_Users_Detail 
-                      SET Grade = 30, GP = ISNULL((SELECT GP FROM Project_Game34.dbo.LevelInfo WHERE Grade = 30), 3490849),
-                          Money = 50000, Gold = 100000, GiftToken = 20000, Medal = 500 
-                      WHERE UserID = 1;";
-                await cmd.ExecuteNonQueryAsync();
-
-                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
-                await context.Response.WriteAsJsonAsync(new
+                catch (Exception ex)
                 {
-                    success = true,
-                    isMax = toMax,
-                    message = toMax ?
-                        "⚡ Đã BẬT Max Tài Nguyên (Level 60, 99.999.999 Xu/Vàng/Lễ Kim)! Nếu đang trong game, gõ /max để cập nhật ngay." :
-                        "🛡️ Đã TẮT Max Tài Nguyên (Level 30, tài nguyên chuẩn cân bằng)! Nếu đang trong game, gõ /normal để cập nhật ngay."
-                });
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        success = false,
+                        message = "Không thể kết nối Database SQL: " + ex.Message
+                    });
+                }
             });
 
             app.MapGet("/api/admin/resource-status", async (Microsoft.AspNetCore.Http.HttpContext context) =>
@@ -562,32 +572,45 @@ namespace Tank.Request
                     return;
                 }
 
-                string connStr = "Server=127.0.0.1,1433;Database=Project_Player34;User Id=sa;Password=Gunny@2026Mac;TrustServerCertificate=True;";
-                using var conn = new SqlConnection(connStr);
-                await conn.OpenAsync();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT Grade, Money, Gold, GiftToken, Medal FROM Sys_Users_Detail WHERE UserID = 1;";
-                using var reader = await cmd.ExecuteReaderAsync();
-                if (await reader.ReadAsync())
+                try
                 {
-                    int grade = Convert.ToInt32(reader["Grade"]);
-                    int money = Convert.ToInt32(reader["Money"]);
-                    bool isMax = money > 50000000 || grade >= 60;
+                    string connStr = "Server=127.0.0.1,1433;Database=Project_Player34;User Id=sa;Password=Gunny@2026Mac;TrustServerCertificate=True;Connection Timeout=3;";
+                    using var conn = new SqlConnection(connStr);
+                    await conn.OpenAsync();
+                    using var cmd = conn.CreateCommand();
+                    cmd.CommandText = "SELECT Grade, Money, Gold, GiftToken, Medal FROM Sys_Users_Detail WHERE UserID = 1;";
+                    using var reader = await cmd.ExecuteReaderAsync();
+                    if (await reader.ReadAsync())
+                    {
+                        int grade = Convert.ToInt32(reader["Grade"]);
+                        int money = Convert.ToInt32(reader["Money"]);
+                        bool isMax = money > 50000000 || grade >= 60;
+                        context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                        await context.Response.WriteAsJsonAsync(new
+                        {
+                            success = true,
+                            isMax = isMax,
+                            grade = grade,
+                            money = money,
+                            gold = Convert.ToInt32(reader["Gold"]),
+                            giftToken = Convert.ToInt32(reader["GiftToken"]),
+                            medal = Convert.ToInt32(reader["Medal"])
+                        });
+                        return;
+                    }
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    await context.Response.WriteAsJsonAsync(new { success = false, message = "User not found", isMax = false });
+                }
+                catch (Exception ex)
+                {
                     context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
                     await context.Response.WriteAsJsonAsync(new
                     {
-                        success = true,
-                        isMax = isMax,
-                        grade = grade,
-                        money = money,
-                        gold = Convert.ToInt32(reader["Gold"]),
-                        giftToken = Convert.ToInt32(reader["GiftToken"]),
-                        medal = Convert.ToInt32(reader["Medal"])
+                        success = false,
+                        isMax = false,
+                        message = "Không thể kết nối Database SQL: " + ex.Message
                     });
-                    return;
                 }
-                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
-                await context.Response.WriteAsJsonAsync(new { success = false, message = "User not found" });
             });
 
             // Enable WebSockets for Ruffle ActionScript Socket proxy
